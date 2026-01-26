@@ -1,10 +1,65 @@
-class SignUpException implements Exception {
-  final String message;
+import 'package:flutter/cupertino.dart';
+import 'package:go_router/go_router.dart';
+import 'package:relog/core/routing/route_paths.dart';
+import 'package:relog/presentation/calendar/calendar_screen.dart';
+import 'package:relog/presentation/friends/friends_screen.dart';
+import 'package:relog/presentation/home/home_screen.dart';
+import 'package:relog/presentation/my_page/my_page_screen.dart';
+import 'package:relog/presentation/navigation/bottom_navigation.dart';
 
-  SignUpException([
-    this.message = "입력 정보를 다시 확인해 주세요",
-  ]);
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
-  @override
-  String toString() => message;
-}
+final router = GoRouter(
+  navigatorKey: rootNavigatorKey,
+  initialLocation: RoutePaths.home,
+  routes: [
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) {
+       return BottomNavigation(
+         body: navigationShell,
+         currentPageIndex: navigationShell.currentIndex,
+         onChangeIndex: (index) {
+           navigationShell.goBranch(
+             index,
+             initialLocation:  index == navigationShell.currentIndex,
+           );
+         },
+       );
+      },
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: RoutePaths.home,
+              builder: (context, state) => HomeScreen(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: RoutePaths.calendar,
+              builder: (context, state) => CalendarScreen(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: RoutePaths.friends,
+              builder: (context, state) => FriendsScreen(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: RoutePaths.mypage,
+              builder: (context, state) => MyPageScreen(),
+            ),
+          ],
+        ),
+      ]
+    )
+  ]
+);
