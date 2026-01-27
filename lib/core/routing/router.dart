@@ -4,6 +4,7 @@ import 'package:relog/core/routing/route_paths.dart';
 import 'package:relog/presentation/calendar/calendar_screen.dart';
 import 'package:relog/presentation/friends/friends_screen.dart';
 import 'package:relog/presentation/home/home_screen.dart';
+import 'package:relog/presentation/my_page/edit/profile_edit_screen.dart';
 import 'package:relog/presentation/my_page/my_page_screen.dart';
 import 'package:relog/presentation/navigation/bottom_navigation.dart';
 import 'package:relog/presentation/web_view/web_view_screen.dart';
@@ -57,6 +58,9 @@ final router = GoRouter(
             GoRoute(
               path: RoutePaths.mypage,
               builder: (context, state) => MyPageScreen(
+                onTapEditScreen: () {
+                  context.push(RoutePaths.mypage + RoutePaths.profileEdit);
+                },
                 onTapWebView: (url, title) {
                   context.push(
                     RoutePaths.mypage + RoutePaths.webView,
@@ -68,6 +72,10 @@ final router = GoRouter(
                 },
               ),
               routes: [
+                GoRoute(
+                  path: RoutePaths.profileEdit,
+                  builder: (context, state) => ProfileEditScreen(),
+                ),
                 GoRoute(
                   path: RoutePaths.webView,
                   builder: (context, state) {
