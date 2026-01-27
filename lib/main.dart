@@ -4,6 +4,8 @@ import 'package:relog/core/presentation/ui/color_styles.dart';
 import 'core/routing/router.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   // .env 파일 로드
   await dotenv.load();
 
