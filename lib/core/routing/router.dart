@@ -57,11 +57,13 @@ final router = GoRouter(
             GoRoute(
               path: RoutePaths.mypage,
               builder: (context, state) => MyPageScreen(
-                onTapWebView: (url) {
+                onTapWebView: (url, title) {
                   context.push(
-                    RoutePaths.mypage + RoutePaths.webView, extra: {
+                    RoutePaths.mypage + RoutePaths.webView,
+                    extra: {
                       'url': url,
-                    }
+                      'title': title,
+                    },
                   );
                 },
               ),
@@ -71,6 +73,7 @@ final router = GoRouter(
                   builder: (context, state) {
                     return WebViewScreen(
                       url: (state.extra as Map<String, dynamic>)['url'],
+                      title: (state.extra as Map<String, dynamic>)['title'],
                     );
                   }
                 ),

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:relog/core/presentation/ui/color_styles.dart';
+import 'package:relog/core/presentation/widgets/app_bar/default_app_bar.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewScreen extends StatefulWidget {
   final String url;
+  final String title;
 
   const WebViewScreen({
     super.key,
     required this.url,
+    required this.title,
   });
 
   @override
@@ -39,10 +42,8 @@ class _WebViewScreenState extends State<WebViewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorStyles.black22,
-      appBar: AppBar(
-        backgroundColor: ColorStyles.black22,
-        foregroundColor: ColorStyles.grayD3,
-        title: Text(''),
+      appBar: DefaultAppBar(
+        title: widget.title,
       ),
       body: SafeArea(
         child: Stack(
