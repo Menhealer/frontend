@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:relog/ui/color_styles.dart';
-import 'package:relog/ui/text_styles.dart';
+import 'package:relog/core/presentation/ui/color_styles.dart';
+import 'package:relog/core/presentation/ui/text_styles.dart';
+import 'package:relog/presentation/my_page/widgets/profile_card.dart';
+import 'package:relog/presentation/my_page/widgets/setting_section.dart';
 
 class MyPageScreen extends HookConsumerWidget {
   const MyPageScreen({super.key});
@@ -11,14 +13,64 @@ class MyPageScreen extends HookConsumerWidget {
     return Scaffold(
       backgroundColor: ColorStyles.black22,
       body: SafeArea(
-        child: Center(
-          child: Text(
-            '마이페이지',
-            style: TextStyles.titleTextBold.copyWith(
-              color: ColorStyles.white,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 24,
+              children: [
+                Text(
+                  'My Log',
+                  style: TextStyles.titleTextBold.copyWith(
+                    color: ColorStyles.grayD3,
+                  ),
+                ),
+
+                // 프로필 카드
+                MyProfileCard(
+                  name: '주꾸미',
+                  email: 'woojoo0922@gmail.com',
+                  imageAsset: 'assets/images/profile.png',
+                  onEditProfile: () {
+                    // TODO: 프로필 수정 페이지 이동
+                  },
+                ),
+
+                // 설정
+                SettingsSectionCard(
+                  title: '앱 정보',
+                  children: [
+                    const SettingsItem(label: '버전  1.0.0'),
+                    SettingsItem(
+                      label: '서비스 이용약관',
+                      onTap: () {},
+                    ),
+                    SettingsItem(
+                      label: '개인정보 처리방침',
+                      onTap: () {},
+                    ),
+                  ],
+                ),
+
+                SettingsSectionCard(
+                  title: '계정 관리',
+                  children: [
+                    SettingsItem(
+                      label: '로그아웃',
+                      onTap: () {},
+                    ),
+                    SettingsItem(
+                      label: '회원 탈퇴',
+                      onTap: () {},
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-        ),
+        )
       ),
     );
   }
