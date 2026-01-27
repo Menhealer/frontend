@@ -6,10 +6,12 @@ import 'package:relog/presentation/my_page/widgets/profile_card.dart';
 import 'package:relog/presentation/my_page/widgets/setting_section.dart';
 
 class MyPageScreen extends HookConsumerWidget {
+  final VoidCallback onTapEditScreen;
   final void Function(String url, String title) onTapWebView;
 
   const MyPageScreen({
     super.key,
+    required this.onTapEditScreen,
     required this.onTapWebView,
   });
 
@@ -43,9 +45,7 @@ class MyPageScreen extends HookConsumerWidget {
                   name: '주꾸미',
                   email: 'woojoo0922@gmail.com',
                   imageAsset: 'assets/images/profile.png',
-                  onEditProfile: () {
-                    // TODO: 프로필 수정 페이지 이동
-                  },
+                  onEditProfile: onTapEditScreen,
                 ),
 
                 // 설정
