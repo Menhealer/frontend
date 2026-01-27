@@ -6,6 +6,7 @@ import 'package:relog/presentation/friends/friends_screen.dart';
 import 'package:relog/presentation/home/home_screen.dart';
 import 'package:relog/presentation/my_page/my_page_screen.dart';
 import 'package:relog/presentation/navigation/bottom_navigation.dart';
+import 'package:relog/presentation/web_view/web_view_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -55,7 +56,25 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: RoutePaths.mypage,
-              builder: (context, state) => MyPageScreen(),
+              builder: (context, state) => MyPageScreen(
+                onTapWebView: (url) {
+                  context.push(
+                    RoutePaths.mypage + RoutePaths.webView, extra: {
+                      'url': url,
+                    }
+                  );
+                },
+              ),
+              routes: [
+                GoRoute(
+                  path: RoutePaths.webView,
+                  builder: (context, state) {
+                    return WebViewScreen(
+                      url: (state.extra as Map<String, dynamic>)['url'],
+                    );
+                  }
+                ),
+              ]
             ),
           ],
         ),
