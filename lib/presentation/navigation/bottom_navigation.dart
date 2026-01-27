@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:relog/ui/color_styles.dart';
-import 'package:relog/ui/text_styles.dart';
+import 'package:relog/core/presentation/ui/color_styles.dart';
+import 'package:relog/core/presentation/ui/text_styles.dart';
 
 class BottomNavigation extends StatelessWidget {
   final Widget body;
