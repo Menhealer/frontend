@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:relog/ui/color_styles.dart';
-
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:relog/core/presentation/ui/color_styles.dart';
 import 'core/routing/router.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   // .env 파일 로드
   await dotenv.load();
 
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
       theme: ThemeData(
         colorScheme: ColorScheme.dark(),
