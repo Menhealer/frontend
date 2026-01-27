@@ -6,7 +6,7 @@ import 'package:relog/presentation/my_page/widgets/profile_card.dart';
 import 'package:relog/presentation/my_page/widgets/setting_section.dart';
 
 class MyPageScreen extends HookConsumerWidget {
-  final void Function(String url) onTapWebView;
+  final void Function(String url, String title) onTapWebView;
 
   const MyPageScreen({
     super.key,
@@ -55,11 +55,11 @@ class MyPageScreen extends HookConsumerWidget {
                     const SettingsItem(label: '버전  1.0.0'),
                     SettingsItem(
                       label: '서비스 이용약관',
-                      onTap: () => onTapWebView(termsOfService),
+                      onTap: () => onTapWebView(termsOfService, '서비스 이용약관'),
                     ),
                     SettingsItem(
                       label: '개인정보 처리방침',
-                      onTap: () => onTapWebView(privacyPolicy),
+                      onTap: () => onTapWebView(privacyPolicy, '개인정보 처리방침'),
                     ),
                   ],
                 ),
