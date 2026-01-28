@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:relog/core/routing/route_paths.dart';
 import 'package:relog/domain/friends/friend_detail.dart';
+import 'package:relog/domain/friends/friend_edit.dart';
 import 'package:relog/presentation/calendar/calendar_screen.dart';
 import 'package:relog/presentation/friends/detail/friend_detail_screen.dart';
 import 'package:relog/presentation/friends/friends_screen.dart';
@@ -60,16 +61,29 @@ final router = GoRouter(
                     extra: detail,
                   );
                 },
-                onTapWrite: () {
+                onTapWrite: (isEdit) {
                   context.push(
                     RoutePaths.friends + RoutePaths.friendWrite,
+                    extra: {
+                      'isEdit': false,
+                      'friendInfo': null,
+                    },
                   );
                 },
               ),
               routes: [
                 GoRoute(
                   path: RoutePaths.friendWrite,
-                  builder: (context, state) => FriendWriteScreen(),
+                  builder: (context, state) {
+                    final extra = state.extra as Map<String, dynamic>?;
+                    final bool isEdit = extra?['isEdit'] ?? false;
+                    final FriendEdit? friendInfo = extra?['friendInfo'] as FriendEdit?;
+
+                    return FriendWriteScreen(
+                      isEdit: isEdit,
+                      friendInfo: friendInfo,
+                    );
+                  },
                 ),
                 GoRoute(
                   path: RoutePaths.friendDetail,
@@ -83,6 +97,15 @@ final router = GoRouter(
                         );
                       },
                       onTapPresent: () {  },
+                      onTapEdit: (isEdit, friendInfo) {
+                        context.push(
+                          RoutePaths.friends + RoutePaths.friendWrite,
+                          extra: {
+                            'isEdit': isEdit,
+                            'friendInfo': friendInfo,
+                          },
+                        );
+                      },
                     );
                   },
                   routes: [

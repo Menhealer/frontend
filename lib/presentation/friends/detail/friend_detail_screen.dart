@@ -10,7 +10,9 @@ import 'package:relog/core/presentation/widgets/buttons/secondary_button.dart';
 import 'package:relog/core/presentation/widgets/cards/present_card.dart';
 import 'package:relog/core/presentation/widgets/chip/info_chip.dart';
 import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
+import 'package:relog/core/utils/time_format.dart';
 import 'package:relog/domain/friends/friend_detail.dart';
+import 'package:relog/domain/friends/friend_edit.dart';
 import 'package:relog/presentation/friends/widgets/event_card.dart';
 import 'package:relog/presentation/friends/widgets/score_bar.dart';
 
@@ -18,12 +20,14 @@ class FriendDetailScreen extends HookConsumerWidget {
   final FriendDetail friend;
   final VoidCallback onTapSummary;
   final VoidCallback onTapPresent;
+  final void Function(bool isEdit, FriendEdit friendInfo) onTapEdit;
 
   const FriendDetailScreen({
     super.key,
     required this.friend,
     required this.onTapSummary,
     required this.onTapPresent,
+    required this.onTapEdit,
   });
 
   @override
@@ -53,9 +57,7 @@ class FriendDetailScreen extends HookConsumerWidget {
               actions: [
                 ActionSheetItem(
                   label: '친구 정보 수정',
-                  onTap: () {
-                    // 수정 로직
-                  },
+                  onTap: () => onTapEdit(true, FriendEdit(id: friend.id, name: friend.name, group: friend.group, birthday: friend.birthday)),
                 ),
                 ActionSheetItem(
                   label: '친구 삭제',
@@ -135,7 +137,7 @@ class FriendDetailScreen extends HookConsumerWidget {
 
                     if (friend.birthday != null)
                       InfoChip(
-                        label: friend.birthday!,
+                        label: formatBirthday(friend.birthday!),
                         backgroundColor: ColorStyles.pink100,
                         textColor: ColorStyles.pink10,
                       ),
