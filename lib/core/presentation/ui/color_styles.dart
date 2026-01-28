@@ -26,5 +26,5 @@ abstract class ColorStyles {
   static const Color pink10 = Color(0xFFF2B0FF);
   static const Color pointPink = Color(0xFFDF45AC);
 
-  static const Color infoBlue = Color(0xFF006DFF);
+  static const Color infoBlue = Color(0xFF71A6FF);
 }
