@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:relog/core/presentation/ui/color_styles.dart';
-import 'package:relog/core/presentation/ui/text_styles.dart';
+import 'package:relog/core/presentation/styles/color_styles.dart';
+import 'package:relog/core/presentation/styles/text_styles.dart';
 
 class SearchTextField extends StatelessWidget {
   final TextEditingController controller;

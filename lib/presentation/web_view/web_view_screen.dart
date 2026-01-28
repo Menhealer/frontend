@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:relog/core/presentation/ui/color_styles.dart';
+import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/widgets/app_bar/default_app_bar.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 

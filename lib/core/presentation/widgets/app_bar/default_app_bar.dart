@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:relog/core/presentation/ui/color_styles.dart';
-import 'package:relog/core/presentation/ui/text_styles.dart';
+import 'package:relog/core/presentation/styles/color_styles.dart';
+import 'package:relog/core/presentation/styles/text_styles.dart';
 
 class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
