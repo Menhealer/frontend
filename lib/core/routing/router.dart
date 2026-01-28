@@ -6,6 +6,7 @@ import 'package:relog/presentation/calendar/calendar_screen.dart';
 import 'package:relog/presentation/friends/detail/friend_detail_screen.dart';
 import 'package:relog/presentation/friends/friends_screen.dart';
 import 'package:relog/presentation/friends/summary/friend_summary.dart';
+import 'package:relog/presentation/friends/write/friend_write_screen.dart';
 import 'package:relog/presentation/home/home_screen.dart';
 import 'package:relog/presentation/my_page/edit/profile_edit_screen.dart';
 import 'package:relog/presentation/my_page/my_page_screen.dart';
@@ -59,8 +60,17 @@ final router = GoRouter(
                     extra: detail,
                   );
                 },
+                onTapWrite: () {
+                  context.push(
+                    RoutePaths.friends + RoutePaths.friendWrite,
+                  );
+                },
               ),
               routes: [
+                GoRoute(
+                  path: RoutePaths.friendWrite,
+                  builder: (context, state) => FriendWriteScreen(),
+                ),
                 GoRoute(
                   path: RoutePaths.friendDetail,
                   builder: (context, state) {
