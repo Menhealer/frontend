@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:relog/core/presentation/ui/color_styles.dart';
 import 'package:relog/core/presentation/ui/text_styles.dart';
+import 'package:relog/core/presentation/widgets/action_sheet/custom_action_sheet.dart';
 import 'package:relog/core/presentation/widgets/app_bar/default_app_bar.dart';
 import 'package:relog/core/presentation/widgets/buttons/secondary_button.dart';
 import 'package:relog/core/presentation/widgets/cards/present_card.dart';
@@ -44,12 +46,33 @@ class FriendDetailScreen extends HookConsumerWidget {
         title: '친구 정보',
         trailing: IconButton(
           onPressed: () {
-            // TODO: 액션 버튼
+            CustomActionSheet.show(
+              context,
+              actions: [
+                ActionSheetItem(
+                  label: '친구 정보 수정',
+                  onTap: () {
+                    // 수정 로직
+                  },
+                ),
+                ActionSheetItem(
+                  label: '친구 삭제',
+                  type: ActionSheetItemType.destructive,
+                  onTap: () {
+                    // 삭제 로직
+                  },
+                ),
+              ],
+            );
           },
-          icon: Icon(
-            Icons.add,
-            color: ColorStyles.grayD3,
-            size: 24,
+          icon: SvgPicture.asset(
+            'assets/icons/kebab_menu.svg',
+            width: 24,
+            height: 24,
+            colorFilter: const ColorFilter.mode(
+              ColorStyles.grayD3,
+              BlendMode.srcIn,
+            ),
           ),
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
