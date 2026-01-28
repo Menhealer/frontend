@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:relog/core/presentation/ui/color_styles.dart';
 import 'package:relog/core/presentation/ui/text_styles.dart';
+import 'package:relog/core/utils/number_format.dart';
 import 'package:relog/core/utils/time_format.dart';
 import 'package:relog/domain/friends/present.dart';
 
@@ -76,7 +77,7 @@ class PresentCard extends StatelessWidget {
                       spacing: 8,
                       children: [
                         Text(
-                          '${present.price.toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => ',',)}원',
+                          '${NumberFormatUtil.comma(present.price)}원',
                           style: TextStyles.largeTextBold.copyWith(
                             color: ColorStyles.grayD3,
                           ),

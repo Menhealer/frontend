@@ -5,6 +5,7 @@ import 'package:relog/domain/friends/friend_detail.dart';
 import 'package:relog/presentation/calendar/calendar_screen.dart';
 import 'package:relog/presentation/friends/detail/friend_detail_screen.dart';
 import 'package:relog/presentation/friends/friends_screen.dart';
+import 'package:relog/presentation/friends/summary/friend_summary.dart';
 import 'package:relog/presentation/home/home_screen.dart';
 import 'package:relog/presentation/my_page/edit/profile_edit_screen.dart';
 import 'package:relog/presentation/my_page/my_page_screen.dart';
@@ -66,10 +67,20 @@ final router = GoRouter(
                     final detail = state.extra as FriendDetail;
                     return FriendDetailScreen(
                       friend: detail,
-                      onTapSummary: () {  },
+                      onTapSummary: () {
+                        context.push(
+                          RoutePaths.friends + RoutePaths.friendDetail + RoutePaths.friendSummary,
+                        );
+                      },
                       onTapPresent: () {  },
                     );
                   },
+                  routes: [
+                    GoRoute(
+                      path: RoutePaths.friendSummary,
+                      builder: (context, state) => FriendSummary(),
+                    )
+                  ]
                 ),
               ]
             ),
