@@ -11,7 +11,7 @@ import 'dummy.dart';
 
 class FriendsScreen extends HookConsumerWidget {
   final void Function(FriendDetail detail) onTapDetail;
-  final VoidCallback onTapWrite;
+  final void Function(bool isEdit) onTapWrite;
 
   const FriendsScreen({
     super.key,
@@ -38,7 +38,7 @@ class FriendsScreen extends HookConsumerWidget {
         title: '친구',
         showBackButton: false,
         trailing: IconButton(
-          onPressed: onTapWrite,
+          onPressed: () => onTapWrite(false),
           icon: Icon(
             Icons.add,
             color: ColorStyles.grayD3,

@@ -22,7 +22,7 @@ final List<FriendDetail> dummyFriendDetails = [
     name: '햄스터',
     score: 85,
     group: '동아리',
-    birthday: '9월 22일',
+    birthday: DateTime(2024, 10, 12),
     eventList: [
       Event(
         id: 1,
@@ -62,7 +62,7 @@ final List<FriendDetail> dummyFriendDetails = [
     name: '고양이',
     score: 42,
     group: null,
-    birthday: '1월 15일',
+    birthday: DateTime(2024, 1, 15),
     eventList: [
       Event(
         id: 3,
@@ -106,7 +106,7 @@ final List<FriendDetail> dummyFriendDetails = [
     name: '여우',
     score: 67,
     group: null,
-    birthday: 'null',
+    birthday: null,
     eventList: [
       Event(
         id: 4,
@@ -186,7 +186,7 @@ final List<FriendDetail> dummyFriendDetails = [
     name: '수달',
     score: -45,
     group: '동아리',
-    birthday: '4월 14일',
+    birthday: DateTime(2024, 4, 22),
     eventList: [
       Event(
         id: 9,
@@ -203,7 +203,7 @@ final List<FriendDetail> dummyFriendDetails = [
     name: '늑대',
     score: -80,
     group: null,
-    birthday: '6월 13일',
+    birthday: DateTime(2024, 6, 28),
     eventList: [],
     presentList: [],
   ),
