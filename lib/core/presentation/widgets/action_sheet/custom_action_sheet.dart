@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:relog/core/presentation/ui/color_styles.dart';
-import 'package:relog/core/presentation/ui/text_styles.dart';
+import 'package:relog/core/presentation/styles/color_styles.dart';
+import 'package:relog/core/presentation/styles/text_styles.dart';
 
 class CustomActionSheet {
   static void show(
@@ -10,13 +10,13 @@ class CustomActionSheet {
     }) {
     showCupertinoModalPopup(
       context: context,
-      builder: (_) => Padding(
+      builder: (ctx) => Padding(
         padding: const EdgeInsets.only(bottom: 24),
         child: CupertinoTheme(
           data: CupertinoThemeData(
             brightness: Brightness.dark,
-            scaffoldBackgroundColor: ColorStyles.white,
-            barBackgroundColor: ColorStyles.white,
+            scaffoldBackgroundColor: ColorStyles.black22,
+            barBackgroundColor: ColorStyles.black22,
             primaryColor: ColorStyles.infoBlue,
             textTheme: CupertinoTextThemeData(
               actionTextStyle: TextStyles.largeTextRegular,
@@ -28,7 +28,7 @@ class CustomActionSheet {
                 isDestructiveAction:
                 action.type == ActionSheetItemType.destructive,
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.of(ctx).pop();
                   action.onTap();
                 },
                 child: Text(
@@ -43,7 +43,7 @@ class CustomActionSheet {
               );
             }).toList(),
             cancelButton: CupertinoActionSheetAction(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.of(ctx).pop(),
               child: Text(
                 cancelText,
                 style: TextStyles.largeTextBold.copyWith(

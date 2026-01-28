@@ -1,13 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:relog/core/presentation/ui/color_styles.dart';
-import 'package:relog/core/presentation/ui/text_styles.dart';
+import 'package:relog/core/presentation/styles/color_styles.dart';
+import 'package:relog/core/presentation/styles/text_styles.dart';
 import 'package:relog/core/presentation/widgets/action_sheet/custom_action_sheet.dart';
 import 'package:relog/core/presentation/widgets/app_bar/default_app_bar.dart';
 import 'package:relog/core/presentation/widgets/buttons/secondary_button.dart';
 import 'package:relog/core/presentation/widgets/cards/present_card.dart';
 import 'package:relog/core/presentation/widgets/chip/info_chip.dart';
+import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
 import 'package:relog/domain/friends/friend_detail.dart';
 import 'package:relog/presentation/friends/widgets/event_card.dart';
 import 'package:relog/presentation/friends/widgets/score_bar.dart';
@@ -59,6 +61,29 @@ class FriendDetailScreen extends HookConsumerWidget {
                   label: '친구 삭제',
                   type: ActionSheetItemType.destructive,
                   onTap: () {
+                    showCupertinoDialog(
+                      context: context,
+                      barrierDismissible: true, // 바깥 터치 시 다이얼로그 닫힘
+                      builder: (_) => CustomDialog(
+                        title: '친구 삭제',
+                        content: '삭제하면 되돌릴 수 없어요.\n정말로 친구를 삭제할까요?',
+                        actions: [
+                          CustomDialogAction(
+                            text: '취소',
+                            style: DialogActionStyle.normal,
+                            onPressed: () {},
+                          ),
+                          CustomDialogAction(
+                            text: '삭제',
+                            style: DialogActionStyle.destructive,
+                            isDefaultAction: true,
+                            onPressed: () {
+                              // 삭제 로직
+                            },
+                          ),
+                        ],
+                      ),
+                    );
                     // 삭제 로직
                   },
                 ),

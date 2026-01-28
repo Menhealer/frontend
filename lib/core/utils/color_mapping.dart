@@ -1,5 +1,5 @@
 import 'dart:ui';
-import 'package:relog/core/presentation/ui/color_styles.dart';
+import 'package:relog/core/presentation/styles/color_styles.dart';
 
 Color scoreToColor(int score) {
   switch (score) {

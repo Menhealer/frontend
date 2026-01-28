@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:relog/core/presentation/ui/color_styles.dart';
+import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'core/routing/router.dart';
 
 Future<void> main() async {

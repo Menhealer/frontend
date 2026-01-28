@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:relog/core/presentation/ui/color_styles.dart';
+import 'package:relog/core/presentation/styles/color_styles.dart';
 
 class ScoreBar extends StatelessWidget {
   final int score;

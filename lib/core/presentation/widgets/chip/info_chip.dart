@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:relog/core/presentation/ui/text_styles.dart';
+import 'package:relog/core/presentation/styles/text_styles.dart';
 
 class InfoChip extends StatelessWidget {
   final String label;
