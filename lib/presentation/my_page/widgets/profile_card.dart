@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:relog/core/presentation/ui/color_styles.dart';
-import 'package:relog/core/presentation/ui/text_styles.dart';
+import 'package:relog/core/presentation/styles/color_styles.dart';
+import 'package:relog/core/presentation/styles/text_styles.dart';
 import 'package:relog/core/presentation/widgets/buttons/secondary_button.dart';
 
 class MyProfileCard extends StatelessWidget {
@@ -64,6 +64,7 @@ class MyProfileCard extends StatelessWidget {
           ),
           SecondaryButton(
             label: '프로필 수정',
+            minHeight: 40,
             onTap: onEditProfile,
           ),
         ],
