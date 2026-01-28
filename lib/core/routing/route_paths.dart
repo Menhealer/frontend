@@ -9,6 +9,7 @@ abstract class RoutePaths {
 
   static const String friends = '/friends';
   static const String friendDetail = '/friendDetail';
+  static const String friendSummary = '/friendSummary';
 
   static const String mypage = '/mypage';
   static const String webView = '/webView';
