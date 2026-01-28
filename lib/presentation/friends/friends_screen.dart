@@ -5,10 +5,17 @@ import 'package:relog/core/presentation/ui/color_styles.dart';
 import 'package:relog/core/presentation/widgets/app_bar/default_app_bar.dart';
 import 'package:relog/core/presentation/widgets/inputs/search_text_field.dart';
 import 'package:relog/domain/friends/friend.dart';
+import 'package:relog/domain/friends/friend_detail.dart';
 import 'package:relog/presentation/friends/widgets/friend_card.dart';
+import 'dummy.dart';
 
 class FriendsScreen extends HookConsumerWidget {
-  const FriendsScreen({super.key});
+  final void Function(FriendDetail detail) onTapDetail;
+
+  const FriendsScreen({
+    super.key,
+    required this.onTapDetail,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -17,18 +24,6 @@ class FriendsScreen extends HookConsumerWidget {
 
     final searchQuery = searchController.text.trim();
 
-    final List<Friend> allFriends = [
-      Friend(id: 1, name: '햄스터', score: 85),
-      Friend(id: 2, name: '고양이', score: 42),
-      Friend(id: 3, name: '토끼', score: -10),
-      Friend(id: 4, name: '여우', score: 67),
-      Friend(id: 5, name: '강아지', score: 95),
-      Friend(id: 6, name: '판다', score: 12),
-      Friend(id: 7, name: '수달', score: -45),
-      Friend(id: 8, name: '늑대', score: -80),
-      Friend(id: 9, name: '너구리', score: 5),
-      Friend(id: 10, name: '고슴도치', score: 30),
-    ];
     final List<Friend> filteredFriends = searchQuery.isEmpty
       ? allFriends
       : allFriends.where((friend) {
@@ -91,6 +86,11 @@ class FriendsScreen extends HookConsumerWidget {
                             splashColor: Colors.transparent,
                             highlightColor: Colors.transparent,
                             onTap: () async {
+                              final detail = dummyFriendDetails.firstWhere(
+                                    (d) => d.id == friend.id,
+                              );
+                              onTapDetail(detail);
+
                               // TODO: 친구 삭제 시 refresh
                               // final isDeleted = await onTapChatDetail(friend.id);
                               // if (isDeleted) await viewModel.loadFriends();

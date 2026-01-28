@@ -64,6 +64,7 @@ class MyProfileCard extends StatelessWidget {
           ),
           SecondaryButton(
             label: '프로필 수정',
+            minHeight: 40,
             onTap: onEditProfile,
           ),
         ],

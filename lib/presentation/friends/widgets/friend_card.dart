@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:relog/core/presentation/ui/color_styles.dart';
 import 'package:relog/core/presentation/ui/text_styles.dart';
 import 'package:relog/domain/friends/friend.dart';
+import 'package:relog/presentation/friends/widgets/score_bar.dart';
 
 class FriendCard extends StatelessWidget {
   final Friend friend;
@@ -13,13 +14,6 @@ class FriendCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final clampedScore = friend.score.clamp(-100, 100);
-    final percent = clampedScore.abs() / 100;
-
-    final barColor = clampedScore >= 0
-        ? ColorStyles.green100
-        : ColorStyles.red100;
-
     return Container(
       width: double.infinity,
       constraints: const BoxConstraints(minHeight: 48),
@@ -39,31 +33,13 @@ class FriendCard extends StatelessWidget {
               ),
             ),
           ),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final maxWidth = 128.0;
-
-                return Stack(
-                  children: [
-                    Container(
-                      height: 8,
-                      width: maxWidth,
-                      color: ColorStyles.black42,
-                    ),
-
-                    // 채워진 바
-                    Container(
-                      height: 8,
-                      width: maxWidth * percent,
-                      color: barColor,
-                    ),
-                  ],
-                );
-              },
+          SizedBox(
+            width: 128,
+            child: ScoreBar(
+              score: friend.score,
+              height: 8,
             ),
-          )
+          ),
         ],
       ),
     );

@@ -4,11 +4,13 @@ import 'package:relog/core/presentation/ui/text_styles.dart';
 
 class SecondaryButton extends StatelessWidget {
   final String label;
+  final double minHeight;
   final VoidCallback onTap;
 
   const SecondaryButton({
     super.key,
     required this.label,
+    required this.minHeight,
     required this.onTap,
   });
 
@@ -18,7 +20,7 @@ class SecondaryButton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: double.infinity,
-        constraints: const BoxConstraints(minHeight: 40),
+        constraints: BoxConstraints(minHeight: minHeight),
         decoration: BoxDecoration(
           color: ColorStyles.black42,
           borderRadius: BorderRadius.circular(8),
