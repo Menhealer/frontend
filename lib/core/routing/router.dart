@@ -1,8 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:relog/core/routing/route_paths.dart';
+import 'package:relog/domain/friends/friend_detail.dart';
+import 'package:relog/domain/friends/friend_edit.dart';
 import 'package:relog/presentation/calendar/calendar_screen.dart';
+import 'package:relog/presentation/friends/detail/friend_detail_screen.dart';
 import 'package:relog/presentation/friends/friends_screen.dart';
+import 'package:relog/presentation/friends/summary/friend_summary.dart';
+import 'package:relog/presentation/friends/write/friend_write_screen.dart';
 import 'package:relog/presentation/home/home_screen.dart';
 import 'package:relog/presentation/my_page/edit/profile_edit_screen.dart';
 import 'package:relog/presentation/my_page/my_page_screen.dart';
@@ -49,7 +54,68 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: RoutePaths.friends,
-              builder: (context, state) => FriendsScreen(),
+              builder: (context, state) => FriendsScreen(
+                onTapDetail: (detail) {
+                  context.push(
+                    RoutePaths.friends + RoutePaths.friendDetail,
+                    extra: detail,
+                  );
+                },
+                onTapWrite: (isEdit) {
+                  context.push(
+                    RoutePaths.friends + RoutePaths.friendWrite,
+                    extra: {
+                      'isEdit': false,
+                      'friendInfo': null,
+                    },
+                  );
+                },
+              ),
+              routes: [
+                GoRoute(
+                  path: RoutePaths.friendWrite,
+                  builder: (context, state) {
+                    final extra = state.extra as Map<String, dynamic>?;
+                    final bool isEdit = extra?['isEdit'] ?? false;
+                    final FriendEdit? friendInfo = extra?['friendInfo'] as FriendEdit?;
+
+                    return FriendWriteScreen(
+                      isEdit: isEdit,
+                      friendInfo: friendInfo,
+                    );
+                  },
+                ),
+                GoRoute(
+                  path: RoutePaths.friendDetail,
+                  builder: (context, state) {
+                    final detail = state.extra as FriendDetail;
+                    return FriendDetailScreen(
+                      friend: detail,
+                      onTapSummary: () {
+                        context.push(
+                          RoutePaths.friends + RoutePaths.friendDetail + RoutePaths.friendSummary,
+                        );
+                      },
+                      onTapPresent: () {  },
+                      onTapEdit: (isEdit, friendInfo) {
+                        context.push(
+                          RoutePaths.friends + RoutePaths.friendWrite,
+                          extra: {
+                            'isEdit': isEdit,
+                            'friendInfo': friendInfo,
+                          },
+                        );
+                      },
+                    );
+                  },
+                  routes: [
+                    GoRoute(
+                      path: RoutePaths.friendSummary,
+                      builder: (context, state) => FriendSummary(),
+                    )
+                  ]
+                ),
+              ]
             ),
           ],
         ),
