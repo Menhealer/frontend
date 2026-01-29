@@ -1,5 +1,5 @@
 import 'package:relog/domain/event.dart';
-import 'package:relog/domain/friends/present.dart';
+import 'package:relog/domain/presents/present.dart';
 
 class FriendDetail {
   final int id;
