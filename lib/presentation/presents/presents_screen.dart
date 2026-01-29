@@ -35,7 +35,7 @@ class PresentsScreen extends HookConsumerWidget {
     return Scaffold(
       backgroundColor: ColorStyles.black22,
       appBar: DefaultAppBar(
-        title: '친구',
+        title: '선물 기록',
         trailing: IconButton(
           onPressed: () => onTapWrite(false, info.name),
           icon: Icon(
