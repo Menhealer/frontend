@@ -13,13 +13,14 @@ import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
 import 'package:relog/core/utils/time_format.dart';
 import 'package:relog/domain/friends/friend_detail.dart';
 import 'package:relog/domain/friends/friend_edit.dart';
+import 'package:relog/domain/presents/present_friend.dart';
 import 'package:relog/presentation/friends/widgets/event_card.dart';
 import 'package:relog/presentation/friends/widgets/score_bar.dart';
 
 class FriendDetailScreen extends HookConsumerWidget {
   final FriendDetail friend;
   final VoidCallback onTapSummary;
-  final VoidCallback onTapPresent;
+  final void Function(PresentFriend info) onTapPresent;
   final void Function(bool isEdit, FriendEdit friendInfo) onTapEdit;
 
   const FriendDetailScreen({
@@ -293,7 +294,8 @@ class FriendDetailScreen extends HookConsumerWidget {
                             ),
                           ),
                           GestureDetector(
-                            onTap: onTapPresent,
+                            onTap: () => onTapPresent(PresentFriend(id: friend.id, name: friend.name, group: friend.group, birthday: friend.birthday)),
+                            behavior: HitTestBehavior.opaque,
                             child: Row(
                               spacing: 8,
                               mainAxisAlignment: MainAxisAlignment.center,

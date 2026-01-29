@@ -87,7 +87,7 @@ class FriendsScreen extends HookConsumerWidget {
                             highlightColor: Colors.transparent,
                             onTap: () async {
                               final detail = dummyFriendDetails.firstWhere(
-                                    (d) => d.id == friend.id,
+                                (d) => d.id == friend.id,
                               );
                               onTapDetail(detail);
 

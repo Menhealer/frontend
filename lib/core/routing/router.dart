@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:relog/core/routing/route_paths.dart';
 import 'package:relog/domain/friends/friend_detail.dart';
 import 'package:relog/domain/friends/friend_edit.dart';
+import 'package:relog/domain/presents/present_friend.dart';
 import 'package:relog/presentation/calendar/calendar_screen.dart';
 import 'package:relog/presentation/friends/detail/friend_detail_screen.dart';
 import 'package:relog/presentation/friends/friends_screen.dart';
@@ -12,6 +13,7 @@ import 'package:relog/presentation/home/home_screen.dart';
 import 'package:relog/presentation/my_page/edit/profile_edit_screen.dart';
 import 'package:relog/presentation/my_page/my_page_screen.dart';
 import 'package:relog/presentation/navigation/bottom_navigation.dart';
+import 'package:relog/presentation/presents/presents_screen.dart';
 import 'package:relog/presentation/web_view/web_view_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -20,6 +22,16 @@ final router = GoRouter(
   navigatorKey: rootNavigatorKey,
   initialLocation: RoutePaths.home,
   routes: [
+    GoRoute(
+      path: RoutePaths.presents,
+      builder: (context, state) {
+        final info = state.extra as PresentFriend;
+        return PresentsScreen(
+          info: info,
+          onTapWrite: (isEdit) {  },
+        );
+      },
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
        return BottomNavigation(
@@ -96,7 +108,12 @@ final router = GoRouter(
                           RoutePaths.friends + RoutePaths.friendDetail + RoutePaths.friendSummary,
                         );
                       },
-                      onTapPresent: () {  },
+                      onTapPresent: (info) {
+                        context.push(
+                          RoutePaths.presents,
+                          extra: info,
+                        );
+                      },
                       onTapEdit: (isEdit, friendInfo) {
                         context.push(
                           RoutePaths.friends + RoutePaths.friendWrite,

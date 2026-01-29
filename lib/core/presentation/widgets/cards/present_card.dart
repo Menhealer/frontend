@@ -3,7 +3,7 @@ import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/styles/text_styles.dart';
 import 'package:relog/core/utils/number_format.dart';
 import 'package:relog/core/utils/time_format.dart';
-import 'package:relog/domain/friends/present.dart';
+import 'package:relog/domain/presents/present.dart';
 
 class PresentCard extends StatelessWidget {
   final String nickname;
