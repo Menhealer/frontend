@@ -15,12 +15,14 @@ import 'package:relog/presentation/friends/dummy.dart';
 
 class PresentsScreen extends HookConsumerWidget {
   final PresentFriend info;
-  final void Function(bool isEdit) onTapWrite;
+  final void Function(bool isEdit, String friendName) onTapWrite;
+  final void Function(bool isEdit, String friendName, Present present) onTapEdit;
 
   const PresentsScreen({
     super.key,
     required this.info,
     required this.onTapWrite,
+    required this.onTapEdit
   });
 
   @override
@@ -35,7 +37,7 @@ class PresentsScreen extends HookConsumerWidget {
       appBar: DefaultAppBar(
         title: '친구',
         trailing: IconButton(
-          onPressed: () => onTapWrite(false),
+          onPressed: () => onTapWrite(false, info.name),
           icon: Icon(
             Icons.add,
             color: ColorStyles.grayD3,
@@ -79,8 +81,11 @@ class PresentsScreen extends HookConsumerWidget {
                                 actions: [
                                   ActionSheetItem(
                                     label: '선물 기록 수정',
-                                    onTap: () {},
-                                    // onTap: () => onTapEdit(true, FriendEdit(id: friend.id, name: friend.name, group: friend.group, birthday: friend.birthday)),
+                                    onTap: () => onTapEdit(
+                                      true,
+                                      info.name,
+                                      present,
+                                    ),
                                   ),
                                   ActionSheetItem(
                                     label: '선물 기록 삭제',

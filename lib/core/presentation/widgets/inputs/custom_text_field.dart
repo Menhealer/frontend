@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/styles/text_styles.dart';
 
@@ -12,6 +13,7 @@ class CustomTextField extends StatelessWidget {
   final bool enabled;
   final VoidCallback? onTap;
   final ValueChanged<String>? onChanged;
+  final List<TextInputFormatter>? inputFormatters;
 
   const CustomTextField({
     super.key,
@@ -24,6 +26,7 @@ class CustomTextField extends StatelessWidget {
     this.enabled = true,
     this.onTap,
     this.onChanged,
+    this.inputFormatters,
   });
 
   @override
@@ -44,6 +47,7 @@ class CustomTextField extends StatelessWidget {
         obscureText: obscureText,
         keyboardType: keyboardType,
         textInputAction: textInputAction,
+        inputFormatters: inputFormatters,
         textAlignVertical: TextAlignVertical.center,
         style: TextStyles.normalTextRegular.copyWith(
           color: ColorStyles.white,
