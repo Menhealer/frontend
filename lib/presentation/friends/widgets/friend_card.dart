@@ -6,10 +6,12 @@ import 'package:relog/presentation/friends/widgets/score_bar.dart';
 
 class FriendCard extends StatelessWidget {
   final Friend friend;
+  final bool showScore;
 
   const FriendCard({
     super.key,
     required this.friend,
+    this.showScore = true,
   });
 
   @override
@@ -33,13 +35,14 @@ class FriendCard extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
-            width: 128,
-            child: ScoreBar(
-              score: friend.score,
-              height: 8,
+          if (showScore)
+            SizedBox(
+              width: 128,
+              child: ScoreBar(
+                score: friend.score,
+                height: 8,
+              ),
             ),
-          ),
         ],
       ),
     );
