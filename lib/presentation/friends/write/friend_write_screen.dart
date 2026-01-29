@@ -5,6 +5,7 @@ import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/styles/text_styles.dart';
 import 'package:relog/core/presentation/widgets/app_bar/default_app_bar.dart';
 import 'package:relog/core/presentation/widgets/buttons/app_bar_done_button.dart';
+import 'package:relog/core/presentation/widgets/buttons/picker_field.dart';
 import 'package:relog/core/presentation/widgets/inputs/custom_text_field.dart';
 import 'package:relog/core/presentation/widgets/picker/birthday_picker.dart';
 import 'package:relog/domain/friends/friend_edit.dart';
@@ -116,40 +117,12 @@ class FriendWriteScreen extends HookConsumerWidget {
                 // 생일
                 _FieldLabel('생일'),
                 const SizedBox(height: 16,),
-                GestureDetector(
+                PickerField(
+                  placeholder: '생일을 선택해 주세요',
+                  valueText: (month.value == null || day.value == null)
+                      ? '생일을 선택해 주세요'
+                      : '${month.value}월 ${day.value}일',
                   onTap: openPicker,
-                  child: Container(
-                    width: double.infinity,
-                    constraints: const BoxConstraints(minHeight: 44),
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: ColorStyles.black2D,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      spacing: 16,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            (month.value == null || day.value == null)
-                              ? '생일을 선택해 주세요'
-                              : '${month.value}월 ${day.value}일',
-                            style: TextStyles.normalTextRegular.copyWith(
-                              color: (month.value == null || day.value == null)
-                                ? ColorStyles.grayD3
-                                : ColorStyles.white,
-                            ),
-                          ),
-                        ),
-                        Icon(
-                          Icons.navigate_next,
-                          color: ColorStyles.gray86,
-                          size: 24,
-                        )
-                      ],
-                    ),
-                  ),
                 ),
               ],
             ),

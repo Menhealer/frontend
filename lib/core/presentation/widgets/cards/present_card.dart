@@ -3,6 +3,7 @@ import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/styles/text_styles.dart';
 import 'package:relog/core/utils/number_format.dart';
 import 'package:relog/core/utils/time_format.dart';
+import 'package:relog/domain/presents/enum/present_tag.dart';
 import 'package:relog/domain/presents/present.dart';
 
 class PresentCard extends StatelessWidget {
@@ -17,11 +18,11 @@ class PresentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final barColor = present.isGive
+    final barColor = present.isGive == PresentDirection.sent
         ? ColorStyles.red100
         : ColorStyles.green100;
 
-    final descriptionText = present.isGive
+    final descriptionText = present.isGive == PresentDirection.sent
         ? '$nickname님이 준 선물이에요'
         : '$nickname님이 받은 선물이에요';
 
@@ -56,7 +57,7 @@ class PresentCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            present.tag,
+                            present.tag.label,
                             style: TextStyles.smallTextBold.copyWith(
                               color: ColorStyles.grayD3,
                             ),

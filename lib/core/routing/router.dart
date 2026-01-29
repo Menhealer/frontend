@@ -3,10 +3,12 @@ import 'package:go_router/go_router.dart';
 import 'package:relog/core/routing/route_paths.dart';
 import 'package:relog/domain/friends/friend_detail.dart';
 import 'package:relog/domain/friends/friend_edit.dart';
+import 'package:relog/domain/presents/present.dart';
 import 'package:relog/domain/presents/present_friend.dart';
 import 'package:relog/presentation/calendar/calendar_screen.dart';
 import 'package:relog/presentation/friends/detail/friend_detail_screen.dart';
 import 'package:relog/presentation/friends/friends_screen.dart';
+import 'package:relog/presentation/friends/selete/select_friend_screen.dart';
 import 'package:relog/presentation/friends/summary/friend_summary.dart';
 import 'package:relog/presentation/friends/write/friend_write_screen.dart';
 import 'package:relog/presentation/home/home_screen.dart';
@@ -14,6 +16,7 @@ import 'package:relog/presentation/my_page/edit/profile_edit_screen.dart';
 import 'package:relog/presentation/my_page/my_page_screen.dart';
 import 'package:relog/presentation/navigation/bottom_navigation.dart';
 import 'package:relog/presentation/presents/presents_screen.dart';
+import 'package:relog/presentation/presents/write/present_write_screen.dart';
 import 'package:relog/presentation/web_view/web_view_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -22,16 +25,66 @@ final router = GoRouter(
   navigatorKey: rootNavigatorKey,
   initialLocation: RoutePaths.home,
   routes: [
+    // 선물
     GoRoute(
       path: RoutePaths.presents,
       builder: (context, state) {
         final info = state.extra as PresentFriend;
         return PresentsScreen(
           info: info,
-          onTapWrite: (isEdit) {  },
+          onTapWrite: (isEdit, friendName) {
+            context.push(
+              RoutePaths.presents + RoutePaths.presentWrite,
+              extra: {
+                'isEdit': isEdit,
+                'friendName': friendName,
+              },
+            );
+          },
+          onTapEdit: (isEdit, friendName, present) {
+            context.push(
+              RoutePaths.presents + RoutePaths.presentWrite,
+              extra: {
+                'isEdit': isEdit,
+                'friendName': friendName,
+                'info' : present,
+              },
+            );
+          },
         );
       },
+      routes: [
+        GoRoute(
+          path: RoutePaths.presentWrite,
+          builder: (context, state) {
+            final extra = state.extra as Map<String, dynamic>?;
+            final bool isEdit = extra?['isEdit'] ?? false;
+            final String friendName = extra?['friendName'] ?? '';
+            final Present? info = extra?['info'] as Present?;
+
+            return PresentWriteScreen(
+              isEdit: isEdit,
+              friendName: friendName,
+              info: info,
+              onTapSearchFriend: () async {
+                final result = await context.push<String>(
+                  RoutePaths.selectFriend,
+                );
+                return result;
+              },
+            );
+          },
+        ),
+      ]
     ),
+
+    // 친구 선택
+    GoRoute(
+      path: RoutePaths.selectFriend,
+      builder: (context, state) => SelectFriendScreen(),
+    ),
+
+    // 탭
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
        return BottomNavigation(
