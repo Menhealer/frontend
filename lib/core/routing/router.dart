@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:relog/core/routing/route_paths.dart';
-import 'package:relog/domain/friends/friend_detail.dart';
 import 'package:relog/domain/friends/friend_edit.dart';
 import 'package:relog/domain/presents/present.dart';
 import 'package:relog/domain/presents/present_friend.dart';
@@ -11,6 +10,7 @@ import 'package:relog/presentation/friends/friends_screen.dart';
 import 'package:relog/presentation/friends/selete/select_friend_screen.dart';
 import 'package:relog/presentation/friends/summary/friend_summary.dart';
 import 'package:relog/presentation/friends/write/friend_write_screen.dart';
+import 'package:relog/presentation/home/friendship/friendship_screen.dart';
 import 'package:relog/presentation/home/home_screen.dart';
 import 'package:relog/presentation/my_page/edit/profile_edit_screen.dart';
 import 'package:relog/presentation/my_page/my_page_screen.dart';
@@ -103,7 +103,26 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: RoutePaths.home,
-              builder: (context, state) => HomeScreen(),
+              builder: (context, state) => HomeScreen(
+                onTapFriendship: () {
+                  context.push(
+                    RoutePaths.home + RoutePaths.friendship,
+                  );
+                },
+              ),
+              routes: [
+                GoRoute(
+                  path: RoutePaths.friendship,
+                  builder: (context, state) => FriendshipScreen(
+                    onTapFriendDetail: (id) {
+                      context.push(
+                        RoutePaths.friends + RoutePaths.friendDetail,
+                        extra: id,
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -120,10 +139,10 @@ final router = GoRouter(
             GoRoute(
               path: RoutePaths.friends,
               builder: (context, state) => FriendsScreen(
-                onTapDetail: (detail) {
+                onTapDetail: (id) {
                   context.push(
                     RoutePaths.friends + RoutePaths.friendDetail,
-                    extra: detail,
+                    extra: id,
                   );
                 },
                 onTapWrite: (isEdit) {
@@ -153,9 +172,9 @@ final router = GoRouter(
                 GoRoute(
                   path: RoutePaths.friendDetail,
                   builder: (context, state) {
-                    final detail = state.extra as FriendDetail;
+                    final id = state.extra as int;
                     return FriendDetailScreen(
-                      friend: detail,
+                      id: id,
                       onTapSummary: () {
                         context.push(
                           RoutePaths.friends + RoutePaths.friendDetail + RoutePaths.friendSummary,

@@ -5,3 +5,7 @@ String formatPeriodDate(DateTime date) {
 String formatBirthday(DateTime date) {
   return '${date.month}월 ${date.day}일';
 }
+
+int getQuarter(DateTime date) {
+  return ((date.month - 1) ~/ 3) + 1;
+}
