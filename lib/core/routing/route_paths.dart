@@ -5,6 +5,8 @@ abstract class RoutePaths {
   static const String signUp = '/signUp';
 
   static const String home = '/home';
+  static const String friendship = '/friendship';
+
   static const String calendar = '/calendar';
 
   static const String friends = '/friends';
