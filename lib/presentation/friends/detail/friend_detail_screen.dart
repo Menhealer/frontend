@@ -11,21 +11,21 @@ import 'package:relog/core/presentation/widgets/cards/present_card.dart';
 import 'package:relog/core/presentation/widgets/chip/info_chip.dart';
 import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
 import 'package:relog/core/utils/time_format.dart';
-import 'package:relog/domain/friends/friend_detail.dart';
 import 'package:relog/domain/friends/friend_edit.dart';
 import 'package:relog/domain/presents/present_friend.dart';
+import 'package:relog/presentation/friends/dummy.dart';
 import 'package:relog/presentation/friends/widgets/event_card.dart';
 import 'package:relog/presentation/friends/widgets/score_bar.dart';
 
 class FriendDetailScreen extends HookConsumerWidget {
-  final FriendDetail friend;
+  final int id;
   final VoidCallback onTapSummary;
   final void Function(PresentFriend info) onTapPresent;
   final void Function(bool isEdit, FriendEdit friendInfo) onTapEdit;
 
   const FriendDetailScreen({
     super.key,
-    required this.friend,
+    required this.id,
     required this.onTapSummary,
     required this.onTapPresent,
     required this.onTapEdit,
@@ -35,6 +35,9 @@ class FriendDetailScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // 사용자 정보
     const nickname = '주꾸미';
+    final friend = dummyFriendDetails.firstWhere(
+      (d) => d.id == id,
+    );
 
     final clampedScore = friend.score.clamp(-100, 100);
     final scoreTextColor = clampedScore >= 0
