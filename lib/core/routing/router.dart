@@ -19,14 +19,21 @@ import 'package:relog/presentation/my_page/my_page_screen.dart';
 import 'package:relog/presentation/navigation/bottom_navigation.dart';
 import 'package:relog/presentation/presents/presents_screen.dart';
 import 'package:relog/presentation/presents/write/present_write_screen.dart';
+import 'package:relog/presentation/splash/splash_screen.dart';
 import 'package:relog/presentation/web_view/web_view_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final router = GoRouter(
   navigatorKey: rootNavigatorKey,
-  initialLocation: RoutePaths.home,
+  initialLocation: RoutePaths.splash,
   routes: [
+    // 스플래시
+    GoRoute(
+      path: RoutePaths.splash,
+      builder: (context, state) => SplashScreen(),
+    ),
+
     // 선물
     GoRoute(
       path: RoutePaths.presents,
