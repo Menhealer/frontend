@@ -16,7 +16,7 @@ abstract class ColorStyles {
   static const Color red10 = Color(0xFFFFA3A3);
 
   static const Color green100 = Color(0xFF6BD07C);
-  static const Color green10 = Color(0xFFB7E4BF);
+  static const Color green10 = Color(0xFF86B88D);
 
   static const Color purple100 = Color(0xFF513D72);
   static const Color purple10 = Color(0xFFD3B0FF);

@@ -12,7 +12,6 @@ import 'package:relog/core/presentation/widgets/chip/info_chip.dart';
 import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
 import 'package:relog/core/utils/time_format.dart';
 import 'package:relog/domain/friends/friend_edit.dart';
-import 'package:relog/domain/presents/present_friend.dart';
 import 'package:relog/presentation/friends/dummy.dart';
 import 'package:relog/presentation/friends/widgets/event_card.dart';
 import 'package:relog/presentation/friends/widgets/score_bar.dart';
@@ -20,7 +19,8 @@ import 'package:relog/presentation/friends/widgets/score_bar.dart';
 class FriendDetailScreen extends HookConsumerWidget {
   final int id;
   final VoidCallback onTapSummary;
-  final void Function(PresentFriend info) onTapPresent;
+  final void Function(int id) onTapPresent;
+  final void Function(int id) onTapEventDetail;
   final void Function(bool isEdit, FriendEdit friendInfo) onTapEdit;
 
   const FriendDetailScreen({
@@ -28,6 +28,7 @@ class FriendDetailScreen extends HookConsumerWidget {
     required this.id,
     required this.onTapSummary,
     required this.onTapPresent,
+    required this.onTapEventDetail,
     required this.onTapEdit,
   });
 
@@ -267,7 +268,11 @@ class FriendDetailScreen extends HookConsumerWidget {
                         Column(
                           spacing: 8,
                           children: [
-                            for (final event in recentEvents) EventCard(event: event),
+                            for (final event in recentEvents) GestureDetector(
+                              onTap: () => onTapEventDetail(event.id),
+                              behavior: HitTestBehavior.opaque,
+                              child: EventCard(event: event)
+                            ),
                           ],
                         ),
                     ],
@@ -297,7 +302,7 @@ class FriendDetailScreen extends HookConsumerWidget {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () => onTapPresent(PresentFriend(id: friend.id, name: friend.name, group: friend.group, birthday: friend.birthday)),
+                            onTap: () => onTapPresent(friend.id),
                             behavior: HitTestBehavior.opaque,
                             child: Row(
                               spacing: 8,
