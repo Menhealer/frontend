@@ -25,20 +25,9 @@ final List<FriendDetail> dummyFriendDetails = [
     group: '동아리',
     birthday: DateTime(2024, 10, 12),
     eventList: [
-      Event(
-        id: 1,
-        date: DateTime(2024, 3, 12),
-        name: '햄스터',
-        title: '동아리 임원 회의',
-        score: 1,
-      ),
-      Event(
-        id: 2,
-        date: DateTime(2024, 5, 3),
-        name: '햄스터',
-        title: '회식',
-        score: 3,
-      ),
+      Event(id: 101, date: DateTime(2026, 1, 9), title: '전공 동아리 회식', name: '햄스터', score: 1, info: '술도 못 마시면서 술 강요하고 재미없는 말만 한다... 심지어 지각함'),
+      Event(id: 102, date: DateTime(2026, 1, 9), title: '술약속', name: '햄스터', score: 2),
+      Event(id: 105, date: DateTime(2026, 2, 1), title: '모각코', name: '햄스터', score: 4, info: '같이 간 카페가 매우 취향이었음'),
     ],
     presentList: [
       Present(
@@ -70,22 +59,7 @@ final List<FriendDetail> dummyFriendDetails = [
     score: 42,
     group: null,
     birthday: DateTime(2024, 1, 15),
-    eventList: [
-      Event(
-        id: 3,
-        date: DateTime(2024, 2, 20),
-        name: '고양이',
-        title: '점심 식사',
-        score: 4,
-      ),
-      Event(
-        id: 3,
-        date: DateTime(2024, 2, 20),
-        name: '고양이',
-        title: '점심 식사',
-        score: 5,
-      ),
-    ],
+    eventList: [],
     presentList: [],
   ),
 
@@ -159,13 +133,9 @@ final List<FriendDetail> dummyFriendDetails = [
     group: null,
     birthday: null,
     eventList: [
-      Event(
-        id: 7,
-        date: DateTime(2024, 1, 1),
-        name: '강아지',
-        title: '새해 첫 만남',
-        score: 5,
-      ),
+      Event(id: 103, date: DateTime(2026, 1, 12), title: '홍대 약속', name: '강아지', score: 5,),
+      Event(id: 104, date: DateTime(2026, 1, 25), title: '영화 보기', name: '강아지', score: 3),
+      Event(id: 106, date: DateTime(2026, 2, 3), title: '프로젝트 회의', name: '강아지', score: 4, info: '대화가 잘 통함'),
     ],
     presentList: [
       Present(
@@ -197,15 +167,7 @@ final List<FriendDetail> dummyFriendDetails = [
     score: 12,
     group: '프로젝트',
     birthday: DateTime(2024, 1, 25),
-    eventList: [
-      Event(
-        id: 8,
-        date: DateTime(2024, 5, 20),
-        name: '판다',
-        title: '오랜만에 통화',
-        score: 2,
-      ),
-    ],
+    eventList: [],
     presentList: [],
   ),
 
@@ -215,15 +177,7 @@ final List<FriendDetail> dummyFriendDetails = [
     score: -45,
     group: '동아리',
     birthday: DateTime(2024, 4, 22),
-    eventList: [
-      Event(
-        id: 9,
-        date: DateTime(2024, 2, 1),
-        name: '수달',
-        title: '말다툼',
-        score: -3,
-      ),
-    ],
+    eventList: [],
     presentList: [],
   ),
 
