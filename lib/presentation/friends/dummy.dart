@@ -101,27 +101,6 @@ final List<FriendDetail> dummyFriendDetails = [
     group: null,
     birthday: null,
     eventList: [
-      Event(
-        id: 4,
-        date: DateTime(2024, 4, 10),
-        name: '여우',
-        title: '전시회',
-        score: 4,
-      ),
-      Event(
-        id: 5,
-        date: DateTime(2024, 6, 1),
-        name: '여우',
-        title: '저녁 식사',
-        score: 5,
-      ),
-      Event(
-        id: 6,
-        date: DateTime(2024, 6, 15),
-        name: '여우',
-        title: '산책',
-        score: 3,
-      ),
     ],
     presentList: [],
   ),

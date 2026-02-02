@@ -19,6 +19,8 @@ import 'package:relog/presentation/my_page/my_page_screen.dart';
 import 'package:relog/presentation/navigation/bottom_navigation.dart';
 import 'package:relog/presentation/presents/presents_screen.dart';
 import 'package:relog/presentation/presents/write/present_write_screen.dart';
+import 'package:relog/presentation/sign_in/sign_in_screen.dart';
+import 'package:relog/presentation/sign_up/sign_up_screen.dart';
 import 'package:relog/presentation/splash/splash_screen.dart';
 import 'package:relog/presentation/web_view/web_view_screen.dart';
 
@@ -32,6 +34,29 @@ final router = GoRouter(
     GoRoute(
       path: RoutePaths.splash,
       builder: (context, state) => SplashScreen(),
+    ),
+
+    // 로그인
+    GoRoute(
+      path: RoutePaths.signIn,
+      builder: (context, state) => SignInScreen(
+        onTapSignIn: () {
+          context.go(RoutePaths.home);
+        },
+        onTapSignUp: () {
+          context.push(RoutePaths.signIn + RoutePaths.signUp);
+        },
+      ),
+      routes: [
+        GoRoute(
+          path: RoutePaths.signUp,
+          builder: (context, state) => SignUpScreen(
+            onTapSignUp: () {
+              context.go(RoutePaths.signIn);
+            },
+          ),
+        ),
+      ]
     ),
 
     // 선물
