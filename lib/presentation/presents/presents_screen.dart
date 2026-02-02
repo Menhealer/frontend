@@ -10,17 +10,16 @@ import 'package:relog/core/presentation/widgets/chip/info_chip.dart';
 import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
 import 'package:relog/core/utils/time_format.dart';
 import 'package:relog/domain/presents/present.dart';
-import 'package:relog/domain/presents/present_friend.dart';
 import 'package:relog/presentation/friends/dummy.dart';
 
 class PresentsScreen extends HookConsumerWidget {
-  final PresentFriend info;
+  final int id;
   final void Function(bool isEdit, String friendName) onTapWrite;
   final void Function(bool isEdit, String friendName, Present present) onTapEdit;
 
   const PresentsScreen({
     super.key,
-    required this.info,
+    required this.id,
     required this.onTapWrite,
     required this.onTapEdit
   });
@@ -29,6 +28,9 @@ class PresentsScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // 사용자 정보
     const nickname = '주꾸미';
+    final friendInfo = dummyFriendDetails.firstWhere(
+      (d) => d.id == id,
+    );
 
     final List<Present> presents = presentList;
 
@@ -37,7 +39,7 @@ class PresentsScreen extends HookConsumerWidget {
       appBar: DefaultAppBar(
         title: '선물 기록',
         trailing: IconButton(
-          onPressed: () => onTapWrite(false, info.name),
+          onPressed: () => onTapWrite(false, friendInfo.name),
           icon: Icon(
             Icons.add,
             color: ColorStyles.grayD3,
@@ -83,7 +85,7 @@ class PresentsScreen extends HookConsumerWidget {
                                     label: '선물 기록 수정',
                                     onTap: () => onTapEdit(
                                       true,
-                                      info.name,
+                                      friendInfo.name,
                                       present,
                                     ),
                                   ),
@@ -155,22 +157,22 @@ class PresentsScreen extends HookConsumerWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          '${info.name}님과의 기록',
+                          '${friendInfo.name}님과의 기록',
                           style: TextStyles.largeTextBold.copyWith(
                             color: ColorStyles.grayD3,
                           ),
                         ),
                       ),
-                      if (info.group != null)
+                      if (friendInfo.group != null)
                         InfoChip(
-                          label: info.group!,
+                          label: friendInfo.group!,
                           backgroundColor: ColorStyles.purple100,
                           textColor: ColorStyles.purple10,
                         ),
                 
-                      if (info.birthday != null)
+                      if (friendInfo.birthday != null)
                         InfoChip(
-                          label: formatBirthday(info.birthday!),
+                          label: formatBirthday(friendInfo.birthday!),
                           backgroundColor: ColorStyles.pink100,
                           textColor: ColorStyles.pink10,
                         ),

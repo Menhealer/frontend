@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:relog/core/routing/route_paths.dart';
+import 'package:relog/domain/event.dart';
 import 'package:relog/domain/friends/friend_edit.dart';
 import 'package:relog/domain/presents/present.dart';
-import 'package:relog/domain/presents/present_friend.dart';
 import 'package:relog/presentation/calendar/calendar_screen.dart';
+import 'package:relog/presentation/calendar/detail/calendar_detail_screen.dart';
+import 'package:relog/presentation/calendar/write/calendar_write_screen.dart';
 import 'package:relog/presentation/friends/detail/friend_detail_screen.dart';
 import 'package:relog/presentation/friends/friends_screen.dart';
 import 'package:relog/presentation/friends/selete/select_friend_screen.dart';
@@ -17,21 +19,28 @@ import 'package:relog/presentation/my_page/my_page_screen.dart';
 import 'package:relog/presentation/navigation/bottom_navigation.dart';
 import 'package:relog/presentation/presents/presents_screen.dart';
 import 'package:relog/presentation/presents/write/present_write_screen.dart';
+import 'package:relog/presentation/splash/splash_screen.dart';
 import 'package:relog/presentation/web_view/web_view_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final router = GoRouter(
   navigatorKey: rootNavigatorKey,
-  initialLocation: RoutePaths.home,
+  initialLocation: RoutePaths.splash,
   routes: [
+    // 스플래시
+    GoRoute(
+      path: RoutePaths.splash,
+      builder: (context, state) => SplashScreen(),
+    ),
+
     // 선물
     GoRoute(
       path: RoutePaths.presents,
       builder: (context, state) {
-        final info = state.extra as PresentFriend;
+        final id = state.extra as int;
         return PresentsScreen(
-          info: info,
+          id: id,
           onTapWrite: (isEdit, friendName) {
             context.push(
               RoutePaths.presents + RoutePaths.presentWrite,
@@ -130,7 +139,71 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: RoutePaths.calendar,
-              builder: (context, state) => CalendarScreen(),
+              builder: (context, state) => CalendarScreen(
+                onTapWrite: (isEdit, date) {
+                  context.push(
+                    RoutePaths.calendar + RoutePaths.calendarWrite,
+                    extra: {
+                      'isEdit': isEdit,
+                      'date': date,
+                    },
+                  );
+                },
+                onTapPresent: (id) {
+                  context.push(
+                    RoutePaths.presents,
+                    extra: id,
+                  );
+                },
+                onTapEventDetail: (id) {
+                  context.push(
+                    RoutePaths.calendar + RoutePaths.calendarDetail,
+                    extra: id,
+                  );
+                },
+              ),
+              routes: [
+                GoRoute(
+                  path: RoutePaths.calendarWrite,
+                  builder: (context, state) {
+                    final extra = state.extra as Map<String, dynamic>?;
+                    final bool isEdit = extra?['isEdit'] ?? false;
+                    final DateTime? date = extra?['date'] as DateTime?;
+                    final Event? event = extra?['event'] as Event?;
+
+                    return CalendarWriteScreen(
+                      isEdit: isEdit,
+                      date: date,
+                      event: event,
+                      onTapSearchFriend: () async {
+                        final result = await context.push<String>(
+                          RoutePaths.selectFriend,
+                        );
+                        return result;
+                      },
+                    );
+                  },
+                ),
+                GoRoute(
+                  path: RoutePaths.calendarDetail,
+                  builder: (context, state) {
+                    final id = state.extra as int;
+
+                    return CalendarDetailScreen(
+                      id: id,
+                      onTapEdit: (isEdit, event) {
+                        context.push(
+                          RoutePaths.calendar + RoutePaths.calendarWrite,
+                          extra: {
+                            'isEdit': isEdit,
+                            'event': event,
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
+              ]
             ),
           ],
         ),
@@ -180,10 +253,16 @@ final router = GoRouter(
                           RoutePaths.friends + RoutePaths.friendDetail + RoutePaths.friendSummary,
                         );
                       },
-                      onTapPresent: (info) {
+                      onTapPresent: (id) {
                         context.push(
                           RoutePaths.presents,
-                          extra: info,
+                          extra: id,
+                        );
+                      },
+                      onTapEventDetail: (id) {
+                        context.push(
+                          RoutePaths.calendar + RoutePaths.calendarDetail,
+                          extra: id,
                         );
                       },
                       onTapEdit: (isEdit, friendInfo) {

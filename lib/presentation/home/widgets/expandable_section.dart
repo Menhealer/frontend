@@ -41,7 +41,7 @@ class _ExpandableSectionState extends State<ExpandableSection> {
           },
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
-            spacing: 16,
+            spacing: 8,
             children: [
               Text(
                 widget.title,

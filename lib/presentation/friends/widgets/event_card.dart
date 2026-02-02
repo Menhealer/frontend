@@ -39,7 +39,7 @@ class EventCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  event.name,
+                  event.title,
                   style: TextStyles.normalTextBold.copyWith(
                     color: ColorStyles.grayD3,
                   ),

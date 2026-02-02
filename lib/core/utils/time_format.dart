@@ -9,3 +9,8 @@ String formatBirthday(DateTime date) {
 int getQuarter(DateTime date) {
   return ((date.month - 1) ~/ 3) + 1;
 }
+
+String ymdKey(DateTime d) =>
+  '${d.year.toString().padLeft(4, '0')}-'
+  '${d.month.toString().padLeft(2, '0')}-'
+  '${d.day.toString().padLeft(2, '0')}';

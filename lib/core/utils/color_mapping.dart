@@ -1,8 +1,10 @@
 import 'dart:ui';
 import 'package:relog/core/presentation/styles/color_styles.dart';
 
-Color scoreToColor(int score) {
+Color scoreToColor(int? score) {
   switch (score) {
+    case 0:
+      return ColorStyles.pointPink;
     case 1:
       return ColorStyles.red100;
     case 2:
@@ -14,6 +16,6 @@ Color scoreToColor(int score) {
     case 5:
       return ColorStyles.green100;
     default:
-      return ColorStyles.black42;
+      return ColorStyles.gray86;
   }
 }
