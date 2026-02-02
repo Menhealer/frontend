@@ -16,11 +16,11 @@ class SplashScreen extends HookConsumerWidget {
 
     useEffect(() {
       Future<void> goNext() async {
-        await Future.delayed(const Duration(seconds: 4));
+        await Future.delayed(const Duration(seconds: 2));
 
         if (!context.mounted) return;
 
-        context.go(RoutePaths.home);
+        context.go(RoutePaths.signIn);
       }
 
       goNext();
