@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'core/routing/router.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // .env 파일 로드
+  // env 파일 로드
   await dotenv.load();
+
+  // 카카오 로그인
+  final kakaoNativeAppKey = dotenv.get('KAKAO_NATIVE_APP_KEY');
+  KakaoSdk.init(
+    nativeAppKey: kakaoNativeAppKey,
+  );
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -16,9 +23,10 @@ Future<void> main() async {
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+
     return MaterialApp.router(
       theme: ThemeData(
         colorScheme: ColorScheme.dark(),
