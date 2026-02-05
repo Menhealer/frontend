@@ -10,6 +10,7 @@ class CustomTextField extends StatelessWidget {
   final TextInputAction textInputAction;
   final bool obscureText;
   final int maxLines;
+  final int? maxLength;
   final bool enabled;
   final VoidCallback? onTap;
   final ValueChanged<String>? onChanged;
@@ -23,6 +24,7 @@ class CustomTextField extends StatelessWidget {
     this.textInputAction = TextInputAction.done,
     this.obscureText = false,
     this.maxLines = 1,
+    this.maxLength,
     this.enabled = true,
     this.onTap,
     this.onChanged,
@@ -44,6 +46,7 @@ class CustomTextField extends StatelessWidget {
         controller: controller,
         enabled: enabled,
         maxLines: maxLines,
+        maxLength: maxLength,
         obscureText: obscureText,
         keyboardType: keyboardType,
         textInputAction: textInputAction,
@@ -62,6 +65,7 @@ class CustomTextField extends StatelessWidget {
           hintStyle: TextStyles.normalTextRegular.copyWith(
             color: ColorStyles.grayD3,
           ),
+          counterText: '',
         ),
       ),
     );

@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/routing/route_paths.dart';
+import 'package:relog/core/storage/providers/user_session_provider.dart';
+import 'package:relog/domain/auth/model/user.dart';
 
 class SplashScreen extends HookConsumerWidget {
   const SplashScreen({
@@ -13,17 +15,40 @@ class SplashScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final didNavigate = useRef(false);
 
     useEffect(() {
-      Future<void> goNext() async {
-        await Future.delayed(const Duration(seconds: 2));
+      Future<void> bootstrap() async {
+        try {
+          // 최소 2초 + 세션 로딩을 동시에 대기
+          final results = await Future.wait([
+            ref.read(userSessionProvider.future),
+            Future.delayed(const Duration(seconds: 1)),
+          ]);
 
-        if (!context.mounted) return;
+          final user = results.first as User?;
 
-        context.go(RoutePaths.signIn);
+          if (!context.mounted || didNavigate.value) return;
+          didNavigate.value = true;
+
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!context.mounted) return;
+            context.go(
+              user == null ? RoutePaths.signIn : RoutePaths.home,
+            );
+          });
+        } catch (_) {
+          if (!context.mounted || didNavigate.value) return;
+          didNavigate.value = true;
+
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!context.mounted) return;
+            context.go(RoutePaths.signIn);
+          });
+        }
       }
 
-      goNext();
+      bootstrap();
       return null;
     }, const []);
 
