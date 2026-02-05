@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:relog/core/routing/route_paths.dart';
+import 'package:relog/core/storage/providers/user_session_provider.dart';
+import 'package:relog/domain/auth/model/login_request.dart';
 import 'package:relog/domain/event.dart';
 import 'package:relog/domain/friends/friend_edit.dart';
 import 'package:relog/domain/presents/present.dart';
@@ -26,329 +29,373 @@ import 'package:relog/presentation/web_view/web_view_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
-final router = GoRouter(
-  navigatorKey: rootNavigatorKey,
-  initialLocation: RoutePaths.splash,
-  routes: [
-    // 스플래시
-    GoRoute(
-      path: RoutePaths.splash,
-      builder: (context, state) => SplashScreen(),
-    ),
+final routerRefreshProvider = Provider<ValueNotifier<int>>((ref) {
+  final notifier = ValueNotifier<int>(0);
 
-    // 로그인
-    GoRoute(
-      path: RoutePaths.signIn,
-      builder: (context, state) => SignInScreen(
-        onTapSignIn: () {
-          context.go(RoutePaths.home);
-        },
-        onTapSignUp: () {
-          context.push(RoutePaths.signIn + RoutePaths.signUp);
-        },
+  ref.listen(userSessionProvider, (_, __) {
+    notifier.value++; // 세션 바뀌면 redirect 다시 평가
+  });
+
+  ref.onDispose(notifier.dispose);
+  return notifier;
+});
+
+final routerProvider = Provider<GoRouter>((ref) {
+  final refresh = ref.watch(routerRefreshProvider);
+  final session = ref.watch(userSessionProvider);
+
+  bool isSignedIn() => session.asData?.value != null;
+
+  return GoRouter(
+    navigatorKey: rootNavigatorKey,
+    initialLocation: RoutePaths.splash,
+    refreshListenable: refresh,
+    redirect: (context, state) {
+      final signedIn = isSignedIn();
+
+      final location = state.matchedLocation;
+      final inAuthFlow = location == RoutePaths.signIn || location.startsWith(RoutePaths.signIn);
+
+      // 미로그인 & 보호된 영역 -> 로그인
+      if (!signedIn && !inAuthFlow && location != RoutePaths.splash) {
+        return RoutePaths.signIn;
+      }
+
+      // 로그인 상태에서 로그인/스플래시로 이동 -> 홈으로 전환
+      if (signedIn && (location == RoutePaths.splash || inAuthFlow)) {
+        return RoutePaths.home;
+      }
+
+      return null;
+    },
+    routes: [
+      // 스플래시
+      GoRoute(
+        path: RoutePaths.splash,
+        builder: (context, state) => SplashScreen(),
       ),
-      routes: [
-        GoRoute(
-          path: RoutePaths.signUp,
-          builder: (context, state) => SignUpScreen(
-            onTapSignUp: () {
-              context.go(RoutePaths.signIn);
+
+      // 로그인
+      GoRoute(
+        path: RoutePaths.signIn,
+        builder: (context, state) => SignInScreen(
+          onTapSignIn: () {
+            context.go(RoutePaths.home);
+          },
+          onTapSignUp: (request) {
+            context.push(
+              RoutePaths.signIn + RoutePaths.signUp,
+              extra: request,
+            );
+          },
+        ),
+        routes: [
+          GoRoute(
+            path: RoutePaths.signUp,
+            builder: (context, state) {
+              final request = state.extra as LoginRequest;
+              return SignUpScreen(
+                request: request,
+                onTapSignUp: () {
+                  context.go(RoutePaths.signIn);
+                },
+              );
             },
           ),
-        ),
-      ]
-    ),
+        ],
+      ),
 
-    // 선물
-    GoRoute(
-      path: RoutePaths.presents,
-      builder: (context, state) {
-        final id = state.extra as int;
-        return PresentsScreen(
-          id: id,
-          onTapWrite: (isEdit, friendName) {
-            context.push(
-              RoutePaths.presents + RoutePaths.presentWrite,
-              extra: {
-                'isEdit': isEdit,
-                'friendName': friendName,
-              },
-            );
-          },
-          onTapEdit: (isEdit, friendName, present) {
-            context.push(
-              RoutePaths.presents + RoutePaths.presentWrite,
-              extra: {
-                'isEdit': isEdit,
-                'friendName': friendName,
-                'info' : present,
-              },
-            );
-          },
-        );
-      },
-      routes: [
-        GoRoute(
-          path: RoutePaths.presentWrite,
-          builder: (context, state) {
-            final extra = state.extra as Map<String, dynamic>?;
-            final bool isEdit = extra?['isEdit'] ?? false;
-            final String friendName = extra?['friendName'] ?? '';
-            final Present? info = extra?['info'] as Present?;
-
-            return PresentWriteScreen(
-              isEdit: isEdit,
-              friendName: friendName,
-              info: info,
-              onTapSearchFriend: () async {
-                final result = await context.push<String>(
-                  RoutePaths.selectFriend,
-                );
-                return result;
-              },
-            );
-          },
-        ),
-      ]
-    ),
-
-    // 친구 선택
-    GoRoute(
-      path: RoutePaths.selectFriend,
-      builder: (context, state) => SelectFriendScreen(),
-    ),
-
-    // 탭
-    StatefulShellRoute.indexedStack(
-      builder: (context, state, navigationShell) {
-       return BottomNavigation(
-         body: navigationShell,
-         currentPageIndex: navigationShell.currentIndex,
-         onChangeIndex: (index) {
-           navigationShell.goBranch(
-             index,
-             initialLocation:  index == navigationShell.currentIndex,
-           );
-         },
-       );
-      },
-      branches: [
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: RoutePaths.home,
-              builder: (context, state) => HomeScreen(
-                onTapFriendship: () {
-                  context.push(
-                    RoutePaths.home + RoutePaths.friendship,
-                  );
+      // 선물
+      GoRoute(
+        path: RoutePaths.presents,
+        builder: (context, state) {
+          final id = state.extra as int;
+          return PresentsScreen(
+            id: id,
+            onTapWrite: (isEdit, friendName) {
+              context.push(
+                RoutePaths.presents + RoutePaths.presentWrite,
+                extra: {
+                  'isEdit': isEdit,
+                  'friendName': friendName,
                 },
+              );
+            },
+            onTapEdit: (isEdit, friendName, present) {
+              context.push(
+                RoutePaths.presents + RoutePaths.presentWrite,
+                extra: {
+                  'isEdit': isEdit,
+                  'friendName': friendName,
+                  'info' : present,
+                },
+              );
+            },
+          );
+        },
+        routes: [
+          GoRoute(
+            path: RoutePaths.presentWrite,
+            builder: (context, state) {
+              final extra = state.extra as Map<String, dynamic>?;
+              final bool isEdit = extra?['isEdit'] ?? false;
+              final String friendName = extra?['friendName'] ?? '';
+              final Present? info = extra?['info'] as Present?;
+
+              return PresentWriteScreen(
+                isEdit: isEdit,
+                friendName: friendName,
+                info: info,
+                onTapSearchFriend: () async {
+                  final result = await context.push<String>(
+                    RoutePaths.selectFriend,
+                  );
+                  return result;
+                },
+              );
+            },
+          ),
+        ],
+      ),
+
+      // 친구 선택
+      GoRoute(
+        path: RoutePaths.selectFriend,
+        builder: (context, state) => SelectFriendScreen(),
+      ),
+
+      // 탭
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return BottomNavigation(
+            body: navigationShell,
+            currentPageIndex: navigationShell.currentIndex,
+            onChangeIndex: (index) {
+              navigationShell.goBranch(
+                index,
+                initialLocation:  index == navigationShell.currentIndex,
+              );
+            },
+          );
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutePaths.home,
+                builder: (context, state) => HomeScreen(
+                  onTapFriendship: () {
+                    context.push(
+                      RoutePaths.home + RoutePaths.friendship,
+                    );
+                  },
+                ),
+                routes: [
+                  GoRoute(
+                    path: RoutePaths.friendship,
+                    builder: (context, state) => FriendshipScreen(
+                      onTapFriendDetail: (id) {
+                        context.push(
+                          RoutePaths.friends + RoutePaths.friendDetail,
+                          extra: id,
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-              routes: [
-                GoRoute(
-                  path: RoutePaths.friendship,
-                  builder: (context, state) => FriendshipScreen(
-                    onTapFriendDetail: (id) {
-                      context.push(
-                        RoutePaths.friends + RoutePaths.friendDetail,
-                        extra: id,
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutePaths.calendar,
+                builder: (context, state) => CalendarScreen(
+                  onTapWrite: (isEdit, date) {
+                    context.push(
+                      RoutePaths.calendar + RoutePaths.calendarWrite,
+                      extra: {
+                        'isEdit': isEdit,
+                        'date': date,
+                      },
+                    );
+                  },
+                  onTapPresent: (id) {
+                    context.push(
+                      RoutePaths.presents,
+                      extra: id,
+                    );
+                  },
+                  onTapEventDetail: (id) {
+                    context.push(
+                      RoutePaths.calendar + RoutePaths.calendarDetail,
+                      extra: id,
+                    );
+                  },
+                ),
+                routes: [
+                  GoRoute(
+                    path: RoutePaths.calendarWrite,
+                    builder: (context, state) {
+                      final extra = state.extra as Map<String, dynamic>?;
+                      final bool isEdit = extra?['isEdit'] ?? false;
+                      final DateTime? date = extra?['date'] as DateTime?;
+                      final Event? event = extra?['event'] as Event?;
+
+                      return CalendarWriteScreen(
+                        isEdit: isEdit,
+                        date: date,
+                        event: event,
+                        onTapSearchFriend: () async {
+                          final result = await context.push<String>(
+                            RoutePaths.selectFriend,
+                          );
+                          return result;
+                        },
                       );
                     },
                   ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: RoutePaths.calendar,
-              builder: (context, state) => CalendarScreen(
-                onTapWrite: (isEdit, date) {
-                  context.push(
-                    RoutePaths.calendar + RoutePaths.calendarWrite,
-                    extra: {
-                      'isEdit': isEdit,
-                      'date': date,
-                    },
-                  );
-                },
-                onTapPresent: (id) {
-                  context.push(
-                    RoutePaths.presents,
-                    extra: id,
-                  );
-                },
-                onTapEventDetail: (id) {
-                  context.push(
-                    RoutePaths.calendar + RoutePaths.calendarDetail,
-                    extra: id,
-                  );
-                },
-              ),
-              routes: [
-                GoRoute(
-                  path: RoutePaths.calendarWrite,
-                  builder: (context, state) {
-                    final extra = state.extra as Map<String, dynamic>?;
-                    final bool isEdit = extra?['isEdit'] ?? false;
-                    final DateTime? date = extra?['date'] as DateTime?;
-                    final Event? event = extra?['event'] as Event?;
+                  GoRoute(
+                    path: RoutePaths.calendarDetail,
+                    builder: (context, state) {
+                      final id = state.extra as int;
 
-                    return CalendarWriteScreen(
-                      isEdit: isEdit,
-                      date: date,
-                      event: event,
-                      onTapSearchFriend: () async {
-                        final result = await context.push<String>(
-                          RoutePaths.selectFriend,
-                        );
-                        return result;
-                      },
-                    );
-                  },
-                ),
-                GoRoute(
-                  path: RoutePaths.calendarDetail,
-                  builder: (context, state) {
-                    final id = state.extra as int;
-
-                    return CalendarDetailScreen(
-                      id: id,
-                      onTapEdit: (isEdit, event) {
-                        context.push(
-                          RoutePaths.calendar + RoutePaths.calendarWrite,
-                          extra: {
-                            'isEdit': isEdit,
-                            'event': event,
-                          },
-                        );
-                      },
-                    );
-                  },
-                ),
-              ]
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: RoutePaths.friends,
-              builder: (context, state) => FriendsScreen(
-                onTapDetail: (id) {
-                  context.push(
-                    RoutePaths.friends + RoutePaths.friendDetail,
-                    extra: id,
-                  );
-                },
-                onTapWrite: (isEdit) {
-                  context.push(
-                    RoutePaths.friends + RoutePaths.friendWrite,
-                    extra: {
-                      'isEdit': false,
-                      'friendInfo': null,
+                      return CalendarDetailScreen(
+                        id: id,
+                        onTapEdit: (isEdit, event) {
+                          context.push(
+                            RoutePaths.calendar + RoutePaths.calendarWrite,
+                            extra: {
+                              'isEdit': isEdit,
+                              'event': event,
+                            },
+                          );
+                        },
+                      );
                     },
-                  );
-                },
+                  ),
+                ],
               ),
-              routes: [
-                GoRoute(
-                  path: RoutePaths.friendWrite,
-                  builder: (context, state) {
-                    final extra = state.extra as Map<String, dynamic>?;
-                    final bool isEdit = extra?['isEdit'] ?? false;
-                    final FriendEdit? friendInfo = extra?['friendInfo'] as FriendEdit?;
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutePaths.friends,
+                builder: (context, state) => FriendsScreen(
+                  onTapDetail: (id) {
+                    context.push(
+                      RoutePaths.friends + RoutePaths.friendDetail,
+                      extra: id,
+                    );
+                  },
+                  onTapWrite: (isEdit) {
+                    context.push(
+                      RoutePaths.friends + RoutePaths.friendWrite,
+                      extra: {
+                        'isEdit': false,
+                        'friendInfo': null,
+                      },
+                    );
+                  },
+                ),
+                routes: [
+                  GoRoute(
+                    path: RoutePaths.friendWrite,
+                    builder: (context, state) {
+                      final extra = state.extra as Map<String, dynamic>?;
+                      final bool isEdit = extra?['isEdit'] ?? false;
+                      final FriendEdit? friendInfo = extra?['friendInfo'] as FriendEdit?;
 
-                    return FriendWriteScreen(
-                      isEdit: isEdit,
-                      friendInfo: friendInfo,
-                    );
-                  },
-                ),
-                GoRoute(
-                  path: RoutePaths.friendDetail,
-                  builder: (context, state) {
-                    final id = state.extra as int;
-                    return FriendDetailScreen(
-                      id: id,
-                      onTapSummary: () {
-                        context.push(
-                          RoutePaths.friends + RoutePaths.friendDetail + RoutePaths.friendSummary,
-                        );
-                      },
-                      onTapPresent: (id) {
-                        context.push(
-                          RoutePaths.presents,
-                          extra: id,
-                        );
-                      },
-                      onTapEventDetail: (id) {
-                        context.push(
-                          RoutePaths.calendar + RoutePaths.calendarDetail,
-                          extra: id,
-                        );
-                      },
-                      onTapEdit: (isEdit, friendInfo) {
-                        context.push(
-                          RoutePaths.friends + RoutePaths.friendWrite,
-                          extra: {
-                            'isEdit': isEdit,
-                            'friendInfo': friendInfo,
-                          },
-                        );
-                      },
-                    );
-                  },
-                  routes: [
-                    GoRoute(
-                      path: RoutePaths.friendSummary,
-                      builder: (context, state) => FriendSummary(),
-                    )
-                  ]
-                ),
-              ]
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: RoutePaths.mypage,
-              builder: (context, state) => MyPageScreen(
-                onTapEditScreen: () {
-                  context.push(RoutePaths.mypage + RoutePaths.profileEdit);
-                },
-                onTapWebView: (url, title) {
-                  context.push(
-                    RoutePaths.mypage + RoutePaths.webView,
-                    extra: {
-                      'url': url,
-                      'title': title,
+                      return FriendWriteScreen(
+                        isEdit: isEdit,
+                        friendInfo: friendInfo,
+                      );
                     },
-                  );
-                },
+                  ),
+                  GoRoute(
+                    path: RoutePaths.friendDetail,
+                    builder: (context, state) {
+                      final id = state.extra as int;
+                      return FriendDetailScreen(
+                        id: id,
+                        onTapSummary: () {
+                          context.push(
+                            RoutePaths.friends + RoutePaths.friendDetail + RoutePaths.friendSummary,
+                          );
+                        },
+                        onTapPresent: (id) {
+                          context.push(
+                            RoutePaths.presents,
+                            extra: id,
+                          );
+                        },
+                        onTapEventDetail: (id) {
+                          context.push(
+                            RoutePaths.calendar + RoutePaths.calendarDetail,
+                            extra: id,
+                          );
+                        },
+                        onTapEdit: (isEdit, friendInfo) {
+                          context.push(
+                            RoutePaths.friends + RoutePaths.friendWrite,
+                            extra: {
+                              'isEdit': isEdit,
+                              'friendInfo': friendInfo,
+                            },
+                          );
+                        },
+                      );
+                    },
+                    routes: [
+                      GoRoute(
+                        path: RoutePaths.friendSummary,
+                        builder: (context, state) => FriendSummary(),
+                      )
+                    ],
+                  ),
+                ],
               ),
-              routes: [
-                GoRoute(
-                  path: RoutePaths.profileEdit,
-                  builder: (context, state) => ProfileEditScreen(),
-                ),
-                GoRoute(
-                  path: RoutePaths.webView,
-                  builder: (context, state) {
-                    return WebViewScreen(
-                      url: (state.extra as Map<String, dynamic>)['url'],
-                      title: (state.extra as Map<String, dynamic>)['title'],
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: RoutePaths.mypage,
+                builder: (context, state) => MyPageScreen(
+                  onTapEditScreen: () {
+                    context.push(RoutePaths.mypage + RoutePaths.profileEdit);
+                  },
+                  onTapWebView: (url, title) {
+                    context.push(
+                      RoutePaths.mypage + RoutePaths.webView,
+                      extra: {
+                        'url': url,
+                        'title': title,
+                      },
                     );
-                  }
+                  },
                 ),
-              ]
-            ),
-          ],
-        ),
-      ]
-    )
-  ]
-);
+                routes: [
+                  GoRoute(
+                    path: RoutePaths.profileEdit,
+                    builder: (context, state) => ProfileEditScreen(),
+                  ),
+                  GoRoute(
+                    path: RoutePaths.webView,
+                    builder: (context, state) {
+                      return WebViewScreen(
+                        url: (state.extra as Map<String, dynamic>)['url'],
+                        title: (state.extra as Map<String, dynamic>)['title'],
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      )
+    ],
+  );
+});
