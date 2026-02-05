@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:relog/core/presentation/styles/color_styles.dart';
+import 'package:relog/core/storage/providers/user_session_provider.dart';
 import 'package:relog/core/utils/time_format.dart';
 import 'package:relog/presentation/home/widgets/best_worst_panel.dart';
 import 'package:relog/presentation/home/widgets/empty_card.dart';
@@ -20,6 +21,9 @@ class HomeScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(userSessionProvider);
+    print('user: ${user.value.toString()}');
+
     final summary = homeDummyData['monthlySummary'];
     final solution = homeDummyData['monthlySolution'];
     final relationshipSolution1 = homeDummyData['relationshipSolution1'];

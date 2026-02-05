@@ -104,7 +104,7 @@ class CalendarScreen extends HookConsumerWidget {
     }, [context, focusedMonth.value, pageController, anchorMonth,]);
 
     // 선택된 날짜의 이벤트
-    final eventsForSelected = calendarDummy[ymdKey(selectedDate.value)] ?? const <Calendar>[];
+    final eventsForSelected = calendarDummy[ymdHyphen(selectedDate.value)] ?? const <Calendar>[];
 
     // 달력 높이 계산
     const cellHeight = 64.0; // 한 날짜 칸 높이
@@ -143,7 +143,7 @@ class CalendarScreen extends HookConsumerWidget {
                   cellHeight: cellHeight,
                   onMonthChanged: onMonthChanged,
                   onDateSelected: onDateSelected,
-                  eventLookup: (d) => calendarDummy[ymdKey(d)] ?? const <Calendar>[],
+                  eventLookup: (d) => calendarDummy[ymdHyphen(d)] ?? const <Calendar>[],
                 ),
               ),
 

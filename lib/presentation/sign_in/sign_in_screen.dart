@@ -1,14 +1,20 @@
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/styles/text_styles.dart';
-import 'package:relog/core/presentation/widgets/inputs/custom_text_field.dart';
+import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
+import 'package:relog/domain/auth/enum/login_platform.dart';
+import 'package:relog/domain/auth/model/login_request.dart';
+import 'package:relog/domain/auth/use_case/result/social_login_result.dart';
+import 'package:relog/presentation/sign_in/providers/sign_in_view_providers.dart';
 
 class SignInScreen extends HookConsumerWidget {
+  final void Function(LoginRequest requset) onTapSignUp;
   final VoidCallback onTapSignIn;
-  final VoidCallback onTapSignUp;
 
   const SignInScreen({
     super.key,
@@ -18,19 +24,44 @@ class SignInScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final email = '1234';
-    final pw = '1234';
+    final state = ref.watch(signInViewModelProvider);
+    final vm = ref.read(signInViewModelProvider.notifier);
 
-    final emailController = useTextEditingController();
-    final pwController = useTextEditingController();
-
-    bool signIn(String e, String p) {
-      if (e != email || p != pw) {
-        return false;
+    // 오류
+    useEffect(() {
+      if (state.errorMessage != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showCupertinoDialog(
+            context: context,
+            barrierDismissible: true, // 바깥 터치 시 다이얼로그 닫힘
+            builder: (_) => CustomDialog(
+              title: '로그인 오류',
+              content: state.errorMessage!,
+              actions: [
+                CustomDialogAction(
+                  text: '확인',
+                  style: DialogActionStyle.normal,
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          );
+        });
       }
+      return null;
+    }, [state.errorMessage]);
 
-      return true;
-    };
+    // 로딩 상태 표시
+    if (state.isLoading) {
+      return Scaffold(
+        backgroundColor: ColorStyles.black22,
+        body: SafeArea(
+          child: Center(
+            child: CircularProgressIndicator(color: ColorStyles.grayD3,),
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: ColorStyles.black22,
@@ -65,33 +96,32 @@ class SignInScreen extends HookConsumerWidget {
                           ),
                           const SizedBox(height: 48),
 
-                          CustomTextField(
-                            controller: emailController,
-                            hintText: '이메일을 입력해 주세요',
+                          _ImageButton(
+                            platform: LoginPlatform.KAKAO,
+                            img: 'assets/images/kakao_login.png',
+                            onTap: () async {
+                              final result = await vm.socialLogin(LoginPlatform.KAKAO);
+
+                              switch (result) {
+                                case SocialLoginSuccess():
+                                  onTapSignIn();
+                                case SocialLoginNeedSignUp(:final platform, :final token):
+                                  onTapSignUp(LoginRequest(provider: platform, token: token));
+                                case SocialLoginCanceled():
+                                  break;
+                              }
+                            },
                           ),
                           const SizedBox(height: 16),
 
-                          CustomTextField(
-                            controller: pwController,
-                            hintText: '비밀번호를 입력해 주세요',
-                            obscureText: true,
-                          ),
-                          const SizedBox(height: 24),
+                          if (Platform.isIOS)
+                            _ImageButton(
+                              platform: LoginPlatform.APPLE,
+                              img: 'assets/images/apple_login.png',
+                              onTap: () {
 
-                          _PrimaryButton(
-                            text: '로그인',
-                            onTap: () {
-                              final result = signIn(emailController.text.trim(), pwController.text.trim());
-                              if (!result) return;
-                              onTapSignIn();
-                            },
-                          ),
-                          const SizedBox(height: 24),
-
-                          _OutlineButton(
-                            text: '회원가입',
-                            onTap: onTapSignUp,
-                          ),
+                              },
+                            ),
                         ],
                       ),
                     ),
@@ -106,12 +136,14 @@ class SignInScreen extends HookConsumerWidget {
   }
 }
 
-class _PrimaryButton extends StatelessWidget {
-  final String text;
+class _ImageButton extends StatelessWidget {
+  final LoginPlatform platform;
+  final String img;
   final VoidCallback onTap;
 
-  const _PrimaryButton({
-    required this.text,
+  const _ImageButton({
+    required this.platform,
+    required this.img,
     required this.onTap,
   });
 
@@ -121,50 +153,17 @@ class _PrimaryButton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: double.infinity,
-        constraints: const BoxConstraints(minHeight: 44),
-        decoration: BoxDecoration(
-          color: ColorStyles.grayD3,
-          borderRadius: BorderRadius.circular(8),
-        ),
+        constraints: const BoxConstraints(maxHeight: 44),
         alignment: Alignment.center,
-        child: Text(
-          text,
-          style: TextStyles.normalTextBold.copyWith(
-            color: ColorStyles.black22,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _OutlineButton extends StatelessWidget {
-  final String text;
-  final VoidCallback onTap;
-
-  const _OutlineButton({
-    required this.text,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        width: double.infinity,
-        constraints: const BoxConstraints(minHeight: 44),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: ColorStyles.gray86),
+          color: platform == LoginPlatform.KAKAO
+            ? const Color(0xFFFEE500)
+            : const Color(0xFFFFFFFF),
         ),
-        alignment: Alignment.center,
-        child: Text(
-          text,
-          style: TextStyles.normalTextBold.copyWith(
-            color: ColorStyles.grayD3,
-          ),
+        child: Image.asset(
+          img,
+          width: double.infinity,
         ),
       ),
     );
