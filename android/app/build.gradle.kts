@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -5,13 +7,12 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-def localProps = new Properties()
-def localPropsFile = rootProject.file("local.properties")
+val localProps = Properties()
+val localPropsFile = rootProject.file("local.properties")
 if (localPropsFile.exists()) {
-    localProps.load(new FileInputStream(localPropsFile))
+    localPropsFile.inputStream().use { localProps.load(it) }
 }
-def kakaoNativeAppKey = localProps.getProperty("KAKAO_NATIVE_APP_KEY", "")
-
+val kakaoNativeAppKey: String = localProps.getProperty("KAKAO_NATIVE_APP_KEY", "")
 
 android {
     namespace = "com.relog.relog"
@@ -37,11 +38,12 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 
-        manifestPlaceholders = [
-            applicationName      : "android.app.Application",
-            KAKAO_NATIVE_APP_KEY : kakaoNativeAppKey,
-        ]
-
+        manifestPlaceholders.putAll(
+            mapOf(
+                "applicationName" to "android.app.Application",
+                "KAKAO_NATIVE_APP_KEY" to kakaoNativeAppKey,
+            )
+        )
     }
 
     buildTypes {
