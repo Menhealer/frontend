@@ -34,6 +34,11 @@ jobs:
         run: |
           echo "${{ secrets.ENV_B64 }}" | base64 --decode > .env
 
+      - name: Decode Secrets.xcconfig
+        run: |
+          mkdir -p ios/Flutter
+          echo "${{ secrets.SECRETS_XCCONFIG_B64 }}" | base64 --decode > ios/Flutter/Secrets.xcconfig
+
       # iOS Pods 캐시 복원
       - name: Cache iOS Pods
         uses: actions/cache@v3
