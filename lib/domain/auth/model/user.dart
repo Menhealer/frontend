@@ -10,6 +10,7 @@ abstract class User with _$User {
     required String nickname,
     required String birthday,
     required String? profileImage,
+    required String provider,
   }) = _User;
 
   factory User.fromJson(Map<String, dynamic> json) =>

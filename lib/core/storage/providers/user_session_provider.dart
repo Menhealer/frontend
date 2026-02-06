@@ -23,15 +23,18 @@ class UserSessionNotifier extends AsyncNotifier<User?> {
   bool get isSignedIn => state.asData?.value != null;
 
   Future<void> setUser(User user, String accessToken, String refreshToken) async {
-    state = const AsyncValue.loading();
     await _sharedPreferencesService.saveUser(user);
     await _secureStorageService.write('accessToken', accessToken);
     await _secureStorageService.write('refreshToken', refreshToken);
     state = AsyncValue.data(user);
   }
 
+  Future<void> updateUser(User user) async {
+    await _sharedPreferencesService.saveUser(user);
+    state = AsyncValue.data(user);
+  }
+
   Future<void> clear() async {
-    state = const AsyncValue.loading();
     await _sharedPreferencesService.clearUser();
     await _secureStorageService.delete();
     state = const AsyncValue.data(null);

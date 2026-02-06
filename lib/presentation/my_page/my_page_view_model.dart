@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:relog/core/exception/api_exception.dart';
 import 'package:relog/core/storage/providers/user_session_provider.dart';
-import 'package:relog/domain/auth/enum/login_platform.dart';
 import 'package:relog/domain/auth/use_case/logout_use_case.dart';
 import 'package:relog/domain/auth/use_case/providers/auth_use_case_providers.dart';
 import 'package:relog/presentation/my_page/my_page_state.dart';
