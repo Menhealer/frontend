@@ -6,6 +6,7 @@ class SharedPreferencesService {
   static const _nicknameKey = 'nickname';
   static const _birthdayKey = 'birthday';
   static const _profileImageKey = 'profileImage';
+  static const _loginPlatformKey = 'provider';
 
   Future<void> saveUser(User user) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -14,6 +15,7 @@ class SharedPreferencesService {
     await prefs.setString(_nicknameKey, user.nickname);
     await prefs.setString(_birthdayKey, user.birthday);
     await prefs.setString(_profileImageKey, user.profileImage ?? '');
+    await prefs.setString(_loginPlatformKey, user.provider);
   }
 
   Future<User?> getUser() async {
@@ -23,14 +25,16 @@ class SharedPreferencesService {
     final nickname = prefs.getString(_nicknameKey);
     final birthday = prefs.getString(_birthdayKey);
     final profileImage = prefs.getString(_profileImageKey);
+    final loginPlatform = prefs.getString(_loginPlatformKey);
 
-    if (id == null || nickname == null || birthday == null) return null;
+    if (id == null || nickname == null || birthday == null || loginPlatform == null) return null;
 
     return User(
       id: id,
       nickname: nickname,
       birthday: birthday,
       profileImage: (profileImage == null || profileImage.isEmpty) ? null : profileImage,
+      provider: loginPlatform,
     );
   }
 
@@ -40,5 +44,6 @@ class SharedPreferencesService {
     await prefs.remove(_nicknameKey);
     await prefs.remove(_birthdayKey);
     await prefs.remove(_profileImageKey);
+    await prefs.remove(_loginPlatformKey);
   }
 }

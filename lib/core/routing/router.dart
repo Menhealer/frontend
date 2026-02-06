@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:relog/core/routing/route_paths.dart';
 import 'package:relog/core/storage/providers/user_session_provider.dart';
 import 'package:relog/domain/auth/model/login_request.dart';
+import 'package:relog/domain/auth/model/user.dart';
 import 'package:relog/domain/event.dart';
 import 'package:relog/domain/friends/friend_edit.dart';
 import 'package:relog/domain/presents/present.dart';
@@ -32,8 +33,13 @@ final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 final routerRefreshProvider = Provider<ValueNotifier<int>>((ref) {
   final notifier = ValueNotifier<int>(0);
 
-  ref.listen(userSessionProvider, (_, __) {
-    notifier.value++; // 세션 바뀌면 redirect 다시 평가
+  ref.listen<AsyncValue<User?>>(userSessionProvider, (prev, next) {
+    final prevSignedIn = prev?.asData?.value != null;
+    final nextSignedIn = next.asData?.value != null;
+
+    if (prevSignedIn != nextSignedIn) {
+      notifier.value++;
+    }
   });
 
   ref.onDispose(notifier.dispose);
@@ -42,27 +48,34 @@ final routerRefreshProvider = Provider<ValueNotifier<int>>((ref) {
 
 final routerProvider = Provider<GoRouter>((ref) {
   final refresh = ref.watch(routerRefreshProvider);
-  final session = ref.watch(userSessionProvider);
-
-  bool isSignedIn() => session.asData?.value != null;
 
   return GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: RoutePaths.splash,
     refreshListenable: refresh,
     redirect: (context, state) {
-      final signedIn = isSignedIn();
+      final session = ref.read(userSessionProvider);
+      final signedIn = session.when(
+        data: (u) => u != null,
+        loading: () => null,
+        error: (_, __) => false,
+      );
+
+      if (signedIn == null) return null;
 
       final location = state.matchedLocation;
+
       final inAuthFlow = location == RoutePaths.signIn || location.startsWith(RoutePaths.signIn);
 
       // 미로그인 & 보호된 영역 -> 로그인
       if (!signedIn && !inAuthFlow && location != RoutePaths.splash) {
+        print('📍 로그인 페이지로 라우팅 됩니다.');
         return RoutePaths.signIn;
       }
 
       // 로그인 상태에서 로그인/스플래시로 이동 -> 홈으로 전환
       if (signedIn && (location == RoutePaths.splash || inAuthFlow)) {
+        print('📍 홈 페이지로 라우팅 됩니다.');
         return RoutePaths.home;
       }
 
