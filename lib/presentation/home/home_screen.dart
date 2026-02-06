@@ -22,7 +22,6 @@ class HomeScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userSessionProvider);
-    print('user: ${user.value.toString()}');
 
     final summary = homeDummyData['monthlySummary'];
     final solution = homeDummyData['monthlySolution'];

@@ -29,13 +29,12 @@ class ProfileImagePicker extends StatelessWidget {
         height: size,
         fit: BoxFit.cover,
       );
-    } else if (imageUrl != null && imageUrl!.isNotEmpty) {
+    } else if (imageUrl != null && imageUrl!.isNotEmpty && imageUrl != '') {
       image = Image.network(
         imageUrl!,
         width: size,
         height: size,
         fit: BoxFit.cover,
-        // 로딩/에러 처리(필수 추천)
         loadingBuilder: (context, child, progress) {
           if (progress == null) return child;
           return SizedBox(

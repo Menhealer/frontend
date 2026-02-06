@@ -5,7 +5,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/styles/text_styles.dart';
 import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
-import 'package:relog/presentation/my_page/providers/sign_in_view_providers.dart';
+import 'package:relog/core/storage/providers/user_session_provider.dart';
+import 'package:relog/domain/auth/enum/login_platform.dart';
+import 'package:relog/presentation/my_page/providers/my_page_view_providers.dart';
 import 'package:relog/presentation/my_page/widgets/profile_card.dart';
 import 'package:relog/presentation/my_page/widgets/setting_section.dart';
 
@@ -21,6 +23,10 @@ class MyPageScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // 사용자 정보
+    final userAsync = ref.watch(userSessionProvider);
+    final user = userAsync.asData?.value;
+
     final state = ref.watch(myPageViewModelProvider);
     final vm = ref.read(myPageViewModelProvider.notifier);
 
@@ -64,6 +70,10 @@ class MyPageScreen extends HookConsumerWidget {
         ),
       );
     }
+    // 로그아웃 직후/세션 로딩 중 보호
+    if (user == null) {
+      return const SizedBox.shrink();
+    }
 
     return Scaffold(
       backgroundColor: ColorStyles.black22,
@@ -85,9 +95,9 @@ class MyPageScreen extends HookConsumerWidget {
 
                 // 프로필 카드
                 MyProfileCard(
-                  name: '주꾸미',
-                  email: 'woojoo0922@gmail.com',
-                  imageAsset: 'assets/images/profile.png',
+                  name: user.nickname,
+                  provider: user.provider.toLoginPlatform(),
+                  imageUrl: user.profileImage,
                   onEditProfile: onTapEditScreen,
                 ),
 

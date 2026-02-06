@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$User {
 
- int get id; String get nickname; String get birthday; String? get profileImage;
+ int get id; String get nickname; String get birthday; String? get profileImage; String get provider;
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $UserCopyWith<User> get copyWith => _$UserCopyWithImpl<User>(this as User, _$ide
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is User&&(identical(other.id, id) || other.id == id)&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.birthday, birthday) || other.birthday == birthday)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is User&&(identical(other.id, id) || other.id == id)&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.birthday, birthday) || other.birthday == birthday)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage)&&(identical(other.provider, provider) || other.provider == provider));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nickname,birthday,profileImage);
+int get hashCode => Object.hash(runtimeType,id,nickname,birthday,profileImage,provider);
 
 @override
 String toString() {
-  return 'User(id: $id, nickname: $nickname, birthday: $birthday, profileImage: $profileImage)';
+  return 'User(id: $id, nickname: $nickname, birthday: $birthday, profileImage: $profileImage, provider: $provider)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $UserCopyWith<$Res>  {
   factory $UserCopyWith(User value, $Res Function(User) _then) = _$UserCopyWithImpl;
 @useResult
 $Res call({
- int id, String nickname, String birthday, String? profileImage
+ int id, String nickname, String birthday, String? profileImage, String provider
 });
 
 
@@ -65,13 +65,14 @@ class _$UserCopyWithImpl<$Res>
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nickname = null,Object? birthday = null,Object? profileImage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nickname = null,Object? birthday = null,Object? profileImage = freezed,Object? provider = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nickname: null == nickname ? _self.nickname : nickname // ignore: cast_nullable_to_non_nullable
 as String,birthday: null == birthday ? _self.birthday : birthday // ignore: cast_nullable_to_non_nullable
 as String,profileImage: freezed == profileImage ? _self.profileImage : profileImage // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,provider: null == provider ? _self.provider : provider // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -156,10 +157,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nickname,  String birthday,  String? profileImage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nickname,  String birthday,  String? profileImage,  String provider)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _User() when $default != null:
-return $default(_that.id,_that.nickname,_that.birthday,_that.profileImage);case _:
+return $default(_that.id,_that.nickname,_that.birthday,_that.profileImage,_that.provider);case _:
   return orElse();
 
 }
@@ -177,10 +178,10 @@ return $default(_that.id,_that.nickname,_that.birthday,_that.profileImage);case 
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nickname,  String birthday,  String? profileImage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nickname,  String birthday,  String? profileImage,  String provider)  $default,) {final _that = this;
 switch (_that) {
 case _User():
-return $default(_that.id,_that.nickname,_that.birthday,_that.profileImage);case _:
+return $default(_that.id,_that.nickname,_that.birthday,_that.profileImage,_that.provider);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +198,10 @@ return $default(_that.id,_that.nickname,_that.birthday,_that.profileImage);case 
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nickname,  String birthday,  String? profileImage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nickname,  String birthday,  String? profileImage,  String provider)?  $default,) {final _that = this;
 switch (_that) {
 case _User() when $default != null:
-return $default(_that.id,_that.nickname,_that.birthday,_that.profileImage);case _:
+return $default(_that.id,_that.nickname,_that.birthday,_that.profileImage,_that.provider);case _:
   return null;
 
 }
@@ -212,13 +213,14 @@ return $default(_that.id,_that.nickname,_that.birthday,_that.profileImage);case 
 @JsonSerializable()
 
 class _User implements User {
-  const _User({required this.id, required this.nickname, required this.birthday, required this.profileImage});
+  const _User({required this.id, required this.nickname, required this.birthday, required this.profileImage, required this.provider});
   factory _User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 
 @override final  int id;
 @override final  String nickname;
 @override final  String birthday;
 @override final  String? profileImage;
+@override final  String provider;
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
@@ -233,16 +235,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _User&&(identical(other.id, id) || other.id == id)&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.birthday, birthday) || other.birthday == birthday)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _User&&(identical(other.id, id) || other.id == id)&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.birthday, birthday) || other.birthday == birthday)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage)&&(identical(other.provider, provider) || other.provider == provider));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nickname,birthday,profileImage);
+int get hashCode => Object.hash(runtimeType,id,nickname,birthday,profileImage,provider);
 
 @override
 String toString() {
-  return 'User(id: $id, nickname: $nickname, birthday: $birthday, profileImage: $profileImage)';
+  return 'User(id: $id, nickname: $nickname, birthday: $birthday, profileImage: $profileImage, provider: $provider)';
 }
 
 
@@ -253,7 +255,7 @@ abstract mixin class _$UserCopyWith<$Res> implements $UserCopyWith<$Res> {
   factory _$UserCopyWith(_User value, $Res Function(_User) _then) = __$UserCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String nickname, String birthday, String? profileImage
+ int id, String nickname, String birthday, String? profileImage, String provider
 });
 
 
@@ -270,13 +272,14 @@ class __$UserCopyWithImpl<$Res>
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nickname = null,Object? birthday = null,Object? profileImage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nickname = null,Object? birthday = null,Object? profileImage = freezed,Object? provider = null,}) {
   return _then(_User(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nickname: null == nickname ? _self.nickname : nickname // ignore: cast_nullable_to_non_nullable
 as String,birthday: null == birthday ? _self.birthday : birthday // ignore: cast_nullable_to_non_nullable
 as String,profileImage: freezed == profileImage ? _self.profileImage : profileImage // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,provider: null == provider ? _self.provider : provider // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
