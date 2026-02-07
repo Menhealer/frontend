@@ -13,7 +13,7 @@ import 'package:relog/presentation/calendar/detail/calendar_detail_screen.dart';
 import 'package:relog/presentation/calendar/write/calendar_write_screen.dart';
 import 'package:relog/presentation/friends/detail/friend_detail_screen.dart';
 import 'package:relog/presentation/friends/friends_screen.dart';
-import 'package:relog/presentation/friends/selete/select_friend_screen.dart';
+import 'package:relog/presentation/friends/select/select_friend_screen.dart';
 import 'package:relog/presentation/friends/summary/friend_summary.dart';
 import 'package:relog/presentation/friends/write/friend_write_screen.dart';
 import 'package:relog/presentation/home/friendship/friendship_screen.dart';

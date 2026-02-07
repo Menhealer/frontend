@@ -239,7 +239,7 @@ class FriendDetailScreen extends HookConsumerWidget {
 
                       Align(
                         alignment: Alignment.centerRight,
-                        child: state.friendDetail!.friend.score == 0
+                        child: friend.score == 0
                           ? Text(
                               '표시될 만큼 정보가 없어요',
                               style: TextStyles.smallTextRegular.copyWith(

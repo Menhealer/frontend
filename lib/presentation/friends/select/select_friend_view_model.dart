@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:relog/core/exception/api_exception.dart';
 import 'package:relog/domain/friends/use_case/get_friends_use_case.dart';
 import 'package:relog/domain/friends/use_case/providers/friends_use_case_providers.dart';
-import 'package:relog/presentation/friends/selete/select_friend_state.dart';
+import 'package:relog/presentation/friends/select/select_friend_state.dart';
 
 class SelectFriendViewModel extends Notifier<SelectFriendState> {
   late final GetFriendsUseCase _getFriendsUseCase;
