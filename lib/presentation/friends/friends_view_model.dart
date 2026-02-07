@@ -13,6 +13,7 @@ class FriendsViewModel extends Notifier<FriendsState> {
     return FriendsState(isLoading: false);
   }
   Future<void> loadFriends() async {
+    if (state.isLoading) return;
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {

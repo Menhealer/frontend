@@ -5,7 +5,7 @@ class GetFriendsUseCase {
   final FriendsRepository _friendsRepository;
   GetFriendsUseCase(this._friendsRepository);
 
-  Future<List<Friend>?> execute() async {
+  Future<List<Friend>> execute() async {
     return await _friendsRepository.getFriends();
   }
 }

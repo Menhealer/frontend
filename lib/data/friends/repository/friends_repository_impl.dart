@@ -10,14 +10,15 @@ class FriendsRepositoryImpl implements FriendsRepository {
   FriendsRepositoryImpl(this._authDio,);
 
   @override
-  Future<List<Friend>?> getFriends() async {
+  Future<List<Friend>> getFriends() async {
     final endpoint = dotenv.get('FRIENDS_ENDPOINT');
 
     try {
       final response = await _authDio.get(endpoint);
-      final List<Friend>? friends = response.data.map((e) =>
+      final data = response.data as List<dynamic>;
+
+      return data.map((e) =>
           Friend.fromJson(e as Map<String, dynamic>)).toList();
-      return friends;
     } on DioException catch (e) {
       if (e.error is ApiException) {
         throw e.error!;
@@ -27,6 +28,7 @@ class FriendsRepositoryImpl implements FriendsRepository {
         statusCode: e.response?.statusCode,
       );
     } catch (e) {
+      print('‼️ $e');
       throw ApiException('알 수 없는 오류가 발생했어요');
     }
   }
