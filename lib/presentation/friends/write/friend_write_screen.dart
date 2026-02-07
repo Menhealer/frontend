@@ -11,12 +11,12 @@ import 'package:relog/core/presentation/widgets/buttons/picker_field.dart';
 import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
 import 'package:relog/core/presentation/widgets/inputs/custom_text_field.dart';
 import 'package:relog/core/presentation/widgets/picker/date_picker.dart';
-import 'package:relog/domain/friends/model/friend_edit.dart';
+import 'package:relog/domain/friends/model/friend.dart';
 import 'package:relog/presentation/friends/providers/friends_view_providers.dart';
 
 class FriendWriteScreen extends HookConsumerWidget {
   final bool isEdit;
-  final FriendEdit? friendInfo;
+  final Friend? friendInfo;
 
   const FriendWriteScreen({
     super.key,

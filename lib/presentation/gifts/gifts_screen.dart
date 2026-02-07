@@ -5,19 +5,20 @@ import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/styles/text_styles.dart';
 import 'package:relog/core/presentation/widgets/action_sheet/custom_action_sheet.dart';
 import 'package:relog/core/presentation/widgets/app_bar/default_app_bar.dart';
-import 'package:relog/core/presentation/widgets/cards/present_card.dart';
+import 'package:relog/core/presentation/widgets/cards/gift_card.dart';
 import 'package:relog/core/presentation/widgets/chip/info_chip.dart';
 import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
 import 'package:relog/core/utils/time_format.dart';
-import 'package:relog/domain/presents/present.dart';
+import 'package:relog/domain/friends/model/friend_write_request.dart';
+import 'package:relog/domain/gifts/gift_detail.dart';
 import 'package:relog/presentation/friends/dummy.dart';
 
-class PresentsScreen extends HookConsumerWidget {
+class GiftsScreen extends HookConsumerWidget {
   final int id;
   final void Function(bool isEdit, String friendName) onTapWrite;
-  final void Function(bool isEdit, String friendName, Present present) onTapEdit;
+  final void Function(bool isEdit, String friendName, GiftDetail present) onTapEdit;
 
-  const PresentsScreen({
+  const GiftsScreen({
     super.key,
     required this.id,
     required this.onTapWrite,
@@ -28,11 +29,9 @@ class PresentsScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // 사용자 정보
     const nickname = '주꾸미';
-    final friendInfo = dummyFriendDetails.firstWhere(
-      (d) => d.id == id,
-    );
+    final friendInfo = FriendWriteRequest(name: '햄스터', group: '동아리', birthday: '2003-10-12');
 
-    final List<Present> presents = presentList;
+    final List<GiftDetail> presents = presentList;
 
     return Scaffold(
       backgroundColor: ColorStyles.black22,
@@ -122,9 +121,9 @@ class PresentsScreen extends HookConsumerWidget {
                                 ],
                               );
                             },
-                            child: PresentCard(
+                            child: GiftsCard(
                               nickname: nickname,
-                              present: present,
+                              gift: present,
                             ),
                           ),
                         ],

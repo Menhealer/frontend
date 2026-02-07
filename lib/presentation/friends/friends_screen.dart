@@ -11,7 +11,7 @@ import 'package:relog/presentation/friends/providers/friends_view_providers.dart
 import 'package:relog/presentation/friends/widgets/friend_card.dart';
 
 class FriendsScreen extends HookConsumerWidget {
-  final void Function(int id) onTapDetail;
+  final void Function(int friendId) onTapDetail;
   final Future<bool> Function(bool isEdit) onTapWrite;
 
   const FriendsScreen({

@@ -75,7 +75,8 @@ class AuthInterceptor extends Interceptor {
 
       final retryResponse = await refreshDio.fetch(req);
       handler.resolve(retryResponse);
-    } catch (_) {
+    } catch (e) {
+      print('‼️‼️ $e');
       await forceLogout('인증 갱신에 실패했어요');
     }
   }

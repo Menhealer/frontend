@@ -3,7 +3,7 @@ import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/styles/text_styles.dart';
 import 'package:relog/core/utils/color_mapping.dart';
 import 'package:relog/core/utils/time_format.dart';
-import 'package:relog/domain/event.dart';
+import 'package:relog/domain/event/model/event.dart';
 
 class EventCard extends StatelessWidget {
   final Event event;
@@ -33,7 +33,7 @@ class EventCard extends StatelessWidget {
               spacing: 4,
               children: [
                 Text(
-                  formatPeriodDate(event.date),
+                  formatPeriodDate(event.eventDate),
                   style: TextStyles.smallTextRegular.copyWith(
                     color: ColorStyles.grayA3,
                   ),
@@ -51,7 +51,7 @@ class EventCard extends StatelessWidget {
             width: 24,
             height: 24,
             decoration: BoxDecoration(
-              color: scoreToColor(event.score),
+              color: scoreToColor(event.reviewScore),
               shape: BoxShape.circle,
             ),
           ),

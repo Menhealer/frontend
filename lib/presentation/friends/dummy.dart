@@ -1,291 +1,119 @@
-import 'package:relog/domain/event.dart';
-import 'package:relog/domain/friends/model/friend.dart';
-import 'package:relog/domain/friends/model/friend_detail.dart';
-import 'package:relog/domain/presents/enum/present_tag.dart';
-import 'package:relog/domain/presents/present.dart';
-
-final List<Friend> allFriends = [
-  Friend(id: 1, name: '햄스터', score: 85),
-  Friend(id: 2, name: '고양이', score: 42),
-  Friend(id: 3, name: '토끼', score: -10),
-  Friend(id: 4, name: '여우', score: 67),
-  Friend(id: 5, name: '강아지', score: 95),
-  Friend(id: 6, name: '판다', score: 12),
-  Friend(id: 7, name: '수달', score: -45),
-  Friend(id: 8, name: '늑대', score: -80),
-  Friend(id: 9, name: '너구리', score: 5),
-  Friend(id: 10, name: '고슴도치', score: 0),
-];
-
-final List<FriendDetail> dummyFriendDetails = [
-  FriendDetail(
-    id: 1,
-    name: '햄스터',
-    score: 85,
-    group: '동아리',
-    birthday: '2003-10-12',
-    eventList: [
-      Event(id: 101, date: DateTime(2026, 1, 9), title: '전공 동아리 회식', name: '햄스터', score: 1, info: '술도 못 마시면서 술 강요하고 재미없는 말만 한다... 심지어 지각함'),
-      Event(id: 102, date: DateTime(2026, 1, 9), title: '술약속', name: '햄스터', score: 2),
-      Event(id: 105, date: DateTime(2026, 2, 1), title: '모각코', name: '햄스터', score: 4, info: '같이 간 카페가 매우 취향이었음'),
-    ],
-    presentList: [
-      Present(
-        id: 1,
-        date: DateTime(2025, 9, 22),
-        tag: PresentTag.birthday,
-        price: 30000,
-        info: '배민 상품권',
-        isGive: PresentDirection.sent,
-        friendId: 1,
-        friendName: '햄스터',
-      ),
-      Present(
-        id: 1,
-        date: DateTime(2025, 12, 9),
-        tag: PresentTag.birthday,
-        price: 27000,
-        info: null,
-        isGive: PresentDirection.received,
-        friendId: 1,
-        friendName: '햄스터',
-      ),
-    ],
-  ),
-
-  FriendDetail(
-    id: 2,
-    name: '고양이',
-    score: 42,
-    group: null,
-    birthday: '2003-1-15',
-    eventList: [],
-    presentList: [],
-  ),
-
-  FriendDetail(
-    id: 3,
-    name: '토끼',
-    score: -10,
-    group: null,
-    birthday: null,
-    eventList: [],
-    presentList: [
-      Present(
-        id: 2,
-        date: DateTime(2022, 12, 25),
-        tag: PresentTag.etc,
-        price: 15000,
-        info: null,
-        isGive: PresentDirection.sent,
-        friendId: 3,
-        friendName: '토끼',
-      ),
-      Present(
-        id: 3,
-        date: DateTime(2023, 1, 5),
-        tag: PresentTag.etc,
-        price: 12000,
-        info: '받음',
-        isGive: PresentDirection.received,
-        friendId: 3,
-        friendName: '토끼',
-      ),
-    ],
-  ),
-
-  FriendDetail(
-    id: 4,
-    name: '여우',
-    score: 67,
-    group: null,
-    birthday: null,
-    eventList: [
-    ],
-    presentList: [],
-  ),
-
-  FriendDetail(
-    id: 5,
-    name: '강아지',
-    score: 95,
-    group: null,
-    birthday: null,
-    eventList: [
-      Event(id: 103, date: DateTime(2026, 1, 12), title: '홍대 약속', name: '강아지', score: 5,),
-      Event(id: 104, date: DateTime(2026, 1, 25), title: '영화 보기', name: '강아지', score: 3),
-      Event(id: 106, date: DateTime(2026, 2, 3), title: '프로젝트 회의', name: '강아지', score: 4, info: '대화가 잘 통함'),
-    ],
-    presentList: [
-      Present(
-        id: 4,
-        date: DateTime(2023, 11, 3),
-        tag: PresentTag.birthday,
-        price: 50000,
-        info: '커스텀 제작',
-        isGive: PresentDirection.sent,
-        friendId: 5,
-        friendName: '강아지',
-      ),
-      Present(
-        id: 5,
-        date: DateTime(2023, 11, 10),
-        tag: PresentTag.etc,
-        price: 40000,
-        info: null,
-        isGive: PresentDirection.received,
-        friendId: 5,
-        friendName: '강아지',
-      ),
-    ],
-  ),
-
-  FriendDetail(
-    id: 6,
-    name: '판다',
-    score: 12,
-    group: '프로젝트',
-    birthday: '2003-1-25',
-    eventList: [],
-    presentList: [],
-  ),
-
-  FriendDetail(
-    id: 7,
-    name: '수달',
-    score: -45,
-    group: '동아리',
-    birthday: '2003-4-22',
-    eventList: [],
-    presentList: [],
-  ),
-
-  FriendDetail(
-    id: 8,
-    name: '늑대',
-    score: -80,
-    group: null,
-    birthday: '2003-6-18',
-    eventList: [],
-    presentList: [],
-  ),
-
-  FriendDetail(
-    id: 9,
-    name: '너구리',
-    score: 5,
-    group: '학생회',
-    birthday: null,
-    eventList: [],
-    presentList: [
-      Present(
-        id: 6,
-        date: DateTime(2023, 8, 30),
-        tag: PresentTag.etc,
-        price: 20000,
-        info: null,
-        isGive: PresentDirection.sent,
-        friendId: 9,
-        friendName: '너구리',
-      ),
-    ],
-  ),
-
-  FriendDetail(
-    id: 10,
-    name: '고슴도치',
-    score: 0,
-    group: null,
-    birthday: null,
-    eventList: [],
-    presentList: [],
-  ),
-];
+import 'package:relog/domain/gifts/enum/direction.dart';
+import 'package:relog/domain/gifts/enum/gift_type.dart';
+import 'package:relog/domain/gifts/gift_detail.dart';
 
 final List<String> summaryDummy = [
   '최근 3개월 기준, 햄스터님과의 만남은 이어지고 있지만 만남 이후 만족도는 낮은 편이에요.\n\n감정 기록에서는 피로와 아쉬움이 반복적으로 나타났고, 선물 기록 또한 주꾸미님의 제공 비중이 더 높게 기록됐어요.\n\n햄스터님에게 주꾸미님이 먼저 제공한 기록이 더 많았고, 주고받음의 균형은 다소 한쪽으로 기울어져 있었어요.\n\n이 관계는 현재 유지되고는 있지만, 주꾸미님에게 회복을 주는 관계는 아니에요. 기록상으로는 노력 대비 만족도가 낮은 상태로 판단돼요.',
   '- 당분간은 만남 빈도를 줄이고, 관계를 관찰하는 것이 좋아 보여요.\n- 추가적인 선물이나 관계 유지를 위한 노력은 지금 시점에서는 효과가 크지 않을 가능성이 있어요.\n-이 관계가 계속 이어질 경우, 만남 이후 감정 상태를 기준으로 재평가하는 것을 권장해요.\n\n👉 관계 방향성 제안:\n1~2개월 거리 두기 후 재정산 권장',
 ];
 
-final List<Present> presentList = [
-  Present(
+final List<GiftDetail> presentList = [
+  GiftDetail(
     id: 1,
-    date: DateTime(2025, 9, 22),
-    tag: PresentTag.birthday,
     price: 30000,
-    info: '배민 상품권',
-    isGive: PresentDirection.sent,
+    giftDate: '2025-09-22',
+    giftType: GiftType.BIRTHDAY,
+    direction: Direction.GIVEN,
     friendId: 1,
-    friendName: '햄스터',
+    friendName: '햄스터'
   ),
-  Present(
+  GiftDetail(
     id: 1,
-    date: DateTime(2025, 12, 9),
-    tag: PresentTag.etc,
     price: 27000,
-    info: null,
-    isGive: PresentDirection.received,
-    friendId: 1,
-    friendName: '햄스터',
+    giftDate: '2025-12-09',
+    giftType: GiftType.OTHER,
+    direction: Direction.RECEIVED,
+      friendId: 1,
+      friendName: '햄스터'
   ),
-  Present(
-    id: 1,
-    date: DateTime(2025, 9, 22),
-    tag: PresentTag.birthday,
-    price: 30000,
-    info: '배민 상품권',
-    isGive: PresentDirection.sent,
-    friendId: 1,
-    friendName: '햄스터',
+  GiftDetail(
+      id: 1,
+      price: 30000,
+      giftDate: '2025-09-22',
+      giftType: GiftType.BIRTHDAY,
+      direction: Direction.GIVEN,
+      friendId: 1,
+      friendName: '햄스터'
   ),
-  Present(
-    id: 1,
-    date: DateTime(2025, 12, 9),
-    tag: PresentTag.etc,
-    price: 27000,
-    info: null,
-    isGive: PresentDirection.received,
-    friendId: 1,
-    friendName: '햄스터',
+  GiftDetail(
+      id: 1,
+      price: 27000,
+      giftDate: '2025-12-09',
+      giftType: GiftType.OTHER,
+      direction: Direction.RECEIVED,
+      friendId: 1,
+      friendName: '햄스터'
   ),
-  Present(
-    id: 1,
-    date: DateTime(2025, 9, 22),
-    tag: PresentTag.etc,
-    price: 30000,
-    info: '배민 상품권',
-    isGive: PresentDirection.sent,
-    friendId: 1,
-    friendName: '햄스터',
+  GiftDetail(
+      id: 1,
+      price: 30000,
+      giftDate: '2025-09-22',
+      giftType: GiftType.BIRTHDAY,
+      direction: Direction.GIVEN,
+      friendId: 1,
+      friendName: '햄스터'
   ),
-  Present(
-    id: 1,
-    date: DateTime(2025, 12, 9),
-    tag: PresentTag.birthday,
-    price: 27000,
-    info: null,
-    isGive: PresentDirection.received,
-    friendId: 1,
-    friendName: '햄스터',
+  GiftDetail(
+      id: 1,
+      price: 27000,
+      giftDate: '2025-12-09',
+      giftType: GiftType.OTHER,
+      direction: Direction.RECEIVED,
+      friendId: 1,
+      friendName: '햄스터'
   ),
-  Present(
-    id: 1,
-    date: DateTime(2025, 9, 22),
-    tag: PresentTag.birthday,
-    price: 30000,
-    info: '배민 상품권',
-    isGive: PresentDirection.sent,
-    friendId: 1,
-    friendName: '햄스터',
+  GiftDetail(
+      id: 1,
+      price: 30000,
+      giftDate: '2025-09-22',
+      giftType: GiftType.BIRTHDAY,
+      direction: Direction.GIVEN,
+      friendId: 1,
+      friendName: '햄스터'
   ),
-  Present(
-    id: 1,
-    date: DateTime(2025, 12, 9),
-    tag: PresentTag.etc,
-    price: 27000,
-    info: null,
-    isGive: PresentDirection.received,
-    friendId: 1,
-    friendName: '햄스터',
+  GiftDetail(
+      id: 1,
+      price: 27000,
+      giftDate: '2025-12-09',
+      giftType: GiftType.OTHER,
+      direction: Direction.RECEIVED,
+      friendId: 1,
+      friendName: '햄스터'
+  ),
+  GiftDetail(
+      id: 1,
+      price: 30000,
+      giftDate: '2025-09-22',
+      giftType: GiftType.BIRTHDAY,
+      direction: Direction.GIVEN,
+      friendId: 1,
+      friendName: '햄스터'
+  ),
+  GiftDetail(
+      id: 1,
+      price: 27000,
+      giftDate: '2025-12-09',
+      giftType: GiftType.OTHER,
+      direction: Direction.RECEIVED,
+      friendId: 1,
+      friendName: '햄스터'
+  ),
+  GiftDetail(
+      id: 1,
+      price: 30000,
+      giftDate: '2025-09-22',
+      giftType: GiftType.BIRTHDAY,
+      direction: Direction.GIVEN,
+      friendId: 1,
+      friendName: '햄스터'
+  ),
+  GiftDetail(
+      id: 1,
+      price: 27000,
+      giftDate: '2025-12-09',
+      giftType: GiftType.OTHER,
+      direction: Direction.RECEIVED,
+      friendId: 1,
+      friendName: '햄스터'
   ),
 ];

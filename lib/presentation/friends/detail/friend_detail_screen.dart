@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:relog/core/presentation/styles/color_styles.dart';
@@ -7,25 +8,27 @@ import 'package:relog/core/presentation/styles/text_styles.dart';
 import 'package:relog/core/presentation/widgets/action_sheet/custom_action_sheet.dart';
 import 'package:relog/core/presentation/widgets/app_bar/default_app_bar.dart';
 import 'package:relog/core/presentation/widgets/buttons/secondary_button.dart';
-import 'package:relog/core/presentation/widgets/cards/present_card.dart';
+import 'package:relog/core/presentation/widgets/cards/gift_card.dart';
 import 'package:relog/core/presentation/widgets/chip/info_chip.dart';
 import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
+import 'package:relog/core/storage/providers/user_session_provider.dart';
 import 'package:relog/core/utils/time_format.dart';
-import 'package:relog/domain/friends/model/friend_edit.dart';
-import 'package:relog/presentation/friends/dummy.dart';
+import 'package:relog/domain/friends/model/friend.dart';
+import 'package:relog/domain/gifts/gift_detail.dart';
+import 'package:relog/presentation/friends/providers/friends_view_providers.dart';
 import 'package:relog/presentation/friends/widgets/event_card.dart';
 import 'package:relog/presentation/friends/widgets/score_bar.dart';
 
 class FriendDetailScreen extends HookConsumerWidget {
-  final int id;
+  final int friendId;
   final VoidCallback onTapSummary;
   final void Function(int id) onTapPresent;
   final void Function(int id) onTapEventDetail;
-  final void Function(bool isEdit, FriendEdit friendInfo) onTapEdit;
+  final Future<bool> Function(bool isEdit, Friend friendInfo) onTapEdit;
 
   const FriendDetailScreen({
     super.key,
-    required this.id,
+    required this.friendId,
     required this.onTapSummary,
     required this.onTapPresent,
     required this.onTapEventDetail,
@@ -34,22 +37,66 @@ class FriendDetailScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 사용자 정보
-    const nickname = '주꾸미';
-    final friend = dummyFriendDetails.firstWhere(
-      (d) => d.id == id,
-    );
+    final userAsync = ref.watch(userSessionProvider);
+    final user = userAsync.asData?.value;
 
-    final clampedScore = friend.score.clamp(-100, 100);
-    final scoreTextColor = clampedScore >= 0
-        ? ColorStyles.green100
-        : ColorStyles.red100;
+    final state = ref.watch(friendDetailViewModelProvider);
+    final vm = ref.read(friendDetailViewModelProvider.notifier);
 
-    final events = friend.eventList ?? [];
-    final recentEvents = events.take(3).toList();
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        vm.loadFriend(friendId);
+      });
+      return null;
+    }, [friendId]);
 
-    final presents = friend.presentList ?? [];
-    final recentPresents = presents.take(3).toList();
+    final scoreTextColor = state.isPositive ? ColorStyles.green100 : ColorStyles.red100;
+
+    final recentEvents = state.recent3Events;
+    final recentGifts = state.recent3Gifts;
+
+    // 오류
+    useEffect(() {
+      if (state.errorMessage != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showCupertinoDialog(
+            context: context,
+            barrierDismissible: true, // 바깥 터치 시 다이얼로그 닫힘
+            builder: (_) => CustomDialog(
+              title: '친구 정보',
+              content: state.errorMessage!,
+              actions: [
+                CustomDialogAction(
+                  text: '확인',
+                  style: DialogActionStyle.normal,
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          );
+        });
+      }
+      return null;
+    }, [state.errorMessage]);
+
+    // 로딩 상태 표시
+    if (state.isLoading) {
+      return Scaffold(
+        backgroundColor: ColorStyles.black22,
+        body: SafeArea(
+          child: Center(
+            child: CircularProgressIndicator(color: ColorStyles.grayD3,),
+          ),
+        ),
+      );
+    }
+
+    final friend = state.friend;
+    if (user == null || friend == null) {
+      return const SizedBox.shrink();
+    }
+    final group = state.groupOrNull;
+    final birthday = state.birthdayOrNull;
 
     return Scaffold(
       backgroundColor: ColorStyles.black22,
@@ -62,7 +109,12 @@ class FriendDetailScreen extends HookConsumerWidget {
               actions: [
                 ActionSheetItem(
                   label: '친구 정보 수정',
-                  onTap: () => onTapEdit(true, FriendEdit(id: friend.id, name: friend.name, group: friend.group, birthday: friend.birthday)),
+                  onTap: () async {
+                    final refresh = await onTapEdit(true, friend);
+                    if (refresh) {
+                      await vm.loadFriend(friendId, force: true);
+                    }
+                  }
                 ),
                 ActionSheetItem(
                   label: '친구 삭제',
@@ -85,7 +137,7 @@ class FriendDetailScreen extends HookConsumerWidget {
                             style: DialogActionStyle.destructive,
                             isDefaultAction: true,
                             onPressed: () {
-                              // 삭제 로직
+                              // TODO: 삭제 로직
                             },
                           ),
                         ],
@@ -119,34 +171,40 @@ class FriendDetailScreen extends HookConsumerWidget {
             child: Column(
               children: [
                 // 친구 정보
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      friend.name,
-                      style: TextStyles.titleTextBold.copyWith(
-                        color: ColorStyles.grayD3,
-                      ),
+                SizedBox(
+                  width: double.infinity,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          friend.name,
+                          style: TextStyles.titleTextBold.copyWith(
+                            color: ColorStyles.grayD3,
+                          ),
+                        ),
+                        const SizedBox(width: 16,),
+
+                        if (group != null) ...[
+                          InfoChip(
+                            label: group,
+                            backgroundColor: ColorStyles.purple100,
+                            textColor: ColorStyles.purple10,
+                          ),
+                          const SizedBox(width: 8,),
+                        ],
+
+                        if (birthday != null)
+                          InfoChip(
+                            label: formatBirthday(birthday),
+                            backgroundColor: ColorStyles.pink100,
+                            textColor: ColorStyles.pink10,
+                          ),
+                      ],
                     ),
-                    const SizedBox(width: 16,),
-
-                    if (friend.group != null) ...[
-                      InfoChip(
-                        label: friend.group!,
-                        backgroundColor: ColorStyles.purple100,
-                        textColor: ColorStyles.purple10,
-                      ),
-                      const SizedBox(width: 8,),
-                    ],
-
-                    if (friend.birthday != null)
-                      InfoChip(
-                        label: formatBirthday(friend.birthday!),
-                        backgroundColor: ColorStyles.pink100,
-                        textColor: ColorStyles.pink10,
-                      ),
-                  ],
+                  ),
                 ),
                 const SizedBox(height: 24,),
 
@@ -161,7 +219,7 @@ class FriendDetailScreen extends HookConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '$nickname님과의 관계 상태',
+                        '${user.nickname}님의 관계 상태',
                         style: TextStyles.largeTextBold.copyWith(
                           color: ColorStyles.grayD3,
                         ),
@@ -170,7 +228,7 @@ class FriendDetailScreen extends HookConsumerWidget {
                       SizedBox(
                         width: double.infinity,
                         child: ScoreBar(
-                          score: friend.score,
+                          score: state.rawScore,
                           height: 40,
                         ),
                       ),
@@ -178,7 +236,7 @@ class FriendDetailScreen extends HookConsumerWidget {
 
                       Align(
                         alignment: Alignment.centerRight,
-                        child: friend.score == 0
+                        child: state.friendDetail!.friend.score == 0
                           ? Text(
                               '표시될 만큼 정보가 없어요',
                               style: TextStyles.smallTextRegular.copyWith(
@@ -189,13 +247,13 @@ class FriendDetailScreen extends HookConsumerWidget {
                               TextSpan(
                                 children: [
                                   TextSpan(
-                                    text: '${clampedScore.abs()}% ',
+                                    text: state.scorePercentText,
                                     style: TextStyles.smallTextRegular.copyWith(
                                       color: scoreTextColor,
                                     ),
                                   ),
                                   TextSpan(
-                                    text: clampedScore >= 0 ? '긍정적' : '부정적',
+                                    text: state.sentimentText,
                                     style: TextStyles.smallTextRegular.copyWith(
                                       color: ColorStyles.grayA3,
                                     ),
@@ -269,7 +327,7 @@ class FriendDetailScreen extends HookConsumerWidget {
                           spacing: 8,
                           children: [
                             for (final event in recentEvents) GestureDetector(
-                              onTap: () => onTapEventDetail(event.id),
+                              onTap: () => onTapEventDetail(event.eventId),
                               behavior: HitTestBehavior.opaque,
                               child: EventCard(event: event)
                             ),
@@ -326,7 +384,7 @@ class FriendDetailScreen extends HookConsumerWidget {
                       ),
 
                       // 선물 카드
-                      if (recentPresents.isEmpty)
+                      if (recentGifts.isEmpty)
                         SizedBox(
                           height: 48,
                           child: Center(
@@ -342,8 +400,19 @@ class FriendDetailScreen extends HookConsumerWidget {
                         Column(
                           spacing: 8,
                           children: [
-                            for (final present in recentPresents)
-                              PresentCard(nickname: nickname, present: present),
+                            for (final gift in recentGifts)
+                              GiftsCard(
+                                nickname: user.nickname,
+                                gift: GiftDetail(
+                                  id: gift.giftId,
+                                  price: gift.price,
+                                  giftDate: gift.giftDate,
+                                  giftType: gift.giftType,
+                                  direction: gift.direction,
+                                  friendId: friendId,
+                                  friendName: friend.name,
+                                ),
+                              ),
                           ],
                         ),
                     ],

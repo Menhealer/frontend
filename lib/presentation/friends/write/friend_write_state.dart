@@ -39,7 +39,6 @@ class FriendWriteState {
     this.errorMessage,
   });
 
-  // yyyy-MM-dd
   String? get birthdayYmd {
     if (!birthdayEnabled) return null;
     return formatIntBirthday(year, month, day);

@@ -7,7 +7,7 @@ import 'package:relog/presentation/home/widgets/friendship_card.dart';
 import 'package:relog/presentation/home/widgets/friendship_tab_bar.dart';
 
 class FriendshipScreen extends HookConsumerWidget {
-  final void Function(int id) onTapFriendDetail;
+  final void Function(int friendId) onTapFriendDetail;
 
   const FriendshipScreen({
     super.key,
