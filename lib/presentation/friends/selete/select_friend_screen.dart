@@ -5,7 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/widgets/app_bar/default_app_bar.dart';
 import 'package:relog/core/presentation/widgets/inputs/search_text_field.dart';
-import 'package:relog/domain/friends/friend.dart';
+import 'package:relog/domain/friends/model/friend.dart';
 import 'package:relog/presentation/friends/dummy.dart';
 import 'package:relog/presentation/friends/widgets/friend_card.dart';
 

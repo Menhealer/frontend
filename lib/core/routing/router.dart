@@ -6,7 +6,7 @@ import 'package:relog/core/storage/providers/user_session_provider.dart';
 import 'package:relog/domain/auth/model/login_request.dart';
 import 'package:relog/domain/auth/model/user.dart';
 import 'package:relog/domain/event.dart';
-import 'package:relog/domain/friends/friend_edit.dart';
+import 'package:relog/domain/friends/model/friend_edit.dart';
 import 'package:relog/domain/presents/present.dart';
 import 'package:relog/presentation/calendar/calendar_screen.dart';
 import 'package:relog/presentation/calendar/detail/calendar_detail_screen.dart';

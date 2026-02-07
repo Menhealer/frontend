@@ -11,7 +11,7 @@ import 'package:relog/core/presentation/widgets/cards/present_card.dart';
 import 'package:relog/core/presentation/widgets/chip/info_chip.dart';
 import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
 import 'package:relog/core/utils/time_format.dart';
-import 'package:relog/domain/friends/friend_edit.dart';
+import 'package:relog/domain/friends/model/friend_edit.dart';
 import 'package:relog/presentation/friends/dummy.dart';
 import 'package:relog/presentation/friends/widgets/event_card.dart';
 import 'package:relog/presentation/friends/widgets/score_bar.dart';

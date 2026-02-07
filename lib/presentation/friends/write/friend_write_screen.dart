@@ -8,7 +8,7 @@ import 'package:relog/core/presentation/widgets/buttons/app_bar_done_button.dart
 import 'package:relog/core/presentation/widgets/buttons/picker_field.dart';
 import 'package:relog/core/presentation/widgets/inputs/custom_text_field.dart';
 import 'package:relog/core/presentation/widgets/picker/birthday_picker.dart';
-import 'package:relog/domain/friends/friend_edit.dart';
+import 'package:relog/domain/friends/model/friend_edit.dart';
 
 class FriendWriteScreen extends HookConsumerWidget {
   final bool isEdit;

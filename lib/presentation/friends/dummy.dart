@@ -1,6 +1,6 @@
 import 'package:relog/domain/event.dart';
-import 'package:relog/domain/friends/friend.dart';
-import 'package:relog/domain/friends/friend_detail.dart';
+import 'package:relog/domain/friends/model/friend.dart';
+import 'package:relog/domain/friends/model/friend_detail.dart';
 import 'package:relog/domain/presents/enum/present_tag.dart';
 import 'package:relog/domain/presents/present.dart';
 
