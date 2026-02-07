@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:relog/data/friends/providers/friends_repository_provider.dart';
+import 'package:relog/domain/friends/use_case/friend_delete_use_case.dart';
 import 'package:relog/domain/friends/use_case/friend_edit_use_case.dart';
 import 'package:relog/domain/friends/use_case/friend_name_check_use_case.dart';
 import 'package:relog/domain/friends/use_case/get_friend_detail_use_case.dart';
@@ -29,4 +30,9 @@ final friendNameCheckUseCaseProvider = Provider<FriendNameCheckUseCase>((ref) {
 final friendEditUseCaseProvider = Provider<FriendEditUseCase>((ref) {
   final repo = ref.watch(friendsRepositoryProvider);
   return FriendEditUseCase(repo);
+});
+
+final friendDeleteUseCaseProvider = Provider<FriendDeleteUseCase>((ref) {
+  final repo = ref.watch(friendsRepositoryProvider);
+  return FriendDeleteUseCase(repo);
 });

@@ -296,11 +296,12 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: RoutePaths.friends,
                 builder: (context, state) => FriendsScreen(
-                  onTapDetail: (friendId) {
-                    context.push(
+                  onTapDetail: (friendId) async {
+                    final refresh = await context.push<bool>(
                       RoutePaths.friends + RoutePaths.friendDetail,
                       extra: friendId,
                     );
+                    return refresh ?? false;
                   },
                   onTapWrite: (isEdit) async {
                     final refresh = await context.push<bool>(
@@ -351,14 +352,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                           );
                         },
                         onTapEdit: (isEdit, friendInfo) async {
-                          final refresh = await context.push<bool>(
+                          final refresh = await context.push<Friend?>(
                             RoutePaths.friends + RoutePaths.friendWrite,
                             extra: {
                               'isEdit': isEdit,
                               'friendInfo': friendInfo,
                             },
                           );
-                          return refresh ?? false;
+                          return refresh;
                         },
                       );
                     },

@@ -91,8 +91,10 @@ class FriendWriteScreen extends HookConsumerWidget {
           enabled: state.canSubmit,
           onTap: () async {
             if (state.isLoading) return;
-            final ok = await vm.submit();
-            if (ok && context.mounted) context.pop(true);
+            final result = await vm.submit();
+            if (result != null && context.mounted) {
+              isEdit ? context.pop(result) : context.pop(true);
+            }
           },
         ),
       ),

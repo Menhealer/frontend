@@ -93,8 +93,8 @@ class FriendWriteViewModel extends Notifier<FriendWriteState> {
     state = state.copyWith(birthdayEnabled: false);
   }
 
-  Future<bool> submit() async {
-    if (!state.canSubmit) return false;
+  Future<Friend?> submit() async {
+    if (!state.canSubmit) return null;
 
     state = state.copyWith(isLoading: true, errorMessage: null);
 
@@ -110,42 +110,39 @@ class FriendWriteViewModel extends Notifier<FriendWriteState> {
             isLoading: false,
             errorMessage: '이미 등록된 친구 이름이에요\n다른 이름으로 입력해 주세요',
           );
-          return false;
+          return null;
         }
       }
 
       if (state.isEdit) {
         final req = FriendEditRequest(
           name: nameChanged ? state.trimmedName : null,
-          group: state.trimmedGroup.isEmpty ? null : state.trimmedGroup,
+          group: state.trimmedGroup.isEmpty ? '' : state.trimmedGroup,
           birthday: state.birthdayYmd,
         );
-
-        await _friendEditUseCase.execute(req, state.friendId!);
+        state = state.copyWith(isLoading: false);
+        return await _friendEditUseCase.execute(req, state.friendId!);
       } else {
         final req = FriendWriteRequest(
           name: state.trimmedName,
           group: state.trimmedGroup.isEmpty ? null : state.trimmedGroup,
           birthday: state.birthdayYmd,
         );
-
-        await _writeFriendUseCase.execute(req);
+        state = state.copyWith(isLoading: false);
+        return await _writeFriendUseCase.execute(req);
       }
-
-      state = state.copyWith(isLoading: false);
-      return true;
     } on ApiException catch (e) {
       state = state.copyWith(
         isLoading: false,
         errorMessage: e.message,
       );
-      return false;
+      return null;
     } catch (_) {
       state = state.copyWith(
         isLoading: false,
         errorMessage: '친구 등록 중\n알 수 없는 오류가 발생했습니다.',
       );
-      return false;
+      return null;
     }
   }
 }

@@ -11,7 +11,7 @@ import 'package:relog/presentation/friends/providers/friends_view_providers.dart
 import 'package:relog/presentation/friends/widgets/friend_card.dart';
 
 class FriendsScreen extends HookConsumerWidget {
-  final void Function(int friendId) onTapDetail;
+  final Future<bool> Function(int friendId) onTapDetail;
   final Future<bool> Function(bool isEdit) onTapWrite;
 
   const FriendsScreen({
@@ -135,11 +135,10 @@ class FriendsScreen extends HookConsumerWidget {
                               splashColor: Colors.transparent,
                               highlightColor: Colors.transparent,
                               onTap: () async {
-                                onTapDetail(friend.id);
-
-                                // TODO: 친구 삭제 시 refresh
-                                // final isDeleted = await onTapChatDetail(friend.id);
-                                // if (isDeleted) await viewModel.loadFriends();
+                                final refresh = await onTapDetail(friend.id);
+                                if (refresh) {
+                                  await vm.loadFriends();
+                                }
                               },
                               child: FriendCard(friend: friend),
                             ),
