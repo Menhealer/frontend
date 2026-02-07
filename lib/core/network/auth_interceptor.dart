@@ -44,6 +44,7 @@ class AuthInterceptor extends Interceptor {
       );
     }
 
+    print('‼️‼️ 401 error - access token');
     try {
       final refreshToken = await storage.read('refreshToken');
       if (refreshToken == null) {
@@ -55,7 +56,10 @@ class AuthInterceptor extends Interceptor {
 
       Response refreshRes;
       try {
-        refreshRes = await refreshDio.post(endpoint, data: refreshToken);
+        final requestBody = {
+          "refreshToken": refreshToken,
+        };
+        refreshRes = await refreshDio.post(endpoint, data: requestBody);
       } on DioException catch (e) {
         if (e.response?.statusCode == HttpStatusCode.unauthorized.code) {
           await forceLogout('로그인이 만료됐어요');
@@ -75,7 +79,8 @@ class AuthInterceptor extends Interceptor {
 
       final retryResponse = await refreshDio.fetch(req);
       handler.resolve(retryResponse);
-    } catch (_) {
+    } catch (e) {
+      print('‼️‼️ $e');
       await forceLogout('인증 갱신에 실패했어요');
     }
   }

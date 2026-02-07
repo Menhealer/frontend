@@ -11,17 +11,18 @@ import 'package:relog/core/presentation/widgets/buttons/picker_field.dart';
 import 'package:relog/core/presentation/widgets/inputs/custom_text_field.dart';
 import 'package:relog/core/presentation/widgets/picker/date_picker.dart';
 import 'package:relog/core/utils/number_format.dart';
-import 'package:relog/domain/presents/enum/present_tag.dart';
-import 'package:relog/domain/presents/present.dart';
-import 'package:relog/presentation/presents/widgets/selectable_chip_row.dart';
+import 'package:relog/domain/gifts/enum/direction.dart';
+import 'package:relog/domain/gifts/enum/gift_type.dart';
+import 'package:relog/domain/gifts/gift_detail.dart';
+import 'package:relog/presentation/gifts/widgets/selectable_chip_row.dart';
 
-class PresentWriteScreen extends HookConsumerWidget {
+class GiftWriteScreen extends HookConsumerWidget {
   final bool isEdit;
   final String friendName;
-  final Present? info;
-  final Future<String?> Function() onTapSearchFriend;
+  final GiftDetail? info;
+  final Future<Map<String, dynamic>?> Function() onTapSearchFriend;
 
-  const PresentWriteScreen({
+  const GiftWriteScreen({
     super.key,
     required this.isEdit,
     required this.friendName,
@@ -33,21 +34,24 @@ class PresentWriteScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedFriendName = useState<String>(friendName);
 
-    final selectedTag = useState<PresentTag?>(
-        isEdit ? info!.tag : null
+    final selectedTag = useState<GiftType?>(
+        isEdit ? info!.giftType : null
     );
-    final selectedDirection = useState<PresentDirection?>(
-        isEdit ? info!.isGive : null
+    final selectedDirection = useState<Direction?>(
+        isEdit ? info!.direction : null
     );
 
     final year = useState<int?>(
-        isEdit ? info!.date.year : null
+      null
+        // isEdit ? info!.date.year : null
     );
     final month = useState<int?>(
-        isEdit ? info!.date.month : null
+      null
+        // isEdit ? info!.date.month : null
     );
     final day = useState<int?>(
-        isEdit ? info!.date.day : null
+      null
+        // isEdit ? info!.date.day : null
     );
 
     final priceController = useTextEditingController(
@@ -56,7 +60,7 @@ class PresentWriteScreen extends HookConsumerWidget {
     useListenable(priceController);
 
     final infoController = useTextEditingController(
-      text: isEdit ? info!.info : null,
+      text: isEdit ? info!.description : null,
     );
     useListenable(infoController);
 
@@ -92,13 +96,13 @@ class PresentWriteScreen extends HookConsumerWidget {
       ? true
       : (
           selectedFriendName.value.trim() != friendName.trim() ||
-          selectedTag.value != info!.tag ||
-          selectedDirection.value != info!.isGive ||
-          year.value != info!.date.year ||
-          month.value != info!.date.month ||
-          day.value != info!.date.day ||
+          selectedTag.value != info!.giftType ||
+          selectedDirection.value != info!.direction ||
+          // year.value != info!.date.year ||
+          // month.value != info!.date.month ||
+          // day.value != info!.date.day ||
           currentPrice != info!.price ||
-          infoController.text.trim() != (info!.info ?? '').trim()
+          infoController.text.trim() != (info!.description ?? '').trim()
         );
 
     final isEditEnabled = isWriteEnabled && isDirty;
@@ -136,9 +140,11 @@ class PresentWriteScreen extends HookConsumerWidget {
                     valueText: selectedFriendName.value.isEmpty ? null : selectedFriendName.value,
                     onTap: () async {
                       final result = await onTapSearchFriend();
-
                       if (result == null) return;
-                      selectedFriendName.value = result;
+
+                      final int friendId = result['id'];
+                      final String friendName = result['name'];
+                      selectedFriendName.value = friendName;
                     },
                   ),
                   const SizedBox(height: 24,),
@@ -148,15 +154,15 @@ class PresentWriteScreen extends HookConsumerWidget {
                   const SizedBox(height: 16,),
 
                   SelectableChipRow(
-                    items: PresentTag.values,
+                    items: GiftType.values,
                     selected: selectedTag.value,
                     labelBuilder: (t) => t.label,
                     onSelected: (t) => selectedTag.value = t,
                   ),
                   const SizedBox(height: 16,),
 
-                  SelectableChipRow<PresentDirection>(
-                    items: PresentDirection.values,
+                  SelectableChipRow<Direction>(
+                    items: Direction.values,
                     selected: selectedDirection.value,
                     labelBuilder: (d) => d.label,
                     onSelected: (d) => selectedDirection.value = d,
