@@ -14,8 +14,6 @@ class FriendWriteViewModel extends Notifier<FriendWriteState> {
   late final FriendWriteUseCase _writeFriendUseCase;
   late final FriendEditUseCase _friendEditUseCase;
 
-  bool _initialized = false;
-
   @override
   FriendWriteState build() {
     _writeFriendUseCase = ref.read(friendWriteUseCaseProvider);
@@ -39,19 +37,34 @@ class FriendWriteViewModel extends Notifier<FriendWriteState> {
     required bool isEdit,
     Friend? friend,
   }) {
-    if (_initialized) return;
-    _initialized = true;
-
     final now = DateTime.now();
 
     if (!isEdit || friend == null) {
-      state = state.copyWith(isEdit: false);
+      if (!state.isEdit && state.friendId == null) return;
+
+      state = state.copyWith(
+        isEdit: false,
+        friendId: null,
+        name: '',
+        group: '',
+        birthdayEnabled: false,
+        year: now.year,
+        month: now.month,
+        day: now.day,
+        originalName: null,
+        originalGroup: null,
+        originalBirthday: null,
+        errorMessage: null,
+        isLoading: false,
+      );
       return;
     }
 
-    final birthday = friend.birthday != null
-        ? DateTime.tryParse(friend.birthday!)
-        : null;
+    if (state.isEdit && state.friendId == friend.id) return;
+
+    final birthday = (friend.birthday == null || friend.birthday!.trim().isEmpty)
+        ? null
+        : DateTime.tryParse(friend.birthday!.trim());
 
     state = state.copyWith(
       isEdit: true,
@@ -65,6 +78,8 @@ class FriendWriteViewModel extends Notifier<FriendWriteState> {
       originalName: friend.name,
       originalGroup: friend.group,
       originalBirthday: friend.birthday,
+      errorMessage: null,
+      isLoading: false,
     );
   }
 
@@ -120,16 +135,18 @@ class FriendWriteViewModel extends Notifier<FriendWriteState> {
           group: state.trimmedGroup.isEmpty ? '' : state.trimmedGroup,
           birthday: state.birthdayYmd,
         );
+        final result = await _friendEditUseCase.execute(req, state.friendId!);
         state = state.copyWith(isLoading: false);
-        return await _friendEditUseCase.execute(req, state.friendId!);
+        return result;
       } else {
         final req = FriendWriteRequest(
           name: state.trimmedName,
           group: state.trimmedGroup.isEmpty ? null : state.trimmedGroup,
           birthday: state.birthdayYmd,
         );
+        final result = await _writeFriendUseCase.execute(req);
         state = state.copyWith(isLoading: false);
-        return await _writeFriendUseCase.execute(req);
+        return result;
       }
     } on ApiException catch (e) {
       state = state.copyWith(

@@ -67,7 +67,6 @@ class FriendsRepositoryImpl implements FriendsRepository {
     final endpoint = '$baseEndpoint/$friendId';
 
     try {
-      print('친구 수정: ${request.toJson().withoutNulls()}');
       final response = await _authDio.put(
         endpoint,
         data: request.toJson().withoutNulls(),

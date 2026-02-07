@@ -34,7 +34,7 @@ class FriendWriteScreen extends HookConsumerWidget {
         vm.initialize(isEdit: isEdit, friend: friendInfo);
       });
       return null;
-    }, [isEdit, friendInfo]);
+    }, [isEdit, friendInfo?.id]);
 
     final nameController = useTextEditingController(
       text: isEdit ? friendInfo!.name : null,
