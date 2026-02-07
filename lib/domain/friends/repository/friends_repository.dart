@@ -6,7 +6,8 @@ import 'package:relog/domain/friends/model/friend_write_request.dart';
 abstract class FriendsRepository {
   Future<List<Friend>> getFriends();
   Future<FriendDetail> getFriendDetail(int friendId);
-  Future<bool> friendWrite(FriendWriteRequest request);
-  Future<bool> friendEdit(FriendEditRequest request, int friendId);
+  Future<Friend?> friendWrite(FriendWriteRequest request);
+  Future<Friend?> friendEdit(FriendEditRequest request, int friendId);
   Future<bool> checkName(String name);
+  Future<bool> friendDelete(int friendId);
 }

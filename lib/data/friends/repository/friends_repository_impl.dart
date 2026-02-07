@@ -38,7 +38,7 @@ class FriendsRepositoryImpl implements FriendsRepository {
   }
 
   @override
-  Future<bool> friendWrite(FriendWriteRequest request) async {
+  Future<Friend?> friendWrite(FriendWriteRequest request) async {
     final endpoint = dotenv.get('FRIENDS_ENDPOINT');
 
     try {
@@ -46,8 +46,8 @@ class FriendsRepositoryImpl implements FriendsRepository {
         endpoint,
         data: request.toJson().withoutNulls(),
       );
-      if (response.statusCode == HttpStatusCode.created.code) return true;
-      return false;
+      if (response.statusCode == HttpStatusCode.created.code) return Friend.fromJson(response.data);
+      return null;
     } on DioException catch (e) {
       if (e.error is ApiException) {
         throw e.error!;
@@ -62,7 +62,7 @@ class FriendsRepositoryImpl implements FriendsRepository {
   }
 
   @override
-  Future<bool> friendEdit(FriendEditRequest request, int friendId) async {
+  Future<Friend?> friendEdit(FriendEditRequest request, int friendId) async {
     final baseEndpoint = dotenv.get('FRIENDS_ENDPOINT');
     final endpoint = '$baseEndpoint/$friendId';
 
@@ -72,8 +72,9 @@ class FriendsRepositoryImpl implements FriendsRepository {
         endpoint,
         data: request.toJson().withoutNulls(),
       );
-      if (response.statusCode == HttpStatusCode.ok.code) return true;
-      return false;
+
+      if (response.statusCode == HttpStatusCode.ok.code) return Friend.fromJson(response.data);
+      return null;
     } on DioException catch (e) {
       if (e.error is ApiException) {
         throw e.error!;
@@ -128,6 +129,28 @@ class FriendsRepositoryImpl implements FriendsRepository {
       }
       throw ApiException(
         '친구 정보를 불러오는 데 실패했어요',
+        statusCode: e.response?.statusCode,
+      );
+    } catch (e) {
+      throw ApiException('알 수 없는 오류가 발생했어요');
+    }
+  }
+
+  @override
+  Future<bool> friendDelete(int friendId) async {
+    final baseEndpoint = dotenv.get('FRIENDS_ENDPOINT');
+    final endpoint = '$baseEndpoint/$friendId';
+
+    try {
+      final response = await _authDio.delete(endpoint);
+      if (response.statusCode == HttpStatusCode.ok.code) return true;
+      return false;
+    } on DioException catch (e) {
+      if (e.error is ApiException) {
+        throw e.error!;
+      }
+      throw ApiException(
+        '친구 정보를 삭제하는 데 실패했어요',
         statusCode: e.response?.statusCode,
       );
     } catch (e) {

@@ -1,11 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:relog/core/exception/api_exception.dart';
+import 'package:relog/domain/friends/use_case/friend_delete_use_case.dart';
 import 'package:relog/domain/friends/use_case/get_friend_detail_use_case.dart';
 import 'package:relog/domain/friends/use_case/providers/friends_use_case_providers.dart';
 import 'package:relog/presentation/friends/detail/friend_detail_state.dart';
 
 class FriendDetailViewModel extends Notifier<FriendDetailState> {
   late final GetFriendDetailUseCase _getFriendDetailUseCase;
+  late final FriendDeleteUseCase _friendDeleteUseCase;
 
   int? _loadedFriendId;
   int? _loadingFriendId;
@@ -13,6 +15,7 @@ class FriendDetailViewModel extends Notifier<FriendDetailState> {
   @override
   FriendDetailState build() {
     _getFriendDetailUseCase = ref.read(getFriendDetailUseCaseProvider);
+    _friendDeleteUseCase = ref.read(friendDeleteUseCaseProvider);
     return FriendDetailState(isLoading: false);
   }
 
@@ -51,5 +54,20 @@ class FriendDetailViewModel extends Notifier<FriendDetailState> {
   void clearCache() {
     _loadedFriendId = null;
     _loadingFriendId = null;
+  }
+
+  Future<bool> friendDelete(int friendId) async {
+    try {
+      return await _friendDeleteUseCase.execute(friendId);
+    } on ApiException catch (e) {
+      state = state.copyWith(isLoading: false, errorMessage: e.message);
+      return false;
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: "친구 삭제 중\n알 수 없는 오류가 발생했습니다.",
+      );
+      return false;
+    }
   }
 }

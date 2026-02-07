@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:relog/core/presentation/styles/color_styles.dart';
@@ -24,7 +25,7 @@ class FriendDetailScreen extends HookConsumerWidget {
   final VoidCallback onTapSummary;
   final void Function(int id) onTapPresent;
   final void Function(int id) onTapEventDetail;
-  final Future<bool> Function(bool isEdit, Friend friendInfo) onTapEdit;
+  final Future<Friend?> Function(bool isEdit, Friend friendInfo) onTapEdit;
 
   const FriendDetailScreen({
     super.key,
@@ -110,8 +111,9 @@ class FriendDetailScreen extends HookConsumerWidget {
                 ActionSheetItem(
                   label: '친구 정보 수정',
                   onTap: () async {
-                    final refresh = await onTapEdit(true, friend);
-                    if (refresh) {
+                    final updated = await onTapEdit(true, friend);
+                    if (updated != null) {
+                      ref.read(friendsViewModelProvider.notifier).upsertFriend(updated);
                       await vm.loadFriend(friendId, force: true);
                     }
                   }
@@ -136,8 +138,9 @@ class FriendDetailScreen extends HookConsumerWidget {
                             text: '삭제',
                             style: DialogActionStyle.destructive,
                             isDefaultAction: true,
-                            onPressed: () {
-                              // TODO: 삭제 로직
+                            onPressed: () async {
+                              final ok = await vm.friendDelete(friendId);
+                              if (ok && context.mounted) context.pop(true);
                             },
                           ),
                         ],

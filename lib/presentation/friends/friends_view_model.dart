@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:relog/core/exception/api_exception.dart';
+import 'package:relog/domain/friends/model/friend.dart';
 import 'package:relog/domain/friends/use_case/get_friends_use_case.dart';
 import 'package:relog/domain/friends/use_case/providers/friends_use_case_providers.dart';
 import 'package:relog/presentation/friends/friends_state.dart';
@@ -28,5 +29,14 @@ class FriendsViewModel extends Notifier<FriendsState> {
         errorMessage: "친구 목록을 불러오는 중\n알 수 없는 오류가 발생했습니다.",
       );
     }
+  }
+
+  void upsertFriend(Friend updated) {
+    final list = state.friends;
+    final next = [
+      for (final f in list)
+        if (f.id == updated.id) updated else f
+    ];
+    state = state.copyWith(friends: next);
   }
 }
