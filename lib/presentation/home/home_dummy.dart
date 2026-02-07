@@ -23,14 +23,14 @@ final bestDummy = [
     id: 1,
     name: '햄스터',
     group: '동아리',
-    birthday: DateTime(2024, 10, 12),
+    birthday: '2003-10-12',
     info: '지금의 관계 흐름을 유지해요',
   ),
   Friendship(
     id: 2,
     name: '고양이',
     group: null,
-    birthday: DateTime(2024, 1, 15),
+    birthday: '2003-1-15',
     info: '만남 빈도를 조금 늘려봐요',
   ),
 ];

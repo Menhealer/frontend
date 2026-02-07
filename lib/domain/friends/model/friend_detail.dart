@@ -6,7 +6,7 @@ class FriendDetail {
   final String name;
   final int score;
   final String? group;
-  final DateTime? birthday;
+  final String? birthday;
   final List<Event>? eventList;
   final List<Present>? presentList;
 

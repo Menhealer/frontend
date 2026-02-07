@@ -7,13 +7,12 @@ import 'package:relog/core/presentation/styles/text_styles.dart';
 import 'package:relog/core/presentation/widgets/app_bar/default_app_bar.dart';
 import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
 import 'package:relog/core/presentation/widgets/inputs/search_text_field.dart';
-import 'package:relog/domain/friends/model/friend.dart';
 import 'package:relog/presentation/friends/providers/friends_view_providers.dart';
 import 'package:relog/presentation/friends/widgets/friend_card.dart';
 
 class FriendsScreen extends HookConsumerWidget {
   final void Function(int id) onTapDetail;
-  final void Function(bool isEdit) onTapWrite;
+  final Future<bool> Function(bool isEdit) onTapWrite;
 
   const FriendsScreen({
     super.key,
@@ -53,7 +52,7 @@ class FriendsScreen extends HookConsumerWidget {
             context: context,
             barrierDismissible: true, // 바깥 터치 시 다이얼로그 닫힘
             builder: (_) => CustomDialog(
-              title: '친구 오류',
+              title: '친구 페이지 오류',
               content: state.errorMessage!,
               actions: [
                 CustomDialogAction(
@@ -87,7 +86,12 @@ class FriendsScreen extends HookConsumerWidget {
         title: '친구',
         showBackButton: false,
         trailing: IconButton(
-          onPressed: () => onTapWrite(false),
+          onPressed: () async {
+            final refresh = await onTapWrite(false);
+            if (refresh) {
+              await vm.loadFriends();
+            }
+          },
           icon: Icon(
             Icons.add,
             color: ColorStyles.grayD3,

@@ -1,14 +1,18 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/styles/text_styles.dart';
 import 'package:relog/core/presentation/widgets/app_bar/default_app_bar.dart';
 import 'package:relog/core/presentation/widgets/buttons/app_bar_done_button.dart';
 import 'package:relog/core/presentation/widgets/buttons/picker_field.dart';
+import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
 import 'package:relog/core/presentation/widgets/inputs/custom_text_field.dart';
-import 'package:relog/core/presentation/widgets/picker/birthday_picker.dart';
+import 'package:relog/core/presentation/widgets/picker/date_picker.dart';
 import 'package:relog/domain/friends/model/friend_edit.dart';
+import 'package:relog/presentation/friends/providers/friends_view_providers.dart';
 
 class FriendWriteScreen extends HookConsumerWidget {
   final bool isEdit;
@@ -22,6 +26,16 @@ class FriendWriteScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(friendWriteViewModelProvider);
+    final vm = ref.read(friendWriteViewModelProvider.notifier);
+
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        vm.initialize(isEdit: isEdit, friend: friendInfo);
+      });
+      return null;
+    }, [isEdit, friendInfo]);
+
     final nameController = useTextEditingController(
       text: isEdit ? friendInfo!.name : null,
     );
@@ -32,45 +46,40 @@ class FriendWriteScreen extends HookConsumerWidget {
     );
     useListenable(groupController);
 
-    final month = useState<int?>(
-      isEdit ? friendInfo!.birthday?.month : null
-    );
-    final day = useState<int?>(
-      isEdit ? friendInfo!.birthday?.day : null
-    );
+    // 오류
+    useEffect(() {
+      if (state.errorMessage != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showCupertinoDialog(
+            context: context,
+            barrierDismissible: true, // 바깥 터치 시 다이얼로그 닫힘
+            builder: (_) => CustomDialog(
+              title: '친구 등록 오류',
+              content: state.errorMessage!,
+              actions: [
+                CustomDialogAction(
+                  text: '확인',
+                  style: DialogActionStyle.normal,
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          );
+        });
+      }
+      return null;
+    }, [state.errorMessage]);
 
-    // 생일 선택 picker call back
-    final openPicker = useCallback(() async {
-      final result = await showBirthdayPicker(
-        context,
-        initialMonth: month.value ?? DateTime.now().month,
-        initialDay: day.value ?? DateTime.now().day,
+    // 로딩 상태 표시
+    if (state.isLoading) {
+      return Scaffold(
+        backgroundColor: ColorStyles.black22,
+        body: SafeArea(
+          child: Center(
+            child: CircularProgressIndicator(color: ColorStyles.grayD3,),
+          ),
+        ),
       );
-      if (result == null) return;
-      month.value = result.month;
-      day.value = result.day;
-    }, [context, month.value, day.value]);
-
-    // 작성 버튼 활성화 조건
-    final trimmedName = nameController.text.trim();
-    final isWriteValid = trimmedName.isNotEmpty;
-
-    // 수정 버튼 활성화 조건
-    bool isEditValid = false;
-    if (isEdit && friendInfo != null) {
-      final isNameChanged = trimmedName != friendInfo!.name;
-      final isNameValid = trimmedName.isNotEmpty;
-
-      final currentGroup = groupController.text.trim();
-      final originalGroup = friendInfo!.group?.trim() ?? '';
-      final isGroupChanged = currentGroup != originalGroup;
-
-      final isDirty = isNameChanged ||
-          isGroupChanged ||
-          month.value != friendInfo!.birthday?.month ||
-          day.value != friendInfo!.birthday?.day;
-
-      isEditValid = isDirty && isNameValid;
     }
 
     return Scaffold(
@@ -79,9 +88,11 @@ class FriendWriteScreen extends HookConsumerWidget {
         title: isEdit ? '친구 수정' : '친구 등록',
         defaultBackButtonIcon: false,
         trailing: AppBarDoneButton(
-          enabled: isEdit ? isEditValid : isWriteValid,
-          onTap: () {
-            // TODO: 친구 등록 API || 친구 수정 API
+          enabled: state.canSubmit,
+          onTap: () async {
+            if (state.isLoading) return;
+            final ok = await vm.submit();
+            if (ok && context.mounted) context.pop(true);
           },
         ),
       ),
@@ -101,7 +112,9 @@ class FriendWriteScreen extends HookConsumerWidget {
                 const SizedBox(height: 16,),
                 CustomTextField(
                   controller: nameController,
-                  hintText: '이름을 입력해 주세요',
+                  hintText: '최대 10글자 입력 가능해요',
+                  maxLength: 10,
+                  onChanged: vm.onNameChanged,
                 ),
                 const SizedBox(height: 24,),
 
@@ -111,6 +124,7 @@ class FriendWriteScreen extends HookConsumerWidget {
                 CustomTextField(
                   controller: groupController,
                   hintText: '단체를 입력해 주세요',
+                  onChanged: vm.onGroupChanged,
                 ),
                 const SizedBox(height: 24,),
 
@@ -119,10 +133,24 @@ class FriendWriteScreen extends HookConsumerWidget {
                 const SizedBox(height: 16,),
                 PickerField(
                   placeholder: '생일을 선택해 주세요',
-                  valueText: (month.value == null || day.value == null)
+                  valueText: !state.birthdayEnabled
                       ? '생일을 선택해 주세요'
-                      : '${month.value}월 ${day.value}일',
-                  onTap: openPicker,
+                      : '${state.year}년 ${state.month}월 ${state.day}일',
+                  onTap: () async {
+                    final result = await showYmdPicker(
+                      context,
+                      initialYear: state.year,
+                      initialMonth: state.month,
+                      initialDay: state.day,
+                    );
+                    if (result != null) {
+                      vm.onBirthdayPicked(
+                        year: result.year,
+                        month: result.month,
+                        day: result.day,
+                      );
+                    }
+                  },
                 ),
               ],
             ),
