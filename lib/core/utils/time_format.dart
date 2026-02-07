@@ -2,7 +2,10 @@ String formatPeriodDate(DateTime date) {
   return '${date.year}. ${date.month}. ${date.day}.';
 }
 
-String formatBirthday(DateTime date) {
+String formatBirthday(String birthday) {
+  final date = DateTime.tryParse(birthday);
+  if (date == null) return '';
+
   return '${date.month}월 ${date.day}일';
 }
 

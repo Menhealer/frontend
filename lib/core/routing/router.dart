@@ -302,14 +302,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                       extra: id,
                     );
                   },
-                  onTapWrite: (isEdit) {
-                    context.push(
+                  onTapWrite: (isEdit) async {
+                    final refresh = await context.push<bool>(
                       RoutePaths.friends + RoutePaths.friendWrite,
                       extra: {
                         'isEdit': false,
                         'friendInfo': null,
                       },
                     );
+                    return refresh ?? false;
                   },
                 ),
                 routes: [

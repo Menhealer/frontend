@@ -2,7 +2,7 @@ class FriendEdit {
   final int id;
   final String name;
   final String? group;
-  final DateTime? birthday;
+  final String? birthday;
 
   FriendEdit({
     required this.id,
