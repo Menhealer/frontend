@@ -9,6 +9,8 @@ abstract class Friend with _$Friend {
     required int id,
     required String name,
     required int score,
+    String? group,
+    String? birthday,
   }) = _Friend;
 
   factory Friend.fromJson(Map<String, dynamic> json) =>

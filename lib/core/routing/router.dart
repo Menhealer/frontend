@@ -5,9 +5,9 @@ import 'package:relog/core/routing/route_paths.dart';
 import 'package:relog/core/storage/providers/user_session_provider.dart';
 import 'package:relog/domain/auth/model/login_request.dart';
 import 'package:relog/domain/auth/model/user.dart';
-import 'package:relog/domain/event.dart';
-import 'package:relog/domain/friends/model/friend_edit.dart';
-import 'package:relog/domain/presents/present.dart';
+import 'package:relog/domain/event/model/event_detail.dart';
+import 'package:relog/domain/friends/model/friend.dart';
+import 'package:relog/domain/gifts/gift_detail.dart';
 import 'package:relog/presentation/calendar/calendar_screen.dart';
 import 'package:relog/presentation/calendar/detail/calendar_detail_screen.dart';
 import 'package:relog/presentation/calendar/write/calendar_write_screen.dart';
@@ -21,8 +21,8 @@ import 'package:relog/presentation/home/home_screen.dart';
 import 'package:relog/presentation/my_page/edit/profile_edit_screen.dart';
 import 'package:relog/presentation/my_page/my_page_screen.dart';
 import 'package:relog/presentation/navigation/bottom_navigation.dart';
-import 'package:relog/presentation/presents/presents_screen.dart';
-import 'package:relog/presentation/presents/write/present_write_screen.dart';
+import 'package:relog/presentation/gifts/gifts_screen.dart';
+import 'package:relog/presentation/gifts/write/gift_write_screen.dart';
 import 'package:relog/presentation/sign_in/sign_in_screen.dart';
 import 'package:relog/presentation/sign_up/sign_up_screen.dart';
 import 'package:relog/presentation/splash/splash_screen.dart';
@@ -123,7 +123,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: RoutePaths.presents,
         builder: (context, state) {
           final id = state.extra as int;
-          return PresentsScreen(
+          return GiftsScreen(
             id: id,
             onTapWrite: (isEdit, friendName) {
               context.push(
@@ -153,14 +153,14 @@ final routerProvider = Provider<GoRouter>((ref) {
               final extra = state.extra as Map<String, dynamic>?;
               final bool isEdit = extra?['isEdit'] ?? false;
               final String friendName = extra?['friendName'] ?? '';
-              final Present? info = extra?['info'] as Present?;
+              final GiftDetail? info = extra?['info'] as GiftDetail?;
 
-              return PresentWriteScreen(
+              return GiftWriteScreen(
                 isEdit: isEdit,
                 friendName: friendName,
                 info: info,
                 onTapSearchFriend: () async {
-                  final result = await context.push<String>(
+                  final result = await context.push<Map<String, dynamic>>(
                     RoutePaths.selectFriend,
                   );
                   return result;
@@ -207,10 +207,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: RoutePaths.friendship,
                     builder: (context, state) => FriendshipScreen(
-                      onTapFriendDetail: (id) {
+                      onTapFriendDetail: (friendId) {
                         context.push(
                           RoutePaths.friends + RoutePaths.friendDetail,
-                          extra: id,
+                          extra: friendId,
                         );
                       },
                     ),
@@ -253,14 +253,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                       final extra = state.extra as Map<String, dynamic>?;
                       final bool isEdit = extra?['isEdit'] ?? false;
                       final DateTime? date = extra?['date'] as DateTime?;
-                      final Event? event = extra?['event'] as Event?;
+                      final EventDetail? event = extra?['event'] as EventDetail?;
 
                       return CalendarWriteScreen(
                         isEdit: isEdit,
                         date: date,
                         event: event,
                         onTapSearchFriend: () async {
-                          final result = await context.push<String>(
+                          final result = await context.push<Map<String, dynamic>>(
                             RoutePaths.selectFriend,
                           );
                           return result;
@@ -296,10 +296,10 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: RoutePaths.friends,
                 builder: (context, state) => FriendsScreen(
-                  onTapDetail: (id) {
+                  onTapDetail: (friendId) {
                     context.push(
                       RoutePaths.friends + RoutePaths.friendDetail,
-                      extra: id,
+                      extra: friendId,
                     );
                   },
                   onTapWrite: (isEdit) async {
@@ -319,7 +319,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                     builder: (context, state) {
                       final extra = state.extra as Map<String, dynamic>?;
                       final bool isEdit = extra?['isEdit'] ?? false;
-                      final FriendEdit? friendInfo = extra?['friendInfo'] as FriendEdit?;
+                      final Friend? friendInfo = extra?['friendInfo'] as Friend?;
 
                       return FriendWriteScreen(
                         isEdit: isEdit,
@@ -330,9 +330,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: RoutePaths.friendDetail,
                     builder: (context, state) {
-                      final id = state.extra as int;
+                      final friendId = state.extra as int;
                       return FriendDetailScreen(
-                        id: id,
+                        friendId: friendId,
                         onTapSummary: () {
                           context.push(
                             RoutePaths.friends + RoutePaths.friendDetail + RoutePaths.friendSummary,
@@ -350,14 +350,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                             extra: id,
                           );
                         },
-                        onTapEdit: (isEdit, friendInfo) {
-                          context.push(
+                        onTapEdit: (isEdit, friendInfo) async {
+                          final refresh = await context.push<bool>(
                             RoutePaths.friends + RoutePaths.friendWrite,
                             extra: {
                               'isEdit': isEdit,
                               'friendInfo': friendInfo,
                             },
                           );
+                          return refresh ?? false;
                         },
                       );
                     },

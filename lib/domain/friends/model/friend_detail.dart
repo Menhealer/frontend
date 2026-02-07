@@ -1,22 +1,19 @@
-import 'package:relog/domain/event.dart';
-import 'package:relog/domain/presents/present.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:relog/domain/event/model/event.dart';
+import 'package:relog/domain/friends/model/friend.dart';
+import 'package:relog/domain/gifts/gift.dart';
 
-class FriendDetail {
-  final int id;
-  final String name;
-  final int score;
-  final String? group;
-  final String? birthday;
-  final List<Event>? eventList;
-  final List<Present>? presentList;
+part 'friend_detail.freezed.dart';
+part 'friend_detail.g.dart';
 
-  FriendDetail({
-    required this.id,
-    required this.name,
-    required this.score,
-    this.group,
-    this.birthday,
-    this.eventList,
-    this.presentList,
-  });
+@freezed
+abstract class FriendDetail with _$FriendDetail {
+  const factory FriendDetail({
+    required Friend friend,
+    List<Event>? recentEvents,
+    List<Gift>? giftHistory,
+  }) = _FriendDetail;
+
+  factory FriendDetail.fromJson(Map<String, dynamic> json) =>
+      _$FriendDetailFromJson(json);
 }

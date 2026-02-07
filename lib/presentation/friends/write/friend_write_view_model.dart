@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:relog/core/exception/api_exception.dart';
-import 'package:relog/domain/friends/model/friend_edit.dart';
+import 'package:relog/domain/friends/model/friend.dart';
+import 'package:relog/domain/friends/model/friend_edit_request.dart';
 import 'package:relog/domain/friends/model/friend_write_request.dart';
 import 'package:relog/domain/friends/use_case/friend_edit_use_case.dart';
 import 'package:relog/domain/friends/use_case/friend_name_check_use_case.dart';
@@ -36,7 +37,7 @@ class FriendWriteViewModel extends Notifier<FriendWriteState> {
 
   void initialize({
     required bool isEdit,
-    FriendEdit? friend,
+    Friend? friend,
   }) {
     if (_initialized) return;
     _initialized = true;
@@ -98,36 +99,37 @@ class FriendWriteViewModel extends Notifier<FriendWriteState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
-      final duplicate = await _friendNameCheckUseCase.execute(state.trimmedName);
-      if (duplicate) {
-        state = state.copyWith(
-          isLoading: false,
-          errorMessage: '이미 등록된 친구 이름이에요\n다른 이름으로 입력해 주세요',
-        );
-        return false;
+      final nameChanged = state.isEdit
+          ? state.trimmedName != (state.originalName ?? '')
+          : true;
+
+      if (nameChanged) {
+        final duplicate = await _friendNameCheckUseCase.execute(state.trimmedName);
+        if (duplicate) {
+          state = state.copyWith(
+            isLoading: false,
+            errorMessage: '이미 등록된 친구 이름이에요\n다른 이름으로 입력해 주세요',
+          );
+          return false;
+        }
       }
 
       if (state.isEdit) {
-        await _friendEditUseCase.execute(
-          FriendWriteRequest(
-            name: state.trimmedName,
-            group: state.trimmedGroup.isEmpty
-                ? null
-                : state.trimmedGroup,
-            birthday: state.birthdayYmd,
-          ),
-          state.friendId!,
+        final req = FriendEditRequest(
+          name: nameChanged ? state.trimmedName : null,
+          group: state.trimmedGroup.isEmpty ? null : state.trimmedGroup,
+          birthday: state.birthdayYmd,
         );
+
+        await _friendEditUseCase.execute(req, state.friendId!);
       } else {
-        await _writeFriendUseCase.execute(
-          FriendWriteRequest(
-            name: state.trimmedName,
-            group: state.trimmedGroup.isEmpty
-                ? null
-                : state.trimmedGroup,
-            birthday: state.birthdayYmd,
-          ),
+        final req = FriendWriteRequest(
+          name: state.trimmedName,
+          group: state.trimmedGroup.isEmpty ? null : state.trimmedGroup,
+          birthday: state.birthdayYmd,
         );
+
+        await _writeFriendUseCase.execute(req);
       }
 
       state = state.copyWith(isLoading: false);

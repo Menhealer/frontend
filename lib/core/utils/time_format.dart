@@ -1,4 +1,7 @@
-String formatPeriodDate(DateTime date) {
+String formatPeriodDate(String day) {
+  final date = DateTime.tryParse(day);
+  if (date == null) return '';
+
   return '${date.year}. ${date.month}. ${date.day}.';
 }
 
