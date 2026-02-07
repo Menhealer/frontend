@@ -1,9 +1,13 @@
+import 'package:relog/core/utils/time_format.dart';
+
 class FriendWriteState {
   final bool isLoading;
   final String? errorMessage;
 
   // mode
   final bool isEdit;
+
+  final int? friendId;
 
   // form fields
   final String name;
@@ -19,9 +23,10 @@ class FriendWriteState {
   final String? originalGroup;
   final String? originalBirthday;
 
-  FriendWriteState({
+  const FriendWriteState({
     required this.isLoading,
     required this.isEdit,
+    this.friendId,
     required this.name,
     required this.group,
     required this.birthdayEnabled,
@@ -37,9 +42,7 @@ class FriendWriteState {
   // yyyy-MM-dd
   String? get birthdayYmd {
     if (!birthdayEnabled) return null;
-    return '${year.toString().padLeft(4, '0')}-'
-        '${month.toString().padLeft(2, '0')}-'
-        '${day.toString().padLeft(2, '0')}';
+    return formatIntBirthday(year, month, day);
   }
 
   String get trimmedName => name.trim();
@@ -68,6 +71,7 @@ class FriendWriteState {
   FriendWriteState copyWith({
     bool? isLoading,
     bool? isEdit,
+    int? friendId,
     String? name,
     String? group,
     bool? birthdayEnabled,
@@ -82,6 +86,7 @@ class FriendWriteState {
     return FriendWriteState(
       isLoading: isLoading ?? this.isLoading,
       isEdit: isEdit ?? this.isEdit,
+      friendId: friendId ?? this.friendId,
       name: name ?? this.name,
       group: group ?? this.group,
       birthdayEnabled: birthdayEnabled ?? this.birthdayEnabled,

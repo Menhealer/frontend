@@ -36,7 +36,7 @@ class FriendsRepositoryImpl implements FriendsRepository {
   }
 
   @override
-  Future<bool> writeFriend(FriendWriteRequest request) async {
+  Future<bool> friendWrite(FriendWriteRequest request) async {
     final endpoint = dotenv.get('FRIENDS_ENDPOINT');
 
     try {
@@ -52,6 +52,31 @@ class FriendsRepositoryImpl implements FriendsRepository {
       }
       throw ApiException(
         '친구 등록에 실패했어요',
+        statusCode: e.response?.statusCode,
+      );
+    } catch (e) {
+      throw ApiException('알 수 없는 오류가 발생했어요');
+    }
+  }
+
+  @override
+  Future<bool> friendEdit(FriendWriteRequest request, int friendId) async {
+    final baseEndpoint = dotenv.get('FRIENDS_ENDPOINT');
+    final endpoint = '$baseEndpoint/$friendId';
+
+    try {
+      final response = await _authDio.put(
+        endpoint,
+        data: request.toJson().withoutNulls(),
+      );
+      if (response.statusCode == HttpStatusCode.ok.code) return true;
+      return false;
+    } on DioException catch (e) {
+      if (e.error is ApiException) {
+        throw e.error!;
+      }
+      throw ApiException(
+        '정보 수정에 실패했어요',
         statusCode: e.response?.statusCode,
       );
     } catch (e) {
