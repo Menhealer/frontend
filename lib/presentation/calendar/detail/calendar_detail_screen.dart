@@ -9,12 +9,12 @@ import 'package:relog/core/presentation/widgets/app_bar/default_app_bar.dart';
 import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
 import 'package:relog/core/utils/color_mapping.dart';
 import 'package:relog/core/utils/time_format.dart';
-import 'package:relog/domain/event.dart';
+import 'package:relog/domain/event/model/event_detail.dart';
 import 'package:relog/presentation/calendar/calendar_dummy.dart';
 
 class CalendarDetailScreen extends HookConsumerWidget {
   final int id;
-  final void Function(bool isEdit, Event event) onTapEdit;
+  final void Function(bool isEdit, EventDetail event) onTapEdit;
 
   const CalendarDetailScreen({
     super.key,
@@ -102,7 +102,7 @@ class CalendarDetailScreen extends HookConsumerWidget {
                 TextSpan(
                   children: [
                     TextSpan(
-                      text: event.name,
+                      text: event.title,
                       style: TextStyles.normalTextBold.copyWith(
                         color: ColorStyles.purple10,
                       ),
@@ -130,7 +130,7 @@ class CalendarDetailScreen extends HookConsumerWidget {
                     ),
                   ),
                   Text(
-                    formatPeriodDate(event.date),
+                    formatPeriodDate(event.eventDate),
                     style: TextStyles.smallTextRegular.copyWith(
                       color: ColorStyles.grayA3,
                     ),
@@ -152,15 +152,14 @@ class CalendarDetailScreen extends HookConsumerWidget {
                       color: ColorStyles.grayD3,
                     ),
                   ),
-                  if (event.score != null)
-                    Container(
-                      width: 16,
-                      height: 16,
-                      decoration: BoxDecoration(
-                        color: scoreToColor(event.score),
-                        shape: BoxShape.circle,
-                      ),
+                  Container(
+                    width: 16,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      color: scoreToColor(event.reviewScore),
+                      shape: BoxShape.circle,
                     ),
+                  ),
                 ]
               ),
               const SizedBox(height: 24,),
@@ -172,10 +171,10 @@ class CalendarDetailScreen extends HookConsumerWidget {
                   color: ColorStyles.black2D,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: event.info != null
+                child: event.reviewText != null
                   ? SingleChildScrollView(
                       child: Text(
-                        event.info!,
+                        event.reviewText!,
                         style: TextStyles.normalTextRegular.copyWith(
                           color: ColorStyles.grayD3,
                         ),
@@ -192,7 +191,7 @@ class CalendarDetailScreen extends HookConsumerWidget {
                     ),
               ),
               const SizedBox(height: 8,),
-              if (event.info == null)
+              if (event.reviewText == null)
                 GestureDetector(
                   onTap: () => onTapEdit(true, event),
                   behavior: HitTestBehavior.opaque,

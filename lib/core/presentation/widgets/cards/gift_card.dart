@@ -3,26 +3,27 @@ import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/styles/text_styles.dart';
 import 'package:relog/core/utils/number_format.dart';
 import 'package:relog/core/utils/time_format.dart';
-import 'package:relog/domain/presents/enum/present_tag.dart';
-import 'package:relog/domain/presents/present.dart';
+import 'package:relog/domain/gifts/enum/direction.dart';
+import 'package:relog/domain/gifts/enum/gift_type.dart';
+import 'package:relog/domain/gifts/gift_detail.dart';
 
-class PresentCard extends StatelessWidget {
+class GiftsCard extends StatelessWidget {
   final String nickname;
-  final Present present;
+  final GiftDetail gift;
 
-  const PresentCard({
+  const GiftsCard({
     super.key,
     required this.nickname,
-    required this.present,
+    required this.gift,
   });
 
   @override
   Widget build(BuildContext context) {
-    final barColor = present.isGive == PresentDirection.sent
+    final barColor = gift.direction == Direction.GIVEN
         ? ColorStyles.red100
         : ColorStyles.green100;
 
-    final descriptionText = present.isGive == PresentDirection.sent
+    final descriptionText = gift.direction == Direction.GIVEN
         ? '$nickname님이 준 선물이에요'
         : '$nickname님이 받은 선물이에요';
 
@@ -57,14 +58,14 @@ class PresentCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            present.tag.label,
+                            gift.giftType.label,
                             style: TextStyles.smallTextBold.copyWith(
                               color: ColorStyles.grayD3,
                             ),
                           ),
                         ),
                         Text(
-                          formatPeriodDate(present.date),
+                          formatPeriodDate(gift.giftDate),
                           style: TextStyles.smallTextRegular.copyWith(
                             color: ColorStyles.grayA3,
                           ),
@@ -78,14 +79,14 @@ class PresentCard extends StatelessWidget {
                       spacing: 8,
                       children: [
                         Text(
-                          '${NumberFormatUtil.comma(present.price)}원',
+                          '${NumberFormatUtil.comma(gift.price)}원',
                           style: TextStyles.largeTextBold.copyWith(
                             color: ColorStyles.grayD3,
                           ),
                         ),
-                        if (present.info != null) ...[
+                        if (gift.description != null) ...[
                           Text(
-                            present.info!,
+                            gift.description!,
                             style: TextStyles.smallTextRegular.copyWith(
                               color: ColorStyles.grayA3,
                             ),

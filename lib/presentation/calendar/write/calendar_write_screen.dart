@@ -8,14 +8,14 @@ import 'package:relog/core/presentation/widgets/buttons/app_bar_done_button.dart
 import 'package:relog/core/presentation/widgets/buttons/picker_field.dart';
 import 'package:relog/core/presentation/widgets/inputs/custom_text_field.dart';
 import 'package:relog/core/presentation/widgets/picker/date_picker.dart';
-import 'package:relog/domain/event.dart';
+import 'package:relog/domain/event/model/event_detail.dart';
 import 'package:relog/presentation/calendar/widgets/score_radio_button.dart';
 
 class CalendarWriteScreen extends HookConsumerWidget {
   final bool isEdit;
   final DateTime? date;
-  final Event? event;
-  final Future<String?> Function() onTapSearchFriend;
+  final EventDetail? event;
+  final Future<Map<String, dynamic>?> Function() onTapSearchFriend;
 
   const CalendarWriteScreen({
     super.key,
@@ -62,7 +62,10 @@ class CalendarWriteScreen extends HookConsumerWidget {
     Future<void> pickFriend() async {
       final result = await onTapSearchFriend();
       if (result == null) return;
-      selectedFriendName.value = result;
+
+      final int friendId = result['id'];
+      final String friendName = result['name'];
+      selectedFriendName.value = friendName;
     }
 
     // 버튼 활성화 조건
@@ -250,16 +253,16 @@ class _InitialValues {
   factory _InitialValues.from({
     required bool isEdit,
     required DateTime? date,
-    required Event? event,
+    required EventDetail? event,
   }) {
     if (isEdit) {
       final e = event!;
       return _InitialValues(
-        date: DateTime(e.date.year, e.date.month, e.date.day),
-        friendName: e.name,
+        date: DateTime.tryParse(e.eventDate) ?? DateTime.now(),
+        friendName: '더미데이터',
         title: e.title,
-        info: e.info,
-        score: e.score,
+        info: e.reviewText,
+        score: e.reviewScore,
       );
     }
     final d = date ?? DateTime.now();

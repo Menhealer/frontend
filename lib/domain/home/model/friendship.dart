@@ -2,7 +2,7 @@ class Friendship {
   final int id;
   final String name;
   final String? group;
-  final DateTime? birthday;
+  final String? birthday;
   final String info;
 
   Friendship({

@@ -1,5 +1,6 @@
 import 'package:relog/domain/calendar.dart';
-import 'package:relog/domain/event.dart';
+import 'package:relog/domain/event/model/event.dart';
+import 'package:relog/domain/event/model/event_detail.dart';
 
 final Map<String, List<Calendar>> calendarDummy = {
   '2026-01-09': [
@@ -25,14 +26,14 @@ final Map<String, List<Calendar>> calendarDummy = {
   ],
 };
 
-final List<Event> dummyEventDetails = [
-  Event(id: 101, date: DateTime(2026, 1, 9), title: '전공 동아리 회식', name: '햄스터', score: 1, info: '술도 못 마시면서 술 강요하고 재미없는 말만 한다... 심지어 지각함'),
-  Event(id: 102, date: DateTime(2026, 1, 9), title: '술약속', name: '햄스터', score: 2),
-  Event(id: 103, date: DateTime(2026, 1, 12), title: '홍대 약속', name: '강아지', score: 5,),
-  Event(id: 104, date: DateTime(2026, 1, 25), title: '영화 보기', name: '강아지', score: 3),
-  Event(id: 105, date: DateTime(2026, 2, 1), title: '모각코', name: '햄스터', score: 4, info: '같이 간 카페가 매우 취향이었음'),
-  Event(id: 106, date: DateTime(2026, 2, 3), title: '프로젝트 회의', name: '강아지', score: 4, info: '대화가 잘 통함'),
-  Event(id: 108, date: DateTime(2026, 1, 9), title: '생일', name: '여우', score: 0),
-  Event(id: 109, date: DateTime(2026, 1, 25), title: '생일', name: '판다', score: 0),
-  Event(id: 110, date: DateTime(2026, 2, 18), title: '생일', name: '강아지', score: 0),
+final List<EventDetail> dummyEventDetails = [
+  EventDetail(id: 101, title: '전공 동아리 회식', eventDate: '2026-01-09', reviewScore: 1, reviewText: '술도 못 마시면서 술 강요하고 재미없는 말만 한다... 심지어 지각함', friendId: 1, friendName: '햄스터'),
+  EventDetail(id: 102, title: '전공 동아리 회식', eventDate: '2026-01-09', reviewScore: 1, friendId: 1, friendName: '햄스터'),
+  EventDetail(id: 103, title: '전공 동아리 회식', eventDate: '2026-01-12', reviewScore: 1, friendId: 5, friendName: '강아지'),
+  EventDetail(id: 104, title: '전공 동아리 회식', eventDate: '2026-01-25', reviewScore: 1, friendId: 5, friendName: '강아지'),
+  EventDetail(id: 105, title: '전공 동아리 회식', eventDate: '2026-02-01', reviewScore: 1, friendId: 6, friendName: '판다'),
+  EventDetail(id: 106, title: '전공 동아리 회식', eventDate: '2026-02-03', reviewScore: 1, reviewText: '술도 못 마시면서 술 강요하고 재미없는 말만 한다... 심지어 지각함', friendId: 5, friendName: '강아지'),
+  EventDetail(id: 108, title: '전공 동아리 회식', eventDate: '2026-01-09', reviewScore: 1, friendId: 5, friendName: '강아지'),
+  EventDetail(id: 109, title: '전공 동아리 회식', eventDate: '2026-01-25', reviewScore: 1, friendId: 6, friendName: '판다'),
+  EventDetail(id: 110, title: '전공 동아리 회식', eventDate: '2026-02-18', reviewScore: 1, reviewText: '술도 못 마시면서 술 강요하고 재미없는 말만 한다... 심지어 지각함', friendId: 5, friendName: '강아지'),
 ];

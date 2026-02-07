@@ -1,12 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/widgets/app_bar/default_app_bar.dart';
+import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
 import 'package:relog/core/presentation/widgets/inputs/search_text_field.dart';
-import 'package:relog/domain/friends/friend.dart';
-import 'package:relog/presentation/friends/dummy.dart';
+import 'package:relog/domain/friends/model/friend.dart';
+import 'package:relog/presentation/friends/providers/friends_view_providers.dart';
 import 'package:relog/presentation/friends/widgets/friend_card.dart';
 
 class SelectFriendScreen extends HookConsumerWidget {
@@ -17,16 +19,61 @@ class SelectFriendScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(selectFriendViewModelProvider);
+    final vm = ref.read(selectFriendViewModelProvider.notifier);
+
     final searchController = useTextEditingController();
     useListenable(searchController);
 
-    final searchQuery = searchController.text.trim();
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        vm.loadFriends();
+      });
+      return null;
+    }, const []);
 
+    final searchQuery = searchController.text.trim();
     final List<Friend> filteredFriends = searchQuery.isEmpty
-        ? allFriends
-        : allFriends.where((friend) {
+        ? state.friends
+        : state.friends.where((friend) {
       return friend.name.contains(searchQuery);
     }).toList();
+
+    // 오류
+    useEffect(() {
+      if (state.errorMessage != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showCupertinoDialog(
+            context: context,
+            barrierDismissible: true, // 바깥 터치 시 다이얼로그 닫힘
+            builder: (_) => CustomDialog(
+              title: '친구 선택',
+              content: state.errorMessage!,
+              actions: [
+                CustomDialogAction(
+                  text: '확인',
+                  style: DialogActionStyle.normal,
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          );
+        });
+      }
+      return null;
+    }, [state.errorMessage]);
+
+    // 로딩 상태 표시
+    if (state.isLoading) {
+      return Scaffold(
+        backgroundColor: ColorStyles.black22,
+        body: SafeArea(
+          child: Center(
+            child: CircularProgressIndicator(color: ColorStyles.grayD3,),
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: ColorStyles.black22,
@@ -44,15 +91,6 @@ class SelectFriendScreen extends HookConsumerWidget {
                 // 검색
                 SearchTextField(
                   controller: searchController,
-                  onTap: () {
-                    // TODO: 검색 포커스 처리
-                  },
-                  onChanged: (value) {
-                    // TODO: 친구 검색
-                  },
-                  onSearchTap: () {
-                    // TODO: 친구 검색 버튼 클릭
-                  },
                 ),
 
                 // 카드 리스트
@@ -68,7 +106,7 @@ class SelectFriendScreen extends HookConsumerWidget {
                           InkWell(
                             splashColor: Colors.transparent,
                             highlightColor: Colors.transparent,
-                            onTap: () => context.pop(friend.name),
+                            onTap: () => context.pop({'id': friend.id, 'name': friend.name}),
                             child: FriendCard(friend: friend, showScore: false,),
                           ),
 
