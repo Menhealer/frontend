@@ -2,18 +2,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:relog/core/exception/api_exception.dart';
 import 'package:relog/domain/friends/model/friend_edit.dart';
 import 'package:relog/domain/friends/model/friend_write_request.dart';
+import 'package:relog/domain/friends/use_case/friend_name_check_use_case.dart';
 import 'package:relog/domain/friends/use_case/providers/friends_use_case_providers.dart';
 import 'package:relog/domain/friends/use_case/write_friend_use_case.dart';
 import 'package:relog/presentation/friends/write/friend_write_state.dart';
 
 class FriendWriteViewModel extends Notifier<FriendWriteState> {
   late final WriteFriendUseCase _writeFriendUseCase;
+  late final FriendNameCheckUseCase _friendNameCheckUseCase;
 
   bool _initialized = false;
 
   @override
   FriendWriteState build() {
     _writeFriendUseCase = ref.read(writeFriendsUseCaseProvider);
+    _friendNameCheckUseCase = ref.read(friendNameCheckUseCaseProvider);
 
     final now = DateTime.now();
     return FriendWriteState(
@@ -94,15 +97,24 @@ class FriendWriteViewModel extends Notifier<FriendWriteState> {
       if (state.isEdit) {
         // TODO: 친구 수정 use case
       } else {
-        await _writeFriendUseCase.execute(
-          FriendWriteRequest(
-            name: state.trimmedName,
-            group: state.trimmedGroup.isEmpty
-                ? null
-                : state.trimmedGroup,
-            birthday: state.birthdayYmd,
-          ),
-        );
+        final duplicate = await _friendNameCheckUseCase.execute(state.trimmedName);
+        if (duplicate) {
+          state = state.copyWith(
+            isLoading: false,
+            errorMessage: '이미 등록된 친구 이름이에요\n다른 이름으로 입력해 주세요'
+          );
+          return false;
+        } else {
+          await _writeFriendUseCase.execute(
+            FriendWriteRequest(
+              name: state.trimmedName,
+              group: state.trimmedGroup.isEmpty
+                  ? null
+                  : state.trimmedGroup,
+              birthday: state.birthdayYmd,
+            ),
+          );
+        }
       }
 
       state = state.copyWith(isLoading: false);

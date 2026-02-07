@@ -58,4 +58,30 @@ class FriendsRepositoryImpl implements FriendsRepository {
       throw ApiException('알 수 없는 오류가 발생했어요');
     }
   }
+
+  @override
+  Future<bool> checkName(String name) async {
+    final endpoint = dotenv.get('FRIEND_NAME_CHECK_ENDPOINT');
+    final requestBody = {
+      "name": name,
+    };
+
+    try {
+      final response = await _authDio.post(
+        endpoint,
+        data: requestBody,
+      );
+      return response.data['duplicate'] as bool;
+    } on DioException catch (e) {
+      if (e.error is ApiException) {
+        throw e.error!;
+      }
+      throw ApiException(
+        '중복 확인에 실패했어요',
+        statusCode: e.response?.statusCode,
+      );
+    } catch (e) {
+      throw ApiException('알 수 없는 오류가 발생했어요');
+    }
+  }
 }
