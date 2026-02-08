@@ -85,7 +85,7 @@ class GiftWriteScreen extends HookConsumerWidget {
             context: context,
             barrierDismissible: true, // 바깥 터치 시 다이얼로그 닫힘
             builder: (_) => CustomDialog(
-              title: '친구 등록',
+              title: '선물 등록',
               content: state.errorMessage!,
               actions: [
                 CustomDialogAction(

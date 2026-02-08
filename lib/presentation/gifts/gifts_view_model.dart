@@ -18,14 +18,14 @@ class GiftsViewModel extends Notifier<GiftsState> {
     return GiftsState(isLoading: false);
   }
 
-  Future<void> loadGifts() async {
+  Future<void> loadGifts(int friendId) async {
     if (state.isLoading) return;
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
-      final gifts = await _getGiftsUseCase.execute();
+      final gifts = await _getGiftsUseCase.execute(friendId);
       final next = [...gifts]..sort(_compareGift);
-      state = state.copyWith(isLoading: false, gifts: next, hasChanged: false);
+      state = state.copyWith(isLoading: false, gifts: next, hasChanged: false, friendId: friendId);
     } on ApiException catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.message);
     } catch (_) {
@@ -68,10 +68,19 @@ class GiftsViewModel extends Notifier<GiftsState> {
   }
 
   void upsertGift(GiftDetail updated) {
-    final list = state.gifts;
-    final idx = list.indexWhere((g) => g.id == updated.id);
+    final currentFriendId = state.friendId;
+    if (currentFriendId == null) return;
 
-    final next = [...list];
+    final next = [...state.gifts];
+
+    if (updated.friendId != currentFriendId) {
+      next.removeWhere((g) => g.id == updated.id);
+      next.sort(_compareGift);
+      state = state.copyWith(gifts: next, hasChanged: true);
+      return;
+    }
+
+    final idx = next.indexWhere((g) => g.id == updated.id);
     if (idx == -1) {
       next.add(updated);
     } else {
@@ -82,20 +91,18 @@ class GiftsViewModel extends Notifier<GiftsState> {
     state = state.copyWith(gifts: next, hasChanged: true);
   }
 
-  List<GiftDetail> recent3ForFriend(int friendId) {
-    final filtered = state.gifts.where((g) => g.friendId == friendId).toList();
-    filtered.sort(_compareGift);
-    return filtered.take(3).toList();
+  List<GiftDetail> recent3() {
+    final next = [...state.gifts]..sort(_compareGift);
+    return next.take(3).toList();
   }
 
   void syncRecent3ToFriendDetail(int friendId, WidgetRef ref) {
     if (!state.hasChanged) return;
 
-    final recent3 = recent3ForFriend(friendId);
+    final recent3Gift = recent3();
     ref.read(friendDetailViewModelProvider.notifier)
-        .replaceRecentGiftsFromGiftDetails(friendId, recent3);
+        .replaceRecentGiftsFromGiftDetails(friendId, recent3Gift);
 
-    // ✅ “반영 완료”로 플래그 내려도 됨 (원하면 유지해도 OK)
     state = state.copyWith(hasChanged: false);
   }
 

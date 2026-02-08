@@ -14,11 +14,16 @@ class GiftsRepositoryImpl implements GiftsRepository {
   GiftsRepositoryImpl(this._authDio,);
 
   @override
-  Future<List<GiftDetail>> getGifts() async {
+  Future<List<GiftDetail>> getGifts(int friendId) async {
     final endpoint = dotenv.get('GIFTS_ENDPOINT');
 
     try {
-      final response = await _authDio.get(endpoint);
+      final response = await _authDio.get(
+        endpoint,
+        queryParameters: {
+          'friendId': friendId,
+        },
+      );
       final data = response.data as List<dynamic>;
 
       return data.map((e) =>

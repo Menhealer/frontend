@@ -37,10 +37,10 @@ class GiftsScreen extends HookConsumerWidget {
 
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        vm.loadGifts();
+        vm.loadGifts(friend.id);
       });
       return null;
-    }, const []);
+    }, [friend.id]);
 
     // 오류
     useEffect(() {

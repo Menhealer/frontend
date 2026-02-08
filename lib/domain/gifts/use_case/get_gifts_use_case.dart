@@ -5,7 +5,7 @@ class GetGiftsUseCase {
   final GiftsRepository _giftsRepository;
   GetGiftsUseCase(this._giftsRepository);
 
-  Future<List<GiftDetail>> execute() async {
-    return await _giftsRepository.getGifts();
+  Future<List<GiftDetail>> execute(int friendId) async {
+    return await _giftsRepository.getGifts(friendId);
   }
 }

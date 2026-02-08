@@ -85,6 +85,7 @@ class FriendDetailViewModel extends Notifier<FriendDetailState> {
         giftDate: g.giftDate,
         giftType: g.giftType,
         direction: g.direction,
+        description: g.description,
       )).toList();
 
     converted.sort((a, b) {

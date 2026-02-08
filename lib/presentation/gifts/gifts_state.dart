@@ -5,12 +5,14 @@ class GiftsState {
   final String? errorMessage;
   final List<GiftDetail> gifts;
   final bool hasChanged;
+  final int? friendId;
 
   GiftsState({
     required this.isLoading,
     this.errorMessage,
     this.gifts = const [],
     this.hasChanged = false,
+    this.friendId,
   });
 
   GiftsState copyWith({
@@ -18,12 +20,14 @@ class GiftsState {
     String? errorMessage,
     List<GiftDetail>? gifts,
     bool? hasChanged,
+    int? friendId,
   }) {
     return GiftsState(
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage,
       gifts: gifts ?? this.gifts,
       hasChanged: hasChanged ?? this.hasChanged,
+      friendId: friendId ?? this.friendId,
     );
   }
 }
