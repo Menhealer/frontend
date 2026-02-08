@@ -43,8 +43,7 @@ class AuthInterceptor extends Interceptor {
         ),
       );
     }
-
-    print('‼️‼️ 401 error - access token');
+    
     try {
       final refreshToken = await storage.read('refreshToken');
       if (refreshToken == null) {
@@ -77,7 +76,6 @@ class AuthInterceptor extends Interceptor {
       final req = err.requestOptions;
       req.headers['Authorization'] = 'Bearer $newAccess';
 
-      print('refreshRes.data = ${refreshRes.data}');
       final retryResponse = await refreshDio.fetch(req);
       handler.resolve(retryResponse);
     } catch (e) {
