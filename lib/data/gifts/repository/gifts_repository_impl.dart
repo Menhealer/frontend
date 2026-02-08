@@ -85,4 +85,26 @@ class GiftsRepositoryImpl implements GiftsRepository {
       throw ApiException('알 수 없는 오류가 발생했어요');
     }
   }
+
+  @override
+  Future<bool> giftDelete(int giftId) async {
+    final baseEndpoint = dotenv.get('GIFTS_ENDPOINT');
+    final endpoint = '$baseEndpoint/$giftId';
+
+    try {
+      final response = await _authDio.delete(endpoint);
+      if (response.statusCode == HttpStatusCode.ok.code) return true;
+      return false;
+    } on DioException catch (e) {
+      if (e.error is ApiException) {
+        throw e.error!;
+      }
+      throw ApiException(
+        '선물 정보를 삭제하는 데 실패했어요',
+        statusCode: e.response?.statusCode,
+      );
+    } catch (e) {
+      throw ApiException('알 수 없는 오류가 발생했어요');
+    }
+  }
 }

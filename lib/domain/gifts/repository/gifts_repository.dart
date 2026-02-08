@@ -6,4 +6,5 @@ abstract class GiftsRepository {
   Future<List<GiftDetail>> getGifts();
   Future<GiftDetail?> giftWrite(GiftWriteRequest request);
   Future<GiftDetail?> giftEdit(GiftEditRequest request, int giftId);
+  Future<bool> giftDelete(int giftId);
 }

@@ -125,17 +125,18 @@ final routerProvider = Provider<GoRouter>((ref) {
           final friend = state.extra as Friend;
           return GiftsScreen(
             friend: friend,
-            onTapWrite: (isEdit, friend) {
-              context.push(
+            onTapWrite: (isEdit, friend) async {
+              final result = await context.push<GiftDetail>(
                 RoutePaths.gifts + RoutePaths.giftWrite,
                 extra: {
                   'isEdit': isEdit,
                   'friend': friend,
                 },
               );
+              return result;
             },
-            onTapEdit: (isEdit, friendName, giftInfo) {
-              context.push(
+            onTapEdit: (isEdit, friendName, giftInfo) async {
+              final result = await context.push<GiftDetail>(
                 RoutePaths.gifts + RoutePaths.giftWrite,
                 extra: {
                   'isEdit': isEdit,
@@ -143,6 +144,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                   'giftInfo' : giftInfo,
                 },
               );
+              return result;
             },
           );
         },
