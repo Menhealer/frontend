@@ -123,8 +123,8 @@ class GiftWriteScreen extends HookConsumerWidget {
           onTap: () async {
             final result = await vm.submit();
             if (result != null && context.mounted) {
-              print('등록 성공: ${result.toString()}');
-              // context.pop(result);
+              print('변경 성공: ${result.toString()}');
+              context.pop(result);
             }
           },
         ),
