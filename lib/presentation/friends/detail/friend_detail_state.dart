@@ -1,7 +1,7 @@
 import 'package:relog/domain/event/model/event.dart';
 import 'package:relog/domain/friends/model/friend.dart';
 import 'package:relog/domain/friends/model/friend_detail.dart';
-import 'package:relog/domain/gifts/gift.dart';
+import 'package:relog/domain/gifts/model/gift.dart';
 
 class FriendDetailState {
   final bool isLoading;
