@@ -79,6 +79,7 @@ class GiftsScreen extends HookConsumerWidget {
             final created = await onTapWrite(false, friend);
             if (created != null) {
               vm.upsertGift(created);
+              vm.syncRecent3ToFriendDetail(friend.id, ref);
             }
           },
           icon: Icon(
@@ -128,6 +129,7 @@ class GiftsScreen extends HookConsumerWidget {
                                       final updated = await onTapEdit(true, friend, gift);
                                       if (updated != null) {
                                         vm.upsertGift(updated);
+                                        vm.syncRecent3ToFriendDetail(friend.id, ref);
                                       }
                                     },
                                   ),
@@ -152,7 +154,10 @@ class GiftsScreen extends HookConsumerWidget {
                                               style: DialogActionStyle.destructive,
                                               isDefaultAction: true,
                                               onPressed: () async {
-                                                await vm.giftDelete(gift.id);
+                                                final ok = await vm.giftDelete(gift.id);
+                                                if (ok) {
+                                                  vm.syncRecent3ToFriendDetail(friend.id, ref);
+                                                }
                                               },
                                             ),
                                           ],
