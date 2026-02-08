@@ -5,7 +5,7 @@ import 'package:relog/core/utils/number_format.dart';
 import 'package:relog/core/utils/time_format.dart';
 import 'package:relog/domain/gifts/enum/direction.dart';
 import 'package:relog/domain/gifts/enum/gift_type.dart';
-import 'package:relog/domain/gifts/gift_detail.dart';
+import 'package:relog/domain/gifts/model/gift_detail.dart';
 
 class GiftsCard extends StatelessWidget {
   final String nickname;

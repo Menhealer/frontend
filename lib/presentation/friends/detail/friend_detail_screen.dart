@@ -15,7 +15,7 @@ import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
 import 'package:relog/core/storage/providers/user_session_provider.dart';
 import 'package:relog/core/utils/time_format.dart';
 import 'package:relog/domain/friends/model/friend.dart';
-import 'package:relog/domain/gifts/gift_detail.dart';
+import 'package:relog/domain/gifts/model/gift_detail.dart';
 import 'package:relog/presentation/friends/providers/friends_view_providers.dart';
 import 'package:relog/presentation/friends/widgets/event_card.dart';
 import 'package:relog/presentation/friends/widgets/score_bar.dart';
@@ -23,7 +23,7 @@ import 'package:relog/presentation/friends/widgets/score_bar.dart';
 class FriendDetailScreen extends HookConsumerWidget {
   final int friendId;
   final VoidCallback onTapSummary;
-  final void Function(int id) onTapPresent;
+  final void Function(Friend friend) onTapGift;
   final void Function(int id) onTapEventDetail;
   final Future<Friend?> Function(bool isEdit, Friend friendInfo) onTapEdit;
 
@@ -31,7 +31,7 @@ class FriendDetailScreen extends HookConsumerWidget {
     super.key,
     required this.friendId,
     required this.onTapSummary,
-    required this.onTapPresent,
+    required this.onTapGift,
     required this.onTapEventDetail,
     required this.onTapEdit,
   });
@@ -363,7 +363,7 @@ class FriendDetailScreen extends HookConsumerWidget {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () => onTapPresent(friend.id),
+                            onTap: () => onTapGift(friend),
                             behavior: HitTestBehavior.opaque,
                             child: Row(
                               spacing: 8,

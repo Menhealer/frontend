@@ -77,7 +77,9 @@ class AuthInterceptor extends Interceptor {
       final req = err.requestOptions;
       req.headers['Authorization'] = 'Bearer $newAccess';
 
+      print('retryResponse1');
       final retryResponse = await refreshDio.fetch(req);
+      print('retryResponse2');
       handler.resolve(retryResponse);
     } catch (e) {
       print('‼️‼️ $e');

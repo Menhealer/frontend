@@ -7,7 +7,7 @@ import 'package:relog/domain/auth/model/login_request.dart';
 import 'package:relog/domain/auth/model/user.dart';
 import 'package:relog/domain/event/model/event_detail.dart';
 import 'package:relog/domain/friends/model/friend.dart';
-import 'package:relog/domain/gifts/gift_detail.dart';
+import 'package:relog/domain/gifts/model/gift_detail.dart';
 import 'package:relog/presentation/calendar/calendar_screen.dart';
 import 'package:relog/presentation/calendar/detail/calendar_detail_screen.dart';
 import 'package:relog/presentation/calendar/write/calendar_write_screen.dart';
@@ -120,14 +120,14 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // 선물
       GoRoute(
-        path: RoutePaths.presents,
+        path: RoutePaths.gifts,
         builder: (context, state) {
-          final id = state.extra as int;
+          final friend = state.extra as Friend;
           return GiftsScreen(
-            id: id,
+            friend: friend,
             onTapWrite: (isEdit, friendName) {
               context.push(
-                RoutePaths.presents + RoutePaths.presentWrite,
+                RoutePaths.gifts + RoutePaths.giftWrite,
                 extra: {
                   'isEdit': isEdit,
                   'friendName': friendName,
@@ -136,7 +136,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             },
             onTapEdit: (isEdit, friendName, present) {
               context.push(
-                RoutePaths.presents + RoutePaths.presentWrite,
+                RoutePaths.gifts + RoutePaths.giftWrite,
                 extra: {
                   'isEdit': isEdit,
                   'friendName': friendName,
@@ -148,7 +148,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
         routes: [
           GoRoute(
-            path: RoutePaths.presentWrite,
+            path: RoutePaths.giftWrite,
             builder: (context, state) {
               final extra = state.extra as Map<String, dynamic>?;
               final bool isEdit = extra?['isEdit'] ?? false;
@@ -233,10 +233,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                       },
                     );
                   },
-                  onTapPresent: (id) {
+                  onTapGift: (friend) {
                     context.push(
-                      RoutePaths.presents,
-                      extra: id,
+                      RoutePaths.gifts,
+                      extra: friend,
                     );
                   },
                   onTapEventDetail: (id) {
@@ -339,10 +339,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                             RoutePaths.friends + RoutePaths.friendDetail + RoutePaths.friendSummary,
                           );
                         },
-                        onTapPresent: (id) {
+                        onTapGift: (friend) {
                           context.push(
-                            RoutePaths.presents,
-                            extra: id,
+                            RoutePaths.gifts,
+                            extra: friend,
                           );
                         },
                         onTapEventDetail: (id) {
