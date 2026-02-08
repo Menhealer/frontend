@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:relog/core/routing/route_paths.dart';
 import 'package:relog/core/storage/providers/user_session_provider.dart';
+import 'package:relog/domain/auth/enum/login_entry.dart';
 import 'package:relog/domain/auth/model/login_request.dart';
 import 'package:relog/domain/auth/model/user.dart';
 import 'package:relog/domain/event/model/event_detail.dart';
@@ -77,6 +78,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (signedIn && (location == RoutePaths.splash || inAuthFlow)) {
         print('📍 홈 페이지로 라우팅 됩니다.');
         return RoutePaths.home;
+      }
+
+      // 카카오 로그인
+      final uri = state.uri;
+      final isKakaoOauthCallback = uri.scheme.contains('kakao') && uri.authority == 'oauth';
+
+      if (isKakaoOauthCallback) {
+        return KakaoLoginFlow.entry == LoginEntry.signIn
+            ? RoutePaths.signIn
+            : RoutePaths.mypage;
       }
 
       return null;
