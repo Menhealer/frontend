@@ -17,8 +17,8 @@ import 'package:relog/presentation/gifts/providers/gifts_view_providers.dart';
 
 class GiftsScreen extends HookConsumerWidget {
   final Friend friend;
-  final void Function(bool isEdit, String friendName) onTapWrite;
-  final void Function(bool isEdit, String friendName, GiftDetail present) onTapEdit;
+  final void Function(bool isEdit, Friend friend) onTapWrite;
+  final void Function(bool isEdit, Friend friend, GiftDetail giftInfo) onTapEdit;
 
   const GiftsScreen({
     super.key,
@@ -75,7 +75,7 @@ class GiftsScreen extends HookConsumerWidget {
       appBar: DefaultAppBar(
         title: '선물 기록',
         trailing: IconButton(
-          onPressed: () => onTapWrite(false, friend.name),
+          onPressed: () => onTapWrite(false, friend),
           icon: Icon(
             Icons.add,
             color: ColorStyles.grayD3,
@@ -119,11 +119,7 @@ class GiftsScreen extends HookConsumerWidget {
                                 actions: [
                                   ActionSheetItem(
                                     label: '선물 기록 수정',
-                                    onTap: () => onTapEdit(
-                                      true,
-                                      gift.friendName,
-                                      gift,
-                                    ),
+                                    onTap: () => onTapEdit(true, friend, gift),
                                   ),
                                   ActionSheetItem(
                                     label: '선물 기록 삭제',
