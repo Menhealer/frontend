@@ -8,7 +8,7 @@ import 'package:relog/domain/auth/model/login_request.dart';
 import 'package:relog/domain/auth/model/user.dart';
 import 'package:relog/domain/event/model/event_detail.dart';
 import 'package:relog/domain/friends/model/friend.dart';
-import 'package:relog/domain/gifts/gift_detail.dart';
+import 'package:relog/domain/gifts/model/gift_detail.dart';
 import 'package:relog/presentation/calendar/calendar_screen.dart';
 import 'package:relog/presentation/calendar/detail/calendar_detail_screen.dart';
 import 'package:relog/presentation/calendar/write/calendar_write_screen.dart';
@@ -131,45 +131,47 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // 선물
       GoRoute(
-        path: RoutePaths.presents,
+        path: RoutePaths.gifts,
         builder: (context, state) {
-          final id = state.extra as int;
+          final friend = state.extra as Friend;
           return GiftsScreen(
-            id: id,
-            onTapWrite: (isEdit, friendName) {
-              context.push(
-                RoutePaths.presents + RoutePaths.presentWrite,
+            friend: friend,
+            onTapWrite: (isEdit, friend) async {
+              final result = await context.push<GiftDetail>(
+                RoutePaths.gifts + RoutePaths.giftWrite,
                 extra: {
                   'isEdit': isEdit,
-                  'friendName': friendName,
+                  'friend': friend,
                 },
               );
+              return result;
             },
-            onTapEdit: (isEdit, friendName, present) {
-              context.push(
-                RoutePaths.presents + RoutePaths.presentWrite,
+            onTapEdit: (isEdit, friendName, giftInfo) async {
+              final result = await context.push<GiftDetail>(
+                RoutePaths.gifts + RoutePaths.giftWrite,
                 extra: {
                   'isEdit': isEdit,
-                  'friendName': friendName,
-                  'info' : present,
+                  'friend': friend,
+                  'giftInfo' : giftInfo,
                 },
               );
+              return result;
             },
           );
         },
         routes: [
           GoRoute(
-            path: RoutePaths.presentWrite,
+            path: RoutePaths.giftWrite,
             builder: (context, state) {
               final extra = state.extra as Map<String, dynamic>?;
               final bool isEdit = extra?['isEdit'] ?? false;
-              final String friendName = extra?['friendName'] ?? '';
-              final GiftDetail? info = extra?['info'] as GiftDetail?;
+              final Friend friend = extra?['friend'] ?? Friend(id: 0, name: '', score: 0);
+              final GiftDetail? giftInfo = extra?['giftInfo'] as GiftDetail?;
 
               return GiftWriteScreen(
                 isEdit: isEdit,
-                friendName: friendName,
-                info: info,
+                friend: friend,
+                giftInfo: giftInfo,
                 onTapSearchFriend: () async {
                   final result = await context.push<Map<String, dynamic>>(
                     RoutePaths.selectFriend,
@@ -244,10 +246,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                       },
                     );
                   },
-                  onTapPresent: (id) {
+                  onTapGift: (friend) {
                     context.push(
-                      RoutePaths.presents,
-                      extra: id,
+                      RoutePaths.gifts,
+                      extra: friend,
                     );
                   },
                   onTapEventDetail: (id) {
@@ -350,10 +352,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                             RoutePaths.friends + RoutePaths.friendDetail + RoutePaths.friendSummary,
                           );
                         },
-                        onTapPresent: (id) {
+                        onTapGift: (friend) {
                           context.push(
-                            RoutePaths.presents,
-                            extra: id,
+                            RoutePaths.gifts,
+                            extra: friend,
                           );
                         },
                         onTapEventDetail: (id) {

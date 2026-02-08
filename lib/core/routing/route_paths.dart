@@ -17,8 +17,8 @@ abstract class RoutePaths {
   static const String friendSummary = '/friendSummary';
   static const String selectFriend = '/selectFriend';
 
-  static const String presents = '/gifts';
-  static const String presentWrite = '/presentWrite';
+  static const String gifts = '/gifts';
+  static const String giftWrite = '/giftWrite';
 
   static const String mypage = '/mypage';
   static const String webView = '/webView';
