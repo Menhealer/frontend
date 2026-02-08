@@ -17,8 +17,8 @@ import 'package:relog/presentation/gifts/providers/gifts_view_providers.dart';
 
 class GiftsScreen extends HookConsumerWidget {
   final Friend friend;
-  final void Function(bool isEdit, Friend friend) onTapWrite;
-  final void Function(bool isEdit, Friend friend, GiftDetail giftInfo) onTapEdit;
+  final Future<GiftDetail?> Function(bool isEdit, Friend friend) onTapWrite;
+  final Future<GiftDetail?> Function(bool isEdit, Friend friend, GiftDetail giftInfo) onTapEdit;
 
   const GiftsScreen({
     super.key,
@@ -75,7 +75,12 @@ class GiftsScreen extends HookConsumerWidget {
       appBar: DefaultAppBar(
         title: '선물 기록',
         trailing: IconButton(
-          onPressed: () => onTapWrite(false, friend),
+          onPressed: () async {
+            final created = await onTapWrite(false, friend);
+            if (created != null) {
+              vm.upsertGift(created);
+            }
+          },
           icon: Icon(
             Icons.add,
             color: ColorStyles.grayD3,
@@ -119,7 +124,12 @@ class GiftsScreen extends HookConsumerWidget {
                                 actions: [
                                   ActionSheetItem(
                                     label: '선물 기록 수정',
-                                    onTap: () => onTapEdit(true, friend, gift),
+                                    onTap: () async {
+                                      final updated = await onTapEdit(true, friend, gift);
+                                      if (updated != null) {
+                                        vm.upsertGift(updated);
+                                      }
+                                    },
                                   ),
                                   ActionSheetItem(
                                     label: '선물 기록 삭제',
@@ -141,8 +151,8 @@ class GiftsScreen extends HookConsumerWidget {
                                               text: '삭제',
                                               style: DialogActionStyle.destructive,
                                               isDefaultAction: true,
-                                              onPressed: () {
-                                                // 삭제 로직
+                                              onPressed: () async {
+                                                await vm.giftDelete(gift.id);
                                               },
                                             ),
                                           ],
