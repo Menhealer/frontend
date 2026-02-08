@@ -25,7 +25,10 @@ final plainDioProvider = Provider<Dio>((ref) {
 
 final refreshDioProvider = Provider<Dio>((ref) {
   final options = ref.watch(baseDioOptionsProvider);
-  return Dio(options);
+  final dio = Dio(options);
+
+  dio.interceptors.add(ResponseInterceptor());
+  return dio;
 });
 
 // 토큰 필요 요청
