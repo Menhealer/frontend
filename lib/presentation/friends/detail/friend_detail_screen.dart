@@ -412,6 +412,7 @@ class FriendDetailScreen extends HookConsumerWidget {
                                   giftDate: gift.giftDate,
                                   giftType: gift.giftType,
                                   direction: gift.direction,
+                                  description: gift.description,
                                   friendId: friendId,
                                   friendName: friend.name,
                                 ),

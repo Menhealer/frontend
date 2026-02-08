@@ -74,25 +74,28 @@ class GiftsCard extends StatelessWidget {
                     ),
         
                     // 금액 + 부가 정보
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      spacing: 8,
-                      children: [
-                        Text(
-                          '${NumberFormatUtil.comma(gift.price)}원',
-                          style: TextStyles.largeTextBold.copyWith(
-                            color: ColorStyles.grayD3,
-                          ),
-                        ),
-                        if (gift.description != null) ...[
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        spacing: 8,
+                        children: [
                           Text(
-                            gift.description!,
-                            style: TextStyles.smallTextRegular.copyWith(
-                              color: ColorStyles.grayA3,
+                            '${NumberFormatUtil.comma(gift.price)}원',
+                            style: TextStyles.largeTextBold.copyWith(
+                              color: ColorStyles.grayD3,
                             ),
                           ),
+                          if (gift.description != null) ...[
+                            Text(
+                              gift.description!,
+                              style: TextStyles.smallTextRegular.copyWith(
+                                color: ColorStyles.grayA3,
+                              ),
+                            ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
         
                     // 줬냐 / 받았냐

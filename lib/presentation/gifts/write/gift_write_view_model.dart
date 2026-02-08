@@ -112,7 +112,7 @@ class GiftWriteViewModel extends Notifier<GiftWriteState> {
           giftDate: dateChanged ? state.giftDateYmd : null,
           price: priceChanged ? state.price : null,
           description: descChanged
-              ? (state.description.trim().isEmpty ? null : state.description.trim())
+              ? (state.description.trim().isEmpty ? '' : state.description.trim())
               : null,
         );
 
