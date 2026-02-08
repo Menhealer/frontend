@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:relog/core/presentation/styles/color_styles.dart';
@@ -8,104 +10,108 @@ import 'package:relog/core/presentation/styles/text_styles.dart';
 import 'package:relog/core/presentation/widgets/app_bar/default_app_bar.dart';
 import 'package:relog/core/presentation/widgets/buttons/app_bar_done_button.dart';
 import 'package:relog/core/presentation/widgets/buttons/picker_field.dart';
+import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
 import 'package:relog/core/presentation/widgets/inputs/custom_text_field.dart';
 import 'package:relog/core/presentation/widgets/picker/date_picker.dart';
 import 'package:relog/core/utils/number_format.dart';
+import 'package:relog/domain/friends/model/friend.dart';
 import 'package:relog/domain/gifts/enum/direction.dart';
 import 'package:relog/domain/gifts/enum/gift_type.dart';
 import 'package:relog/domain/gifts/model/gift_detail.dart';
+import 'package:relog/presentation/gifts/providers/gifts_view_providers.dart';
 import 'package:relog/presentation/gifts/widgets/selectable_chip_row.dart';
 
 class GiftWriteScreen extends HookConsumerWidget {
   final bool isEdit;
-  final String friendName;
-  final GiftDetail? info;
+  final Friend friend;
+  final GiftDetail? giftInfo;
   final Future<Map<String, dynamic>?> Function() onTapSearchFriend;
 
   const GiftWriteScreen({
     super.key,
     required this.isEdit,
-    required this.friendName,
-    this.info,
+    required this.friend,
+    this.giftInfo,
     required this.onTapSearchFriend,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedFriendName = useState<String>(friendName);
+    final state = ref.watch(giftWriteViewModelProvider);
+    final vm = ref.read(giftWriteViewModelProvider.notifier);
 
-    final selectedTag = useState<GiftType?>(
-        isEdit ? info!.giftType : null
-    );
-    final selectedDirection = useState<Direction?>(
-        isEdit ? info!.direction : null
-    );
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        vm.initialize(isEdit: isEdit, gift: giftInfo, friend: friend);
+      });
+      return null;
+    }, [isEdit, giftInfo?.id, friend.id]);
 
-    final year = useState<int?>(
-      null
-        // isEdit ? info!.date.year : null
-    );
-    final month = useState<int?>(
-      null
-        // isEdit ? info!.date.month : null
-    );
-    final day = useState<int?>(
-      null
-        // isEdit ? info!.date.day : null
-    );
+    final priceController = useTextEditingController();
+    final descriptionController = useTextEditingController();
 
-    final priceController = useTextEditingController(
-      text: isEdit ? NumberFormat('#,###').format(info!.price) : null,
-    );
-    useListenable(priceController);
+    useEffect(() {
+      final formatted = state.price == null ? '' : NumberFormat('#,###').format(state.price);
+      if (priceController.text != formatted) {
+        priceController.text = formatted;
+      }
+      return null;
+    }, [state.price]);
 
-    final infoController = useTextEditingController(
-      text: isEdit ? info!.description : null,
-    );
-    useListenable(infoController);
+    useEffect(() {
+      if (descriptionController.text != state.description) {
+        descriptionController.text = state.description;
+      }
+      return null;
+    }, [state.description]);
 
-    // 날짜 선택 picker call back
     final openPicker = useCallback(() async {
       final result = await showYmdPicker(
         context,
-        initialYear: year.value ?? DateTime.now().year,
-        initialMonth: month.value ?? DateTime.now().month,
-        initialDay: day.value ?? DateTime.now().day,
+        initialYear: state.year ?? DateTime.now().year,
+        initialMonth: state.month ?? DateTime.now().month,
+        initialDay: state.day ?? DateTime.now().day,
       );
-      if (result == null) return;
+      if (result != null) {
+        vm.onDatePicked(result);
+      }
+    }, [context, state.year, state.month, state.day]);
 
-      year.value = result.year;
-      month.value = result.month;
-      day.value = result.day;
-    }, [context, year.value, month.value, day.value]);
+    // 오류
+    useEffect(() {
+      if (state.errorMessage != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showCupertinoDialog(
+            context: context,
+            barrierDismissible: true, // 바깥 터치 시 다이얼로그 닫힘
+            builder: (_) => CustomDialog(
+              title: '친구 등록',
+              content: state.errorMessage!,
+              actions: [
+                CustomDialogAction(
+                  text: '확인',
+                  style: DialogActionStyle.normal,
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          );
+        });
+      }
+      return null;
+    }, [state.errorMessage]);
 
-    // 등록 버튼 조건
-    final isFriendValid = selectedFriendName.value.trim().isNotEmpty;
-    final isTagValid = selectedTag.value != null;
-    final isDirectionValid = selectedDirection.value != null;
-    final isDateValid = year.value != null && month.value != null && day.value != null;
-
-    final currentPrice = parsePrice(priceController.text);
-    final isPriceValid = currentPrice != null;
-
-    final isWriteEnabled =
-        isFriendValid && isTagValid && isDirectionValid && isDateValid && isPriceValid;
-
-    // 수정 버튼 조건
-    final isDirty = !isEdit
-      ? true
-      : (
-          selectedFriendName.value.trim() != friendName.trim() ||
-          selectedTag.value != info!.giftType ||
-          selectedDirection.value != info!.direction ||
-          // year.value != info!.date.year ||
-          // month.value != info!.date.month ||
-          // day.value != info!.date.day ||
-          currentPrice != info!.price ||
-          infoController.text.trim() != (info!.description ?? '').trim()
-        );
-
-    final isEditEnabled = isWriteEnabled && isDirty;
+    // 로딩 상태 표시
+    if (state.isLoading) {
+      return Scaffold(
+        backgroundColor: ColorStyles.black22,
+        body: SafeArea(
+          child: Center(
+            child: CircularProgressIndicator(color: ColorStyles.grayD3,),
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: ColorStyles.black22,
@@ -113,9 +119,13 @@ class GiftWriteScreen extends HookConsumerWidget {
         title: isEdit ? '선물 수정' : '선물 등록',
         defaultBackButtonIcon: false,
         trailing: AppBarDoneButton(
-          enabled: isEdit ? isEditEnabled : isWriteEnabled,
-          onTap: () {
-            // TODO: 선물 등록 API || 선물 수정 API
+          enabled: state.canSubmit,
+          onTap: () async {
+            final result = await vm.submit();
+            if (result != null && context.mounted) {
+              print('등록 성공: ${result.toString()}');
+              // context.pop(result);
+            }
           },
         ),
       ),
@@ -137,14 +147,12 @@ class GiftWriteScreen extends HookConsumerWidget {
 
                   PickerField(
                     placeholder: '친구를 선택해 주세요',
-                    valueText: selectedFriendName.value.isEmpty ? null : selectedFriendName.value,
+                    valueText: state.friendName.isEmpty ? null : state.friendName,
                     onTap: () async {
-                      final result = await onTapSearchFriend();
-                      if (result == null) return;
-
-                      final int friendId = result['id'];
-                      final String friendName = result['name'];
-                      selectedFriendName.value = friendName;
+                      final r = await onTapSearchFriend();
+                      if (r != null) {
+                        vm.onFriendSelected(r['id'], r['name']);
+                      }
                     },
                   ),
                   const SizedBox(height: 24,),
@@ -155,17 +163,17 @@ class GiftWriteScreen extends HookConsumerWidget {
 
                   SelectableChipRow(
                     items: GiftType.values,
-                    selected: selectedTag.value,
+                    selected: state.giftType,
                     labelBuilder: (t) => t.label,
-                    onSelected: (t) => selectedTag.value = t,
+                    onSelected: vm.onGiftTypeSelected,
                   ),
                   const SizedBox(height: 16,),
 
                   SelectableChipRow<Direction>(
                     items: Direction.values,
-                    selected: selectedDirection.value,
+                    selected: state.direction,
                     labelBuilder: (d) => d.label,
-                    onSelected: (d) => selectedDirection.value = d,
+                    onSelected: vm.onDirectionSelected,
                   ),
                   const SizedBox(height: 24,),
               
@@ -175,8 +183,8 @@ class GiftWriteScreen extends HookConsumerWidget {
 
                   PickerField(
                     placeholder: '일자를 선택해 주세요',
-                    valueText: (year.value != null && month.value != null && day.value != null)
-                        ? '${year.value}년 ${month.value}월 ${day.value}일'
+                    valueText: state.isDateValid
+                        ? '${state.year}년 ${state.month}월 ${state.day}일'
                         : null,
                     onTap: openPicker,
                   ),
@@ -189,11 +197,13 @@ class GiftWriteScreen extends HookConsumerWidget {
                   CustomTextField(
                     controller: priceController,
                     keyboardType: TextInputType.number,
-                    hintText: '선물 가격을 입력해 주세요',
+                    hintText: '999,999,999원까지 입력 가능해요',
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
                       ThousandsSeparatorInputFormatter(),
                     ],
+                    onChanged: (v) => vm.onPriceChanged(parsePrice(v)),
+                    maxLength: 11,
                   ),
                   const SizedBox(height: 24,),
               
@@ -202,8 +212,10 @@ class GiftWriteScreen extends HookConsumerWidget {
                   const SizedBox(height: 16,),
 
                   CustomTextField(
-                    controller: infoController,
-                    hintText: '선물에 대한 간단한 설명을 입력해 주세요',
+                    controller: descriptionController,
+                    hintText: '최대 20글자 입력 가능해요',
+                    onChanged: vm.onDescriptionChanged,
+                    maxLength: 20,
                   ),
                 ],
               ),

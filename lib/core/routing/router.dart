@@ -125,22 +125,22 @@ final routerProvider = Provider<GoRouter>((ref) {
           final friend = state.extra as Friend;
           return GiftsScreen(
             friend: friend,
-            onTapWrite: (isEdit, friendName) {
+            onTapWrite: (isEdit, friend) {
               context.push(
                 RoutePaths.gifts + RoutePaths.giftWrite,
                 extra: {
                   'isEdit': isEdit,
-                  'friendName': friendName,
+                  'friend': friend,
                 },
               );
             },
-            onTapEdit: (isEdit, friendName, present) {
+            onTapEdit: (isEdit, friendName, giftInfo) {
               context.push(
                 RoutePaths.gifts + RoutePaths.giftWrite,
                 extra: {
                   'isEdit': isEdit,
-                  'friendName': friendName,
-                  'info' : present,
+                  'friend': friend,
+                  'giftInfo' : giftInfo,
                 },
               );
             },
@@ -152,13 +152,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) {
               final extra = state.extra as Map<String, dynamic>?;
               final bool isEdit = extra?['isEdit'] ?? false;
-              final String friendName = extra?['friendName'] ?? '';
-              final GiftDetail? info = extra?['info'] as GiftDetail?;
+              final Friend friend = extra?['friend'] ?? Friend(id: 0, name: '', score: 0);
+              final GiftDetail? giftInfo = extra?['giftInfo'] as GiftDetail?;
 
               return GiftWriteScreen(
                 isEdit: isEdit,
-                friendName: friendName,
-                info: info,
+                friend: friend,
+                giftInfo: giftInfo,
                 onTapSearchFriend: () async {
                   final result = await context.push<Map<String, dynamic>>(
                     RoutePaths.selectFriend,
