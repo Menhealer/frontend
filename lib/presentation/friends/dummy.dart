@@ -1,6 +1,6 @@
 import 'package:relog/domain/gifts/enum/direction.dart';
 import 'package:relog/domain/gifts/enum/gift_type.dart';
-import 'package:relog/domain/gifts/gift_detail.dart';
+import 'package:relog/domain/gifts/model/gift_detail.dart';
 
 final List<String> summaryDummy = [
   '최근 3개월 기준, 햄스터님과의 만남은 이어지고 있지만 만남 이후 만족도는 낮은 편이에요.\n\n감정 기록에서는 피로와 아쉬움이 반복적으로 나타났고, 선물 기록 또한 주꾸미님의 제공 비중이 더 높게 기록됐어요.\n\n햄스터님에게 주꾸미님이 먼저 제공한 기록이 더 많았고, 주고받음의 균형은 다소 한쪽으로 기울어져 있었어요.\n\n이 관계는 현재 유지되고는 있지만, 주꾸미님에게 회복을 주는 관계는 아니에요. 기록상으로는 노력 대비 만족도가 낮은 상태로 판단돼요.',

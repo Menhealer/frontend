@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/styles/text_styles.dart';
 import 'package:relog/domain/calendar.dart';
+import 'package:relog/domain/friends/model/friend.dart';
 import 'package:relog/presentation/calendar/widgets/event_card.dart';
 
 class SelectedDayEventList extends StatelessWidget {
-  final void Function(int id) onTapPresent;
+  final void Function(Friend friend) onTapGift;
   final void Function(int id) onTapEventDetail;
   final List<Calendar> events;
 
   const SelectedDayEventList({
     super.key,
-    required this.onTapPresent,
+    required this.onTapGift,
     required this.onTapEventDetail,
     required this.events,
   });
@@ -38,7 +39,7 @@ class SelectedDayEventList extends StatelessWidget {
               return GestureDetector(
                 onTap: event.category == 'event'
                   ? () => onTapEventDetail(event.id)
-                  : () => onTapPresent(event.friendId),
+                  : () => onTapGift(Friend(id: 1, name: '더미데이터', score: 0)),
                 behavior: HitTestBehavior.opaque,
                 child: EventCard(event: event),
               );

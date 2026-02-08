@@ -5,7 +5,7 @@ import 'package:relog/core/utils/number_format.dart';
 import 'package:relog/core/utils/time_format.dart';
 import 'package:relog/domain/gifts/enum/direction.dart';
 import 'package:relog/domain/gifts/enum/gift_type.dart';
-import 'package:relog/domain/gifts/gift_detail.dart';
+import 'package:relog/domain/gifts/model/gift_detail.dart';
 
 class GiftsCard extends StatelessWidget {
   final String nickname;
@@ -74,25 +74,28 @@ class GiftsCard extends StatelessWidget {
                     ),
         
                     // 금액 + 부가 정보
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      spacing: 8,
-                      children: [
-                        Text(
-                          '${NumberFormatUtil.comma(gift.price)}원',
-                          style: TextStyles.largeTextBold.copyWith(
-                            color: ColorStyles.grayD3,
-                          ),
-                        ),
-                        if (gift.description != null) ...[
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        spacing: 8,
+                        children: [
                           Text(
-                            gift.description!,
-                            style: TextStyles.smallTextRegular.copyWith(
-                              color: ColorStyles.grayA3,
+                            '${NumberFormatUtil.comma(gift.price)}원',
+                            style: TextStyles.largeTextBold.copyWith(
+                              color: ColorStyles.grayD3,
                             ),
                           ),
+                          if (gift.description != null) ...[
+                            Text(
+                              gift.description!,
+                              style: TextStyles.smallTextRegular.copyWith(
+                                color: ColorStyles.grayA3,
+                              ),
+                            ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
         
                     // 줬냐 / 받았냐
