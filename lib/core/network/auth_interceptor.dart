@@ -77,10 +77,10 @@ class AuthInterceptor extends Interceptor {
       final req = err.requestOptions;
       req.headers['Authorization'] = 'Bearer $newAccess';
 
+      print('refreshRes.data = ${refreshRes.data}');
       final retryResponse = await refreshDio.fetch(req);
       handler.resolve(retryResponse);
     } catch (e) {
-      print('‼️‼️ $e');
       await forceLogout('인증 갱신에 실패했어요');
     }
   }
