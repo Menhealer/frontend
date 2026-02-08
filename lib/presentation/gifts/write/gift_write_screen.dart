@@ -13,7 +13,7 @@ import 'package:relog/core/presentation/widgets/picker/date_picker.dart';
 import 'package:relog/core/utils/number_format.dart';
 import 'package:relog/domain/gifts/enum/direction.dart';
 import 'package:relog/domain/gifts/enum/gift_type.dart';
-import 'package:relog/domain/gifts/gift_detail.dart';
+import 'package:relog/domain/gifts/model/gift_detail.dart';
 import 'package:relog/presentation/gifts/widgets/selectable_chip_row.dart';
 
 class GiftWriteScreen extends HookConsumerWidget {

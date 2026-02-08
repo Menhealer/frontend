@@ -6,6 +6,7 @@ import 'package:relog/core/presentation/styles/text_styles.dart';
 import 'package:relog/core/presentation/widgets/picker/calendar_picker.dart';
 import 'package:relog/core/utils/time_format.dart';
 import 'package:relog/domain/calendar.dart';
+import 'package:relog/domain/friends/model/friend.dart';
 import 'package:relog/presentation/calendar/utils/calendar_month_calc.dart';
 import 'package:relog/presentation/calendar/widgets/calendar_month_pager.dart';
 import 'package:relog/presentation/calendar/widgets/selected_day_event_list.dart';
@@ -13,13 +14,13 @@ import 'calendar_dummy.dart';
 
 class CalendarScreen extends HookConsumerWidget {
   final void Function(bool isEdit, DateTime date) onTapWrite;
-  final void Function(int id) onTapPresent;
+  final void Function(Friend friend) onTapGift;
   final void Function(int id) onTapEventDetail;
 
   const CalendarScreen({
     super.key,
     required this.onTapWrite,
-    required this.onTapPresent,
+    required this.onTapGift,
     required this.onTapEventDetail,
   });
 
@@ -150,7 +151,7 @@ class CalendarScreen extends HookConsumerWidget {
               // 일정 목록
               Expanded(
                 child: SelectedDayEventList(
-                  onTapPresent: onTapPresent,
+                  onTapGift: onTapGift,
                   onTapEventDetail: onTapEventDetail,
                   events: eventsForSelected,
                 ),

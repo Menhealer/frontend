@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/styles/text_styles.dart';
@@ -8,37 +9,73 @@ import 'package:relog/core/presentation/widgets/app_bar/default_app_bar.dart';
 import 'package:relog/core/presentation/widgets/cards/gift_card.dart';
 import 'package:relog/core/presentation/widgets/chip/info_chip.dart';
 import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
+import 'package:relog/core/storage/providers/user_session_provider.dart';
 import 'package:relog/core/utils/time_format.dart';
-import 'package:relog/domain/friends/model/friend_write_request.dart';
-import 'package:relog/domain/gifts/gift_detail.dart';
-import 'package:relog/presentation/friends/dummy.dart';
+import 'package:relog/domain/friends/model/friend.dart';
+import 'package:relog/domain/gifts/model/gift_detail.dart';
+import 'package:relog/presentation/gifts/providers/gifts_view_providers.dart';
 
 class GiftsScreen extends HookConsumerWidget {
-  final int id;
+  final Friend friend;
   final void Function(bool isEdit, String friendName) onTapWrite;
   final void Function(bool isEdit, String friendName, GiftDetail present) onTapEdit;
 
   const GiftsScreen({
     super.key,
-    required this.id,
+    required this.friend,
     required this.onTapWrite,
     required this.onTapEdit
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 사용자 정보
-    const nickname = '주꾸미';
-    final friendInfo = FriendWriteRequest(name: '햄스터', group: '동아리', birthday: '2003-10-12');
+    final userAsync = ref.watch(userSessionProvider);
+    final user = userAsync.asData?.value;
 
-    final List<GiftDetail> presents = presentList;
+    final state = ref.watch(giftsViewModelProvider);
+    final vm = ref.read(giftsViewModelProvider.notifier);
+
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        vm.loadGifts();
+      });
+      return null;
+    }, const []);
+
+    // 오류
+    useEffect(() {
+      if (state.errorMessage != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showCupertinoDialog(
+            context: context,
+            barrierDismissible: true, // 바깥 터치 시 다이얼로그 닫힘
+            builder: (_) => CustomDialog(
+              title: '선물 기록',
+              content: state.errorMessage!,
+              actions: [
+                CustomDialogAction(
+                  text: '확인',
+                  style: DialogActionStyle.normal,
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          );
+        });
+      }
+      return null;
+    }, [state.errorMessage]);
+
+    if (user == null) {
+      return const SizedBox.shrink();
+    }
 
     return Scaffold(
       backgroundColor: ColorStyles.black22,
       appBar: DefaultAppBar(
         title: '선물 기록',
         trailing: IconButton(
-          onPressed: () => onTapWrite(false, friendInfo.name),
+          onPressed: () => onTapWrite(false, friend.name),
           icon: Icon(
             Icons.add,
             color: ColorStyles.grayD3,
@@ -56,7 +93,7 @@ class GiftsScreen extends HookConsumerWidget {
           child: Stack(
             children: [
               // 선물 기록
-              presents.isEmpty
+              state.gifts.isEmpty
                 ? Center(
                     child: Text(
                       '아무 기록이 없어요',
@@ -67,10 +104,10 @@ class GiftsScreen extends HookConsumerWidget {
                   )
                 : ListView.separated(
                     padding: const EdgeInsets.only(top: 64),
-                    itemCount: presents.length,
+                    itemCount: state.gifts.length,
                     separatorBuilder: (_, __) => const SizedBox(height: 16),
                     itemBuilder: (context, index) {
-                      final present = presents[index];
+                      final gift = state.gifts[index];
                       return Column(
                         children: [
                           InkWell(
@@ -84,8 +121,8 @@ class GiftsScreen extends HookConsumerWidget {
                                     label: '선물 기록 수정',
                                     onTap: () => onTapEdit(
                                       true,
-                                      friendInfo.name,
-                                      present,
+                                      gift.friendName,
+                                      gift,
                                     ),
                                   ),
                                   ActionSheetItem(
@@ -122,8 +159,8 @@ class GiftsScreen extends HookConsumerWidget {
                               );
                             },
                             child: GiftsCard(
-                              nickname: nickname,
-                              gift: present,
+                              nickname: user.nickname,
+                              gift: gift,
                             ),
                           ),
                         ],
@@ -156,22 +193,22 @@ class GiftsScreen extends HookConsumerWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          '${friendInfo.name}님과의 기록',
+                          '${friend.name}님과의 기록',
                           style: TextStyles.largeTextBold.copyWith(
                             color: ColorStyles.grayD3,
                           ),
                         ),
                       ),
-                      if (friendInfo.group != null)
+                      if (friend.group != null)
                         InfoChip(
-                          label: friendInfo.group!,
+                          label: friend.group!,
                           backgroundColor: ColorStyles.purple100,
                           textColor: ColorStyles.purple10,
                         ),
                 
-                      if (friendInfo.birthday != null)
+                      if (friend.birthday != null)
                         InfoChip(
-                          label: formatBirthday(friendInfo.birthday!),
+                          label: formatBirthday(friend.birthday!),
                           backgroundColor: ColorStyles.pink100,
                           textColor: ColorStyles.pink10,
                         ),
