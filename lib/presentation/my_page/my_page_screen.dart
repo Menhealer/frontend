@@ -6,6 +6,7 @@ import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/styles/text_styles.dart';
 import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
 import 'package:relog/core/storage/providers/user_session_provider.dart';
+import 'package:relog/domain/auth/enum/login_entry.dart';
 import 'package:relog/domain/auth/enum/login_platform.dart';
 import 'package:relog/presentation/my_page/providers/my_page_view_providers.dart';
 import 'package:relog/presentation/my_page/widgets/profile_card.dart';
@@ -153,6 +154,7 @@ class MyPageScreen extends HookConsumerWidget {
                       label: '회원 탈퇴',
                       onTap: () {
                         // TODO: 회원 탈퇴 로직
+                        KakaoLoginFlow.entry = LoginEntry.mypage;
                       },
                     ),
                   ],

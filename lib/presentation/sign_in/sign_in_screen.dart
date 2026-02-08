@@ -7,6 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/styles/text_styles.dart';
 import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
+import 'package:relog/domain/auth/enum/login_entry.dart';
 import 'package:relog/domain/auth/enum/login_platform.dart';
 import 'package:relog/domain/auth/model/login_request.dart';
 import 'package:relog/domain/auth/use_case/result/social_login_result.dart';
@@ -100,6 +101,7 @@ class SignInScreen extends HookConsumerWidget {
                             platform: LoginPlatform.KAKAO,
                             img: 'assets/images/kakao_login.png',
                             onTap: () async {
+                              KakaoLoginFlow.entry = LoginEntry.signIn;
                               final result = await vm.socialLogin(LoginPlatform.KAKAO);
 
                               switch (result) {
