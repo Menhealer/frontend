@@ -43,7 +43,7 @@ class AuthInterceptor extends Interceptor {
         ),
       );
     }
-    
+
     try {
       final refreshToken = await storage.read('refreshToken');
       if (refreshToken == null) {

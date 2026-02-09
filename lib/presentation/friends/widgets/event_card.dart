@@ -3,7 +3,8 @@ import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/styles/text_styles.dart';
 import 'package:relog/core/utils/color_mapping.dart';
 import 'package:relog/core/utils/time_format.dart';
-import 'package:relog/domain/event/model/event.dart';
+import 'package:relog/domain/events/enum/review_score.dart';
+import 'package:relog/domain/events/model/event.dart';
 
 class EventCard extends StatelessWidget {
   final Event event;
@@ -51,7 +52,7 @@ class EventCard extends StatelessWidget {
             width: 24,
             height: 24,
             decoration: BoxDecoration(
-              color: scoreToColor(event.reviewScore),
+              color: scoreToColor(event.reviewScore.toInt),
               shape: BoxShape.circle,
             ),
           ),

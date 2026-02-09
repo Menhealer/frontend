@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:relog/domain/events/enum/review_score.dart';
 
 part 'event.freezed.dart';
 part 'event.g.dart';
@@ -9,7 +10,7 @@ abstract class Event with _$Event {
     required int eventId,
     required String title,
     required String eventDate,
-    required int reviewScore,
+    required ReviewScore reviewScore,
   }) = _Event;
 
   factory Event.fromJson(Map<String, dynamic> json) =>

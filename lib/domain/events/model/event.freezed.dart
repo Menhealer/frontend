@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Event {
 
- int get eventId; String get title; String get eventDate; int get reviewScore;
+ int get eventId; String get title; String get eventDate; ReviewScore get reviewScore;
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $EventCopyWith<$Res>  {
   factory $EventCopyWith(Event value, $Res Function(Event) _then) = _$EventCopyWithImpl;
 @useResult
 $Res call({
- int eventId, String title, String eventDate, int reviewScore
+ int eventId, String title, String eventDate, ReviewScore reviewScore
 });
 
 
@@ -71,7 +71,7 @@ eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_n
 as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,eventDate: null == eventDate ? _self.eventDate : eventDate // ignore: cast_nullable_to_non_nullable
 as String,reviewScore: null == reviewScore ? _self.reviewScore : reviewScore // ignore: cast_nullable_to_non_nullable
-as int,
+as ReviewScore,
   ));
 }
 
@@ -156,7 +156,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int eventId,  String title,  String eventDate,  int reviewScore)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int eventId,  String title,  String eventDate,  ReviewScore reviewScore)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Event() when $default != null:
 return $default(_that.eventId,_that.title,_that.eventDate,_that.reviewScore);case _:
@@ -177,7 +177,7 @@ return $default(_that.eventId,_that.title,_that.eventDate,_that.reviewScore);cas
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int eventId,  String title,  String eventDate,  int reviewScore)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int eventId,  String title,  String eventDate,  ReviewScore reviewScore)  $default,) {final _that = this;
 switch (_that) {
 case _Event():
 return $default(_that.eventId,_that.title,_that.eventDate,_that.reviewScore);case _:
@@ -197,7 +197,7 @@ return $default(_that.eventId,_that.title,_that.eventDate,_that.reviewScore);cas
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int eventId,  String title,  String eventDate,  int reviewScore)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int eventId,  String title,  String eventDate,  ReviewScore reviewScore)?  $default,) {final _that = this;
 switch (_that) {
 case _Event() when $default != null:
 return $default(_that.eventId,_that.title,_that.eventDate,_that.reviewScore);case _:
@@ -218,7 +218,7 @@ class _Event implements Event {
 @override final  int eventId;
 @override final  String title;
 @override final  String eventDate;
-@override final  int reviewScore;
+@override final  ReviewScore reviewScore;
 
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
@@ -253,7 +253,7 @@ abstract mixin class _$EventCopyWith<$Res> implements $EventCopyWith<$Res> {
   factory _$EventCopyWith(_Event value, $Res Function(_Event) _then) = __$EventCopyWithImpl;
 @override @useResult
 $Res call({
- int eventId, String title, String eventDate, int reviewScore
+ int eventId, String title, String eventDate, ReviewScore reviewScore
 });
 
 
@@ -276,7 +276,7 @@ eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_n
 as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,eventDate: null == eventDate ? _self.eventDate : eventDate // ignore: cast_nullable_to_non_nullable
 as String,reviewScore: null == reviewScore ? _self.reviewScore : reviewScore // ignore: cast_nullable_to_non_nullable
-as int,
+as ReviewScore,
   ));
 }
 
