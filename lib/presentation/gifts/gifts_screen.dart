@@ -66,6 +66,18 @@ class GiftsScreen extends HookConsumerWidget {
       return null;
     }, [state.errorMessage]);
 
+    // 로딩 상태 표시
+    if (state.isLoading) {
+      return Scaffold(
+        backgroundColor: ColorStyles.black22,
+        body: SafeArea(
+          child: Center(
+            child: CircularProgressIndicator(color: ColorStyles.grayD3,),
+          ),
+        ),
+      );
+    }
+
     if (user == null) {
       return const SizedBox.shrink();
     }
@@ -210,7 +222,7 @@ class GiftsScreen extends HookConsumerWidget {
                           ),
                         ),
                       ),
-                      if (friend.group != null)
+                      if (friend.group != null && friend.group != '')
                         InfoChip(
                           label: friend.group!,
                           backgroundColor: ColorStyles.purple100,

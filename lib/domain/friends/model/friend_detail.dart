@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:relog/domain/event/model/event.dart';
+import 'package:relog/domain/events/model/event.dart';
 import 'package:relog/domain/friends/model/friend.dart';
 import 'package:relog/domain/gifts/model/gift.dart';
 

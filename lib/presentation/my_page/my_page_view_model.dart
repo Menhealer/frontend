@@ -15,6 +15,7 @@ class MyPageViewModel extends Notifier<MyPageState> {
   }
 
   Future<void> logout() async {
+    if (state.isLoading) return;
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {

@@ -19,8 +19,9 @@ class FriendsViewModel extends Notifier<FriendsState> {
 
     try {
       final friends = await _getFriendsUseCase.execute();
+      final next = _sortedFriends(friends);
 
-      state = state.copyWith(isLoading: false, friends: friends);
+      state = state.copyWith(isLoading: false, friends: next);
     } on ApiException catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.message);
     } catch (e) {
@@ -33,10 +34,36 @@ class FriendsViewModel extends Notifier<FriendsState> {
 
   void upsertFriend(Friend updated) {
     final list = state.friends;
-    final next = [
-      for (final f in list)
-        if (f.id == updated.id) updated else f
-    ];
-    state = state.copyWith(friends: next);
+    final idx = list.indexWhere((f) => f.id == updated.id);
+
+    final next = [...list];
+    if (idx == -1) {
+      next.add(updated);
+    } else {
+      next[idx] = updated;
+    }
+
+    state = state.copyWith(friends: _sortedFriends(next));
+  }
+
+  void removeFriend(int friendId) {
+    final next = state.friends.where((f) => f.id != friendId).toList();
+    state = state.copyWith(friends: _sortedFriends(next));
+  }
+
+  List<Friend> _sortedFriends(List<Friend> list) {
+    final next = [...list];
+    next.sort(_compareFriendByNameAsc);
+    return next;
+  }
+
+  int _compareFriendByNameAsc(Friend a, Friend b) {
+    final an = a.name.trim();
+    final bn = b.name.trim();
+
+    final nameCmp = an.compareTo(bn);
+    if (nameCmp != 0) return nameCmp;
+
+    return a.id.compareTo(b.id);
   }
 }
