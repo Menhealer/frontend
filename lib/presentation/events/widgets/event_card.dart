@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/styles/text_styles.dart';
-import 'package:relog/core/utils/color_mapping.dart';
+import 'package:relog/core/utils/review_mapping.dart';
 import 'package:relog/presentation/events/model/calendar_item.dart';
 
 class EventCard extends StatelessWidget {
