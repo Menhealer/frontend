@@ -54,11 +54,12 @@ class EventsScreen extends HookConsumerWidget {
     void onMonthChanged(DateTime month) {
       final m = DateTime(month.year, month.month, 1);
 
-      if (isProgrammaticJump.value) {
+      final wasProgrammatic = isProgrammaticJump.value;
+      if (wasProgrammatic) {
         isProgrammaticJump.value = false;
-        return;
       }
-      vm.setFocusedMonth(m, alsoSelectFirstDay: true);
+
+      vm.setFocusedMonth(m, alsoSelectFirstDay: !wasProgrammatic);
     }
 
     Future<void> onDateSelected(DateTime d) async {
@@ -96,14 +97,15 @@ class EventsScreen extends HookConsumerWidget {
       final target = DateTime(result.year, result.month, 1);
       final targetPage = pageForMonth(target);
 
-      pageController.animateToPage(
+      isProgrammaticJump.value = true;
+
+      await pageController.animateToPage(
         targetPage,
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeOut,
       );
 
       vm.setFocusedMonth(target, alsoSelectFirstDay: true);
-      vm.setSelectedDate(target);
     }, [context, focusedMonth.year, focusedMonth.month]);
 
     // 선택된 날짜의 아이템
@@ -145,67 +147,73 @@ class EventsScreen extends HookConsumerWidget {
       return null;
     }, [state.errorMessage]);
 
-    // 로딩 상태 표시
-    if (state.isLoading) {
-      return Scaffold(
-        backgroundColor: ColorStyles.black22,
-        body: SafeArea(
-          child: Center(
-            child: CircularProgressIndicator(color: ColorStyles.grayD3,),
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
       backgroundColor: ColorStyles.black22,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: _CalendarHeader(
-                  month: focusedMonth,
-                  onTapMonth: openYearMonthPicker,
-                  onTapWrite: () => onTapWrite(false, selectedDate),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: _CalendarHeader(
+                      month: focusedMonth,
+                      onTapMonth: openYearMonthPicker,
+                      onTapWrite: () => onTapWrite(false, selectedDate),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // 요일
+                  const _WeekdayRow(),
+                  const SizedBox(height: 8),
+
+                  // 달력
+                  // 달력
+                  SizedBox(
+                    height: calendarHeight,
+                    child: CalendarMonthPager(
+                      controller: pageController,
+                      basePage: basePage,
+                      anchorMonth: anchorMonth,
+                      selectedDate: selectedDate,
+                      cellHeight: cellHeight,
+                      onMonthChanged: onMonthChanged,
+                      onDateSelected: onDateSelected,
+                      eventLookup: (d) {
+                        final ymd = ymdHyphen(d);
+                        return state.itemsByDate[ymd] ?? const <CalendarItem>[];
+                      },
+                    ),
+                  ),
+
+                  // 일정 목록
+                  Expanded(
+                    child: SelectedDayEventList(
+                      onTapGift: onTapGift,
+                      onTapEventDetail: onTapEventDetail,
+                      events: itemsForSelected,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (state.isLoading)
+              Positioned.fill(
+                child: IgnorePointer(
+                  ignoring: true,
+                  child: Container(
+                    alignment: Alignment.center,
+                    color: Colors.transparent,
+                    child: CircularProgressIndicator(
+                      color: ColorStyles.grayD3,
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(height: 16),
-
-              // 요일
-              const _WeekdayRow(),
-              const SizedBox(height: 8),
-
-              // 달력
-              SizedBox(
-                height: calendarHeight,
-                child: CalendarMonthPager(
-                  controller: pageController,
-                  basePage: basePage,
-                  anchorMonth: anchorMonth,
-                  selectedDate: selectedDate,
-                  cellHeight: cellHeight,
-                  onMonthChanged: onMonthChanged,
-                  onDateSelected: onDateSelected,
-                  eventLookup: (d) {
-                    final ymd = ymdHyphen(d);
-                    return state.itemsByDate[ymd] ?? const <CalendarItem>[];
-                  },
-                ),
-              ),
-
-              // 일정 목록
-              Expanded(
-                child: SelectedDayEventList(
-                  onTapGift: onTapGift,
-                  onTapEventDetail: onTapEventDetail,
-                  events: itemsForSelected,
-                ),
-              ),
-            ],
-          ),
+          ],
         )
       ),
     );
