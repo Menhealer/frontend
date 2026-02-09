@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:relog/core/presentation/styles/color_styles.dart';
-import 'package:relog/domain/calendar.dart';
-import 'package:relog/presentation/calendar/widgets/calendar_day_cell.dart';
+import 'package:relog/presentation/events/model/calendar_item.dart';
+import 'package:relog/presentation/events/widgets/calendar_day_cell.dart';
 
 class MonthGrid extends StatelessWidget {
   final DateTime month; // 해당 월의 1일
   final DateTime selected;
   final ValueChanged<DateTime> onSelect;
-  final List<Calendar> Function(DateTime date) eventLookup;
+  final List<CalendarItem> Function(DateTime date) eventLookup;
   final double cellHeight;
 
   const MonthGrid({super.key,
@@ -54,8 +54,8 @@ class MonthGrid extends StatelessWidget {
 
         final events = eventLookup(DateTime(d.year, d.month, d.day));
 
-        final hasEvent = events.any((e) => e.category == 'event');
-        final hasBirthday = events.any((e) => e.category == 'birthday');
+        final hasEvent = events.any((e) => e.type == CalendarItemType.event);
+        final hasBirthday = events.any((e) => e.type == CalendarItemType.birthday);
 
         final dots = <Color>[
           if (hasEvent) ColorStyles.pointPurple,

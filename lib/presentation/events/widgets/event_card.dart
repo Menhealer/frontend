@@ -2,15 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/styles/text_styles.dart';
 import 'package:relog/core/utils/color_mapping.dart';
-import 'package:relog/domain/calendar.dart';
+import 'package:relog/presentation/events/model/calendar_item.dart';
 
 class EventCard extends StatelessWidget {
-  final Calendar event;
+  final CalendarItem event;
 
   const EventCard({super.key, required this.event});
 
   @override
   Widget build(BuildContext context) {
+    final titleText = event.type == CalendarItemType.event
+        ? (event.title ?? '')
+        : '생일';
+
+    final scoreColor = event.type == CalendarItemType.event
+        ? event.reviewScore
+        : event.score;
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       constraints: const BoxConstraints(minHeight: 44),
@@ -42,7 +50,7 @@ class EventCard extends StatelessWidget {
                       color: ColorStyles.gray86,
                     ),
                     Text(
-                      event.title,
+                      titleText,
                       style: TextStyles.normalTextRegular.copyWith(
                         color: ColorStyles.grayD3,
                       ),
@@ -54,19 +62,12 @@ class EventCard extends StatelessWidget {
                 width: 16,
                 height: 16,
                 decoration: BoxDecoration(
-                  color: scoreToColor(event.score),
+                  color: scoreToColor(scoreColor),
                   shape: BoxShape.circle,
                 ),
               ),
             ],
           ),
-          if (event.category == 'birthday' && event.info != null && event.info!.isNotEmpty)
-            Text(
-              '기록 - ${event.info}',
-              style: TextStyles.smallTextRegular.copyWith(
-                color: ColorStyles.grayA3,
-              ),
-            ),
         ],
       ),
     );

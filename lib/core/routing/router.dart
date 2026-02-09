@@ -6,12 +6,12 @@ import 'package:relog/core/storage/providers/user_session_provider.dart';
 import 'package:relog/domain/auth/enum/login_entry.dart';
 import 'package:relog/domain/auth/model/login_request.dart';
 import 'package:relog/domain/auth/model/user.dart';
-import 'package:relog/domain/event/model/event_detail.dart';
+import 'package:relog/domain/events/model/event_detail.dart';
 import 'package:relog/domain/friends/model/friend.dart';
 import 'package:relog/domain/gifts/model/gift_detail.dart';
-import 'package:relog/presentation/calendar/calendar_screen.dart';
-import 'package:relog/presentation/calendar/detail/calendar_detail_screen.dart';
-import 'package:relog/presentation/calendar/write/calendar_write_screen.dart';
+import 'package:relog/presentation/events/events_screen.dart';
+import 'package:relog/presentation/events/detail/event_detail_screen.dart';
+import 'package:relog/presentation/events/write/event_write_screen.dart';
 import 'package:relog/presentation/friends/detail/friend_detail_screen.dart';
 import 'package:relog/presentation/friends/friends_screen.dart';
 import 'package:relog/presentation/friends/select/select_friend_screen.dart';
@@ -235,11 +235,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: RoutePaths.calendar,
-                builder: (context, state) => CalendarScreen(
+                path: RoutePaths.events,
+                builder: (context, state) => EventsScreen(
                   onTapWrite: (isEdit, date) {
                     context.push(
-                      RoutePaths.calendar + RoutePaths.calendarWrite,
+                      RoutePaths.events + RoutePaths.eventWrite,
                       extra: {
                         'isEdit': isEdit,
                         'date': date,
@@ -254,21 +254,21 @@ final routerProvider = Provider<GoRouter>((ref) {
                   },
                   onTapEventDetail: (id) {
                     context.push(
-                      RoutePaths.calendar + RoutePaths.calendarDetail,
+                      RoutePaths.events + RoutePaths.eventDetail,
                       extra: id,
                     );
                   },
                 ),
                 routes: [
                   GoRoute(
-                    path: RoutePaths.calendarWrite,
+                    path: RoutePaths.eventWrite,
                     builder: (context, state) {
                       final extra = state.extra as Map<String, dynamic>?;
                       final bool isEdit = extra?['isEdit'] ?? false;
                       final DateTime? date = extra?['date'] as DateTime?;
-                      final EventDetail? event = extra?['event'] as EventDetail?;
+                      final EventDetail? event = extra?['events'] as EventDetail?;
 
-                      return CalendarWriteScreen(
+                      return EventWriteScreen(
                         isEdit: isEdit,
                         date: date,
                         event: event,
@@ -282,18 +282,18 @@ final routerProvider = Provider<GoRouter>((ref) {
                     },
                   ),
                   GoRoute(
-                    path: RoutePaths.calendarDetail,
+                    path: RoutePaths.eventDetail,
                     builder: (context, state) {
                       final id = state.extra as int;
 
-                      return CalendarDetailScreen(
+                      return EventDetailScreen(
                         id: id,
                         onTapEdit: (isEdit, event) {
                           context.push(
-                            RoutePaths.calendar + RoutePaths.calendarWrite,
+                            RoutePaths.events + RoutePaths.eventWrite,
                             extra: {
                               'isEdit': isEdit,
-                              'event': event,
+                              'events': event,
                             },
                           );
                         },
@@ -360,7 +360,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                         },
                         onTapEventDetail: (id) {
                           context.push(
-                            RoutePaths.calendar + RoutePaths.calendarDetail,
+                            RoutePaths.events + RoutePaths.eventDetail,
                             extra: id,
                           );
                         },

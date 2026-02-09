@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:relog/domain/calendar.dart';
-import 'package:relog/presentation/calendar/utils/calendar_month_calc.dart';
-import 'package:relog/presentation/calendar/widgets/month_grid.dart';
+import 'package:relog/presentation/events/model/calendar_item.dart';
+import 'package:relog/presentation/events/utils/calendar_month_calc.dart';
+import 'package:relog/presentation/events/widgets/month_grid.dart';
 
 class CalendarMonthPager extends StatelessWidget {
   final PageController controller;
@@ -13,7 +13,7 @@ class CalendarMonthPager extends StatelessWidget {
   final ValueChanged<DateTime> onMonthChanged; // 월이 바뀌었을 때
   final ValueChanged<DateTime> onDateSelected; // 날짜를 선택했을 때
 
-  final List<Calendar> Function(DateTime date) eventLookup;
+  final List<CalendarItem> Function(DateTime date) eventLookup;
 
   const CalendarMonthPager({
     super.key,

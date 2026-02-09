@@ -8,16 +8,17 @@ import 'package:relog/core/presentation/widgets/buttons/app_bar_done_button.dart
 import 'package:relog/core/presentation/widgets/buttons/picker_field.dart';
 import 'package:relog/core/presentation/widgets/inputs/custom_text_field.dart';
 import 'package:relog/core/presentation/widgets/picker/date_picker.dart';
-import 'package:relog/domain/event/model/event_detail.dart';
-import 'package:relog/presentation/calendar/widgets/score_radio_button.dart';
+import 'package:relog/domain/events/enum/review_score.dart';
+import 'package:relog/domain/events/model/event_detail.dart';
+import 'package:relog/presentation/events/widgets/score_radio_button.dart';
 
-class CalendarWriteScreen extends HookConsumerWidget {
+class EventWriteScreen extends HookConsumerWidget {
   final bool isEdit;
   final DateTime? date;
   final EventDetail? event;
   final Future<Map<String, dynamic>?> Function() onTapSearchFriend;
 
-  const CalendarWriteScreen({
+  const EventWriteScreen({
     super.key,
     required this.isEdit,
     this.date,
@@ -262,7 +263,7 @@ class _InitialValues {
         friendName: '더미데이터',
         title: e.title,
         info: e.reviewText,
-        score: e.reviewScore,
+        score: e.reviewScore.toInt,
       );
     }
     final d = date ?? DateTime.now();
