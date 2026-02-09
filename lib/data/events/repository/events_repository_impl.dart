@@ -122,7 +122,28 @@ class EventsRepositoryImpl implements EventsRepository {
         statusCode: e.response?.statusCode,
       );
     } catch (e) {
-      print('error: $e');
+      throw ApiException('알 수 없는 오류가 발생했어요');
+    }
+  }
+
+  @override
+  Future<bool> eventDelete(int eventId) async {
+    final baseEndpoint = dotenv.get('EVENTS_ENDPOINT');
+    final endpoint = '$baseEndpoint/$eventId';
+
+    try {
+      final response = await _authDio.delete(endpoint);
+      if (response.statusCode == HttpStatusCode.ok.code) return true;
+      return false;
+    } on DioException catch (e) {
+      if (e.error is ApiException) {
+        throw e.error!;
+      }
+      throw ApiException(
+        '일정을 삭제하는 데 실패했어요',
+        statusCode: e.response?.statusCode,
+      );
+    } catch (e) {
       throw ApiException('알 수 없는 오류가 발생했어요');
     }
   }

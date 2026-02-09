@@ -1,18 +1,21 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:relog/core/exception/api_exception.dart';
 import 'package:relog/domain/events/model/event_detail.dart';
+import 'package:relog/domain/events/use_case/event_delete_use_case.dart';
 import 'package:relog/domain/events/use_case/get_event_use_case.dart';
 import 'package:relog/domain/events/use_case/providers/events_use_case_providers.dart';
 import 'package:relog/presentation/events/detail/event_detail_state.dart';
 
 class EventDetailViewModel extends Notifier<EventDetailState> {
   late final GetEventUseCase _getEventUseCase;
+  late final EventDeleteUseCase _eventDeleteUseCase;
 
   int? _loadedId;
 
   @override
   EventDetailState build() {
     _getEventUseCase = ref.read(getEventUseCaseProvider);
+    _eventDeleteUseCase = ref.read(eventDeleteUseCaseProvider);
     return EventDetailState(isLoading: false);
   }
 
@@ -48,8 +51,7 @@ class EventDetailViewModel extends Notifier<EventDetailState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
-      // final ok = await _eventDeleteUseCase.execute(id);
-      final ok = false; // TODO: delete use case 연결
+      final ok = await _eventDeleteUseCase.execute(id);
 
       state = state.copyWith(isLoading: false);
       return ok;
