@@ -312,21 +312,21 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: RoutePaths.friends,
                 builder: (context, state) => FriendsScreen(
                   onTapDetail: (friendId) async {
-                    final refresh = await context.push<bool>(
+                    final deleted = await context.push<bool>(
                       RoutePaths.friends + RoutePaths.friendDetail,
                       extra: friendId,
                     );
-                    return refresh ?? false;
+                    return deleted ?? false;
                   },
                   onTapWrite: (isEdit) async {
-                    final refresh = await context.push<bool>(
+                    final created = await context.push<Friend?>(
                       RoutePaths.friends + RoutePaths.friendWrite,
                       extra: {
                         'isEdit': false,
                         'friendInfo': null,
                       },
                     );
-                    return refresh ?? false;
+                    return created;
                   },
                 ),
                 routes: [

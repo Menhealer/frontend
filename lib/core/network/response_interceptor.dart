@@ -36,6 +36,21 @@ class ResponseInterceptor extends Interceptor {
       return;
     }
 
+    final raw = err.response?.data;
+    if (raw is Map<String, dynamic> && raw.containsKey('success')) {
+      final apiResponse = ApiResponse.fromJson(raw, (json) => json);
+
+      handler.next(
+        DioException(
+          requestOptions: err.requestOptions,
+          response: err.response,
+          type: err.type,
+          error: ApiException(apiResponse.message, statusCode: err.response?.statusCode),
+        ),
+      );
+      return;
+    }
+
     final message = switch (err.type) {
       DioExceptionType.connectionTimeout => '연결 시간이 초과됐어요',
       DioExceptionType.receiveTimeout => '응답 시간이 지연되고 있어요',
