@@ -9,6 +9,7 @@ import 'package:relog/core/presentation/styles/text_styles.dart';
 import 'package:relog/core/presentation/widgets/action_sheet/custom_action_sheet.dart';
 import 'package:relog/core/presentation/widgets/app_bar/default_app_bar.dart';
 import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
+import 'package:relog/core/state/app_mutation_provider.dart';
 import 'package:relog/core/utils/review_mapping.dart';
 import 'package:relog/domain/events/model/event_detail.dart';
 import 'package:relog/presentation/events/providers/events_view_providers.dart';
@@ -103,10 +104,16 @@ class EventDetailScreen extends HookConsumerWidget {
                 ActionSheetItem(
                   label: '일정 수정',
                   onTap: () async {
+                    final oldFriendId = event.friendId;
+
                     final updated = await onTapEdit(true, event);
                     if (updated != null) {
                       vm.applyUpdatedEvent(updated);
                       ref.read(eventsViewModelProvider.notifier).applyUpsertEvent(updated);
+                      ref.read(appMutationProvider.notifier).eventUpsert(
+                        event: updated,
+                        oldFriendId: oldFriendId,
+                      );
                     }
                   },
                 ),
@@ -134,6 +141,10 @@ class EventDetailScreen extends HookConsumerWidget {
                               final ok = await vm.deleteEvent();
                               if (ok && context.mounted) {
                                 ref.read(eventsViewModelProvider.notifier).applyDeleteEvent(id);
+                                ref.read(appMutationProvider.notifier).eventDelete(
+                                  eventId: id,
+                                  friendId: event.friendId,
+                                );
                                 context.pop(true);
                               }
                             },
@@ -265,10 +276,16 @@ class EventDetailScreen extends HookConsumerWidget {
               if (!state.hasReviewText)
                 GestureDetector(
                   onTap: () async {
+                    final oldFriendId = event.friendId;
+
                     final updated = await onTapEdit(true, event);
                     if (updated != null) {
                       vm.applyUpdatedEvent(updated);
                       ref.read(eventsViewModelProvider.notifier).applyUpsertEvent(updated);
+                      ref.read(appMutationProvider.notifier).eventUpsert(
+                        event: updated,
+                        oldFriendId: oldFriendId,
+                      );
                     }
                   },
                   behavior: HitTestBehavior.opaque,
