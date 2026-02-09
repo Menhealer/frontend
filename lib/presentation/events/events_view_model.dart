@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:relog/core/exception/api_exception.dart';
 import 'package:relog/core/utils/time_format.dart';
 import 'package:relog/domain/events/model/calendar.dart';
+import 'package:relog/domain/events/model/event_detail.dart';
 import 'package:relog/domain/events/use_case/get_calendar_use_case.dart';
 import 'package:relog/domain/events/use_case/providers/events_use_case_providers.dart';
 import 'package:relog/presentation/events/events_state.dart';
@@ -111,5 +112,60 @@ class EventsViewModel extends Notifier<EventsState> {
     }
 
     return next;
+  }
+
+  void applyUpsertEvent(EventDetail updated) {
+    final ymd = updated.eventDate; // 'YYYY-MM-DD'
+
+    final nextMap = Map<String, List<CalendarItem>>.from(state.itemsByDate);
+
+    nextMap.updateAll((_, list) {
+      return list
+          .where((it) => !(it.type == CalendarItemType.event && it.id == updated.id))
+          .toList();
+    });
+
+    final current = nextMap[ymd] ?? const <CalendarItem>[];
+    final nextList = [...current];
+
+    final idx = nextList.indexWhere(
+          (it) => it.type == CalendarItemType.event && it.id == updated.id,
+    );
+
+    final item = CalendarItem.fromEvent(updated);
+
+    if (idx == -1) {
+      nextList.add(item);
+    } else {
+      nextList[idx] = item;
+    }
+
+    nextList.sort((a, b) {
+      final typeCmp = a.type.index.compareTo(b.type.index);
+      if (typeCmp != 0) return typeCmp;
+      return a.id.compareTo(b.id);
+    });
+
+    nextMap[ymd] = nextList;
+
+    state = state.copyWith(
+      itemsByDate: nextMap,
+      itemsForSelected: _itemsForDate(state.selectedDate, nextMap),
+    );
+  }
+
+  void applyDeleteEvent(int eventId) {
+    final nextMap = Map<String, List<CalendarItem>>.from(state.itemsByDate);
+
+    nextMap.updateAll((_, list) {
+      return list
+          .where((it) => !(it.type == CalendarItemType.event && it.id == eventId))
+          .toList();
+    });
+
+    state = state.copyWith(
+      itemsByDate: nextMap,
+      itemsForSelected: _itemsForDate(state.selectedDate, nextMap),
+    );
   }
 }

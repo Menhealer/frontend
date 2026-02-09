@@ -106,6 +106,7 @@ class EventDetailScreen extends HookConsumerWidget {
                     final updated = await onTapEdit(true, event);
                     if (updated != null) {
                       vm.applyUpdatedEvent(updated);
+                      ref.read(eventsViewModelProvider.notifier).applyUpsertEvent(updated);
                     }
                   },
                 ),
@@ -132,6 +133,7 @@ class EventDetailScreen extends HookConsumerWidget {
                             onPressed: () async {
                               final ok = await vm.deleteEvent();
                               if (ok && context.mounted) {
+                                ref.read(eventsViewModelProvider.notifier).applyDeleteEvent(id);
                                 context.pop(true);
                               }
                             },
@@ -266,6 +268,7 @@ class EventDetailScreen extends HookConsumerWidget {
                     final updated = await onTapEdit(true, event);
                     if (updated != null) {
                       vm.applyUpdatedEvent(updated);
+                      ref.read(eventsViewModelProvider.notifier).applyUpsertEvent(updated);
                     }
                   },
                   behavior: HitTestBehavior.opaque,
