@@ -132,6 +132,20 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<String> profileImageUpload(File file) async {
     final endpoint = dotenv.get('PROFILE_IMAGE_UPLOAD_ENDPOINT');
+    final filename = file.uri.pathSegments.isNotEmpty
+        ? file.uri.pathSegments.last
+        : file.path.split('/').last;
+
+    final ext = (filename.contains('.') ? filename.split('.').last : '').toLowerCase();
+    const allowed = {'jpg', 'jpeg', 'png', 'webp'};
+
+    if (ext.isEmpty) {
+      throw const ApiException('이미지 확장자를 확인할 수 없어요\nJPG, JPEG, PNG, WEBP 파일만 업로드할 수 있어요');
+    }
+
+    if (!allowed.contains(ext)) {
+      throw ApiException('지원하지 않는 이미지 형식이에요\nJPG, JPEG, PNG, WEBP 파일만 업로드할 수 있어요',);
+    }
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(
         file.path,
