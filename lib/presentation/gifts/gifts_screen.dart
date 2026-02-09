@@ -222,7 +222,7 @@ class GiftsScreen extends HookConsumerWidget {
                           ),
                         ),
                       ),
-                      if (friend.group != null)
+                      if (friend.group != null && friend.group != '')
                         InfoChip(
                           label: friend.group!,
                           backgroundColor: ColorStyles.purple100,

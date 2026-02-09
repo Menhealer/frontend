@@ -46,7 +46,7 @@ class EventDetailViewModel extends Notifier<EventDetailState> {
 
   Future<bool> deleteEvent() async {
     final id = state.event?.id;
-    if (id == null) return false;
+    if (id == null || state.isLoading) return false;
 
     state = state.copyWith(isLoading: true, errorMessage: null);
 

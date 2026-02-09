@@ -59,6 +59,7 @@ class FriendDetailViewModel extends Notifier<FriendDetailState> {
   }
 
   Future<bool> friendDelete(int friendId) async {
+    if (state.isLoading) return false;
     try {
       return await _friendDeleteUseCase.execute(friendId);
     } on ApiException catch (e) {
