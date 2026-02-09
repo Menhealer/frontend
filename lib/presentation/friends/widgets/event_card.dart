@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/styles/text_styles.dart';
-import 'package:relog/core/utils/color_mapping.dart';
+import 'package:relog/core/utils/review_mapping.dart';
 import 'package:relog/core/utils/time_format.dart';
 import 'package:relog/domain/events/enum/review_score.dart';
 import 'package:relog/domain/events/model/event.dart';
