@@ -161,7 +161,12 @@ class EventsScreen extends HookConsumerWidget {
                     child: _CalendarHeader(
                       month: focusedMonth,
                       onTapMonth: openYearMonthPicker,
-                      onTapWrite: () => onTapWrite(false, selectedDate),
+                      onTapWrite: () async {
+                        final created = await onTapWrite(false, selectedDate);
+                        if (created != null) {
+                          vm.applyUpsertEvent(created);
+                        }
+                      },
                     ),
                   ),
                   const SizedBox(height: 16),
