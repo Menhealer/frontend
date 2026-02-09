@@ -169,7 +169,7 @@ class FriendDetailScreen extends HookConsumerWidget {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16,),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16,),
           child: SingleChildScrollView(
             child: Column(
               children: [

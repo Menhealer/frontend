@@ -90,10 +90,9 @@ class FriendWriteScreen extends HookConsumerWidget {
         trailing: AppBarDoneButton(
           enabled: state.canSubmit,
           onTap: () async {
-            if (state.isLoading) return;
             final result = await vm.submit();
             if (result != null && context.mounted) {
-              isEdit ? context.pop(result) : context.pop(true);
+              context.pop(result);
             }
           },
         ),

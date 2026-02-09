@@ -7,9 +7,9 @@ abstract class RoutePaths {
   static const String home = '/home';
   static const String friendship = '/friendship';
 
-  static const String calendar = '/calendar';
-  static const String calendarWrite = '/calendarWrite';
-  static const String calendarDetail = '/calendarDetail';
+  static const String events = '/events';
+  static const String eventWrite = '/eventWrite';
+  static const String eventDetail = '/eventDetail';
 
   static const String friends = '/friends';
   static const String friendWrite = '/friendWrite';
