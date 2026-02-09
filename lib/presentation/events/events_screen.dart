@@ -7,6 +7,7 @@ import 'package:relog/core/presentation/styles/text_styles.dart';
 import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
 import 'package:relog/core/presentation/widgets/picker/calendar_picker.dart';
 import 'package:relog/core/utils/time_format.dart';
+import 'package:relog/domain/events/model/event_detail.dart';
 import 'package:relog/domain/friends/model/friend.dart';
 import 'package:relog/presentation/events/model/calendar_item.dart';
 import 'package:relog/presentation/events/providers/events_view_providers.dart';
@@ -15,7 +16,7 @@ import 'package:relog/presentation/events/widgets/calendar_month_pager.dart';
 import 'package:relog/presentation/events/widgets/selected_day_event_list.dart';
 
 class EventsScreen extends HookConsumerWidget {
-  final void Function(bool isEdit, DateTime date) onTapWrite;
+  final Future<EventDetail?> Function(bool isEdit, DateTime date) onTapWrite;
   final void Function(Friend friend) onTapGift;
   final void Function(int id) onTapEventDetail;
 
@@ -143,6 +144,18 @@ class EventsScreen extends HookConsumerWidget {
       }
       return null;
     }, [state.errorMessage]);
+
+    // 로딩 상태 표시
+    if (state.isLoading) {
+      return Scaffold(
+        backgroundColor: ColorStyles.black22,
+        body: SafeArea(
+          child: Center(
+            child: CircularProgressIndicator(color: ColorStyles.grayD3,),
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: ColorStyles.black22,

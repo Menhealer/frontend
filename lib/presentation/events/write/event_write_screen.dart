@@ -81,7 +81,7 @@ class EventWriteScreen extends HookConsumerWidget {
             context: context,
             barrierDismissible: true, // 바깥 터치 시 다이얼로그 닫힘
             builder: (_) => CustomDialog(
-              title: '선물 등록',
+              title: '일정',
               content: state.errorMessage!,
               actions: [
                 CustomDialogAction(
@@ -119,7 +119,7 @@ class EventWriteScreen extends HookConsumerWidget {
           onTap: () async {
             final result = await vm.submit();
             if (result != null && context.mounted) {
-              context.pop();
+              context.pop(result);
             }
           },
         ),

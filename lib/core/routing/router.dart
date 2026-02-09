@@ -237,14 +237,15 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: RoutePaths.events,
                 builder: (context, state) => EventsScreen(
-                  onTapWrite: (isEdit, date) {
-                    context.push(
+                  onTapWrite: (isEdit, date) async {
+                    final result = await context.push<EventDetail?>(
                       RoutePaths.events + RoutePaths.eventWrite,
                       extra: {
                         'isEdit': isEdit,
                         'date': date,
                       },
                     );
+                    return result;
                   },
                   onTapGift: (friend) {
                     context.push(
@@ -288,14 +289,15 @@ final routerProvider = Provider<GoRouter>((ref) {
 
                       return EventDetailScreen(
                         id: id,
-                        onTapEdit: (isEdit, event) {
-                          context.push(
+                        onTapEdit: (isEdit, event) async {
+                          final result = await context.push<EventDetail?>(
                             RoutePaths.events + RoutePaths.eventWrite,
                             extra: {
                               'isEdit': isEdit,
                               'events': event,
                             },
                           );
+                          return result;
                         },
                       );
                     },
