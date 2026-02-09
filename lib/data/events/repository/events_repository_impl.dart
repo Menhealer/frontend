@@ -45,6 +45,31 @@ class EventsRepositoryImpl implements EventsRepository {
   }
 
   @override
+  Future<EventDetail> getEvent(int eventId) async {
+    final baseEndpoint = dotenv.get('EVENTS_ENDPOINT');
+    final endpoint = '$baseEndpoint/$eventId';
+
+    try {
+      final response = await _authDio.get(endpoint);
+      if (response.statusCode == HttpStatusCode.ok.code) return EventDetail.fromJson(response.data);
+      throw ApiException(
+        '일정 상세 정보를 불러오는 데 실패했어요',
+        statusCode: response.statusCode,
+      );
+    } on DioException catch (e) {
+      if (e.error is ApiException) {
+        throw e.error!;
+      }
+      throw ApiException(
+        '일정 상세 정보를 불러오는 데 실패했어요',
+        statusCode: e.response?.statusCode,
+      );
+    } catch (e) {
+      throw ApiException('알 수 없는 오류가 발생했어요');
+    }
+  }
+
+  @override
   Future<EventDetail> eventWrite(EventWriteRequest request) async {
     final endpoint = dotenv.get('EVENTS_ENDPOINT');
 
@@ -77,6 +102,7 @@ class EventsRepositoryImpl implements EventsRepository {
     final endpoint = '$baseEndpoint/$eventId';
 
     try {
+      print('event edit: ${request.toJson().withoutNulls()}');
       final response = await _authDio.put(
         endpoint,
         data: request.toJson().withoutNulls(),
@@ -96,6 +122,7 @@ class EventsRepositoryImpl implements EventsRepository {
         statusCode: e.response?.statusCode,
       );
     } catch (e) {
+      print('error: $e');
       throw ApiException('알 수 없는 오류가 발생했어요');
     }
   }
