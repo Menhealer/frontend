@@ -13,6 +13,8 @@ class EventsState {
 
   final Set<String> loadedYearMonths;
 
+  final Set<String> dirtyYearMonths;
+
   EventsState({
     required this.isLoading,
     this.errorMessage,
@@ -21,6 +23,7 @@ class EventsState {
     this.itemsByDate = const {},
     this.itemsForSelected = const [],
     this.loadedYearMonths = const {},
+    required this.dirtyYearMonths,
   });
 
   EventsState copyWith({
@@ -31,6 +34,7 @@ class EventsState {
     Map<String, List<CalendarItem>>? itemsByDate,
     List<CalendarItem>? itemsForSelected,
     Set<String>? loadedYearMonths,
+    Set<String>? dirtyYearMonths,
   }) {
     return EventsState(
       isLoading: isLoading ?? this.isLoading,
@@ -40,6 +44,7 @@ class EventsState {
       itemsByDate: itemsByDate ?? this.itemsByDate,
       itemsForSelected: itemsForSelected ?? this.itemsForSelected,
       loadedYearMonths: loadedYearMonths ?? this.loadedYearMonths,
+      dirtyYearMonths: dirtyYearMonths ?? this.dirtyYearMonths,
     );
   }
 }

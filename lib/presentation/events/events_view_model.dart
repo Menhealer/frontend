@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:relog/core/exception/api_exception.dart';
+import 'package:relog/core/state/app_mutation_provider.dart';
 import 'package:relog/core/utils/time_format.dart';
 import 'package:relog/domain/events/model/calendar.dart';
 import 'package:relog/domain/events/model/event_detail.dart';
@@ -11,9 +12,32 @@ import 'package:relog/presentation/events/model/calendar_item.dart';
 class EventsViewModel extends Notifier<EventsState> {
   late final GetCalendarUseCase _getCalendarUseCase;
 
+  // Prevent duplicate calendar loads per (year, month)
+  final Map<String, Future<void>> _inFlightLoads = {};
+
   @override
   EventsState build() {
     _getCalendarUseCase = ref.read(getCalendarUseCaseProvider);
+
+    ref.listen<AppMutation?>(appMutationProvider, (prev, next) async {
+      if (next == null) return;
+
+      if (next is FriendUpserted) {
+        await _invalidateBirthdayAffectedMonths(
+          prevBirthday: next.prevBirthday,
+          nextBirthday: next.friend.birthday,
+        );
+      }
+
+      if (next is FriendDeleted) {
+        await _invalidateBirthdayAffectedMonths(
+          prevBirthday: next.birthday,
+          nextBirthday: null,
+        );
+      }
+    });
+
+    ref.onDispose(_inFlightLoads.clear);
 
     final now = DateTime.now();
     final focused = DateTime(now.year, now.month, 1);
@@ -26,13 +50,65 @@ class EventsViewModel extends Notifier<EventsState> {
       itemsByDate: const {},
       itemsForSelected: const [],
       loadedYearMonths: const {},
+      dirtyYearMonths: const {},
     );
   }
 
+  String _ymKey(int year, int month) => '$year-${month.toString().padLeft(2, '0')}';
+
   Future<void> ensureCalendarLoaded(int year, int month) async {
     final key = _ymKey(year, month);
-    if (state.loadedYearMonths.contains(key)) return;
-    await loadCalendar(year, month);
+
+    // If there is already a request in-flight for this month, await it.
+    final inFlight = _inFlightLoads[key];
+    if (inFlight != null) {
+      await inFlight;
+      return;
+    }
+
+    final isLoaded = state.loadedYearMonths.contains(key);
+    final isDirty = state.dirtyYearMonths.contains(key);
+    if (isLoaded && !isDirty) return;
+
+    // Start a new in-flight load for this month.
+    final future = loadCalendar(year, month);
+    _inFlightLoads[key] = future;
+
+    try {
+      await future;
+    } finally {
+      // Always clear in-flight marker.
+      final current = _inFlightLoads[key];
+      if (identical(current, future)) {
+        _inFlightLoads.remove(key);
+      }
+    }
+  }
+
+  void invalidateCalendarMonth(int year, int month) {
+    final key = _ymKey(year, month);
+
+    // Already invalidated
+    if (state.dirtyYearMonths.contains(key) && !state.loadedYearMonths.contains(key)) {
+      return;
+    }
+
+    final dirty = {...state.dirtyYearMonths, key};
+
+    final loaded = {...state.loadedYearMonths}..remove(key);
+
+    final mm = month.toString().padLeft(2, '0');
+    final prefix = '$year-$mm-';
+
+    final nextMap = Map<String, List<CalendarItem>>.from(state.itemsByDate);
+    nextMap.removeWhere((date, _) => date.startsWith(prefix));
+
+    state = state.copyWith(
+      dirtyYearMonths: dirty,
+      loadedYearMonths: loaded,
+      itemsByDate: nextMap,
+      itemsForSelected: _itemsForDate(state.selectedDate, nextMap),
+    );
   }
 
   void setFocusedMonth(DateTime month, {bool alsoSelectFirstDay = false}) {
@@ -57,6 +133,15 @@ class EventsViewModel extends Notifier<EventsState> {
   }
 
   Future<void> loadCalendar(int year, int month) async {
+    final key = _ymKey(year, month);
+
+    // If another call is already loading this month, don't start a duplicate.
+    final inFlight = _inFlightLoads[key];
+    if (inFlight != null) {
+      await inFlight;
+      return;
+    }
+
     if (state.isLoading) return;
     state = state.copyWith(isLoading: true, errorMessage: null);
 
@@ -64,7 +149,10 @@ class EventsViewModel extends Notifier<EventsState> {
       final calendar = await _getCalendarUseCase.execute(year, month);
 
       final merged = _mergeCalendarIntoMap(state.itemsByDate, calendar);
-      final loaded = {...state.loadedYearMonths, _ymKey(year, month)};
+
+      final loaded = {...state.loadedYearMonths, key};
+      final dirty = {...state.dirtyYearMonths}..remove(key);
+
       final selectedItems = _itemsForDate(state.selectedDate, merged);
 
       state = state.copyWith(
@@ -72,6 +160,7 @@ class EventsViewModel extends Notifier<EventsState> {
         itemsByDate: merged,
         itemsForSelected: selectedItems,
         loadedYearMonths: loaded,
+        dirtyYearMonths: dirty,
       );
     } on ApiException catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.message);
@@ -82,8 +171,6 @@ class EventsViewModel extends Notifier<EventsState> {
       );
     }
   }
-
-  String _ymKey(int year, int month) => '$year-${month.toString().padLeft(2, '0')}';
 
   List<CalendarItem> _itemsForDate(DateTime date, Map<String, List<CalendarItem>> itemsByDate) {
     final ymd = ymdHyphen(date);
@@ -167,5 +254,41 @@ class EventsViewModel extends Notifier<EventsState> {
       itemsByDate: nextMap,
       itemsForSelected: _itemsForDate(state.selectedDate, nextMap),
     );
+  }
+
+  Future<void> _invalidateBirthdayAffectedMonths({
+    required String? prevBirthday,
+    required String? nextBirthday,
+  }) async {
+    final months = <DateTime>{};
+
+    DateTime? toMonthInFocusedYear(String? ymd) {
+      if (ymd == null || ymd.trim().isEmpty) return null;
+      final parts = ymd.split('-');
+      if (parts.length < 2) return null;
+
+      final m = int.tryParse(parts[1]);
+      if (m == null) return null;
+
+      final y = state.focusedMonth.year;
+      return DateTime(y, m, 1);
+    }
+
+    final prevM = toMonthInFocusedYear(prevBirthday);
+    final nextM = toMonthInFocusedYear(nextBirthday);
+
+    if (prevM != null) months.add(prevM);
+    if (nextM != null) months.add(nextM);
+    if (months.isEmpty) months.add(state.focusedMonth);
+
+    for (final m in months) {
+      invalidateCalendarMonth(m.year, m.month);
+    }
+
+    // 포커스 달이 영향을 받았으면 즉시 재호출
+    final focusedKey = _ymKey(state.focusedMonth.year, state.focusedMonth.month);
+    if (state.dirtyYearMonths.contains(focusedKey)) {
+      await ensureCalendarLoaded(state.focusedMonth.year, state.focusedMonth.month);
+    }
   }
 }

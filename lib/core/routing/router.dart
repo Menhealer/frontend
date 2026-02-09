@@ -129,8 +129,101 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
 
+      // 이벤트
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: RoutePaths.eventDetail,
+        builder: (context, state) {
+          final id = state.extra as int;
+
+          return EventDetailScreen(
+            id: id,
+            onTapEdit: (isEdit, event) async {
+              final result = await context.push<EventDetail?>(
+                RoutePaths.eventDetail + RoutePaths.eventWrite,
+                extra: {
+                  'isEdit': isEdit,
+                  'events': event,
+                },
+              );
+              return result;
+            },
+          );
+        },
+        routes: [
+          GoRoute(
+            parentNavigatorKey: rootNavigatorKey,
+            path: RoutePaths.eventWrite,
+            builder: (context, state) {
+              final extra = state.extra as Map<String, dynamic>?;
+              final bool isEdit = extra?['isEdit'] ?? false;
+              final DateTime? date = extra?['date'] as DateTime?;
+              final EventDetail? event = extra?['events'] as EventDetail?;
+
+              return EventWriteScreen(
+                isEdit: isEdit,
+                date: date,
+                event: event,
+                onTapSearchFriend: () async {
+                  final result = await context.push<Map<String, dynamic>>(
+                    RoutePaths.selectFriend,
+                  );
+                  return result;
+                },
+              );
+            },
+          ),
+        ]
+      ),
+
+      // 친구 상세
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: RoutePaths.friendDetail,
+        builder: (context, state) {
+          final friendId = state.extra as int;
+          return FriendDetailScreen(
+            friendId: friendId,
+            onTapSummary: () {
+              context.push(
+                RoutePaths.friendDetail + RoutePaths.friendSummary,
+              );
+            },
+            onTapGift: (friend) {
+              context.push(
+                RoutePaths.gifts,
+                extra: friend,
+              );
+            },
+            onTapEventDetail: (id) {
+              context.push(
+                RoutePaths.eventDetail,
+                extra: id,
+              );
+            },
+            onTapEdit: (isEdit, friendInfo) async {
+              final refresh = await context.push<Friend?>(
+                RoutePaths.friends + RoutePaths.friendWrite,
+                extra: {
+                  'isEdit': isEdit,
+                  'friendInfo': friendInfo,
+                },
+              );
+              return refresh;
+            },
+          );
+        },
+        routes: [
+          GoRoute(
+            path: RoutePaths.friendSummary,
+            builder: (context, state) => FriendSummary(),
+          )
+        ],
+      ),
+
       // 선물
       GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
         path: RoutePaths.gifts,
         builder: (context, state) {
           final friend = state.extra as Friend;
@@ -161,6 +254,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
         routes: [
           GoRoute(
+            parentNavigatorKey: rootNavigatorKey,
             path: RoutePaths.giftWrite,
             builder: (context, state) {
               final extra = state.extra as Map<String, dynamic>?;
@@ -186,6 +280,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // 친구 선택
       GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
         path: RoutePaths.selectFriend,
         builder: (context, state) => SelectFriendScreen(),
       ),
@@ -239,7 +334,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => EventsScreen(
                   onTapWrite: (isEdit, date) async {
                     final result = await context.push<EventDetail?>(
-                      RoutePaths.events + RoutePaths.eventWrite,
+                      RoutePaths.eventDetail + RoutePaths.eventWrite,
                       extra: {
                         'isEdit': isEdit,
                         'date': date,
@@ -255,53 +350,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                   },
                   onTapEventDetail: (id) {
                     context.push(
-                      RoutePaths.events + RoutePaths.eventDetail,
+                      RoutePaths.eventDetail,
                       extra: id,
                     );
                   },
                 ),
                 routes: [
-                  GoRoute(
-                    path: RoutePaths.eventWrite,
-                    builder: (context, state) {
-                      final extra = state.extra as Map<String, dynamic>?;
-                      final bool isEdit = extra?['isEdit'] ?? false;
-                      final DateTime? date = extra?['date'] as DateTime?;
-                      final EventDetail? event = extra?['events'] as EventDetail?;
-
-                      return EventWriteScreen(
-                        isEdit: isEdit,
-                        date: date,
-                        event: event,
-                        onTapSearchFriend: () async {
-                          final result = await context.push<Map<String, dynamic>>(
-                            RoutePaths.selectFriend,
-                          );
-                          return result;
-                        },
-                      );
-                    },
-                  ),
-                  GoRoute(
-                    path: RoutePaths.eventDetail,
-                    builder: (context, state) {
-                      final id = state.extra as int;
-
-                      return EventDetailScreen(
-                        id: id,
-                        onTapEdit: (isEdit, event) async {
-                          final result = await context.push<EventDetail?>(
-                            RoutePaths.events + RoutePaths.eventWrite,
-                            extra: {
-                              'isEdit': isEdit,
-                              'events': event,
-                            },
-                          );
-                          return result;
-                        },
-                      );
-                    },
-                  ),
                 ],
               ),
             ],
@@ -313,7 +367,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => FriendsScreen(
                   onTapDetail: (friendId) async {
                     final deleted = await context.push<bool>(
-                      RoutePaths.friends + RoutePaths.friendDetail,
+                      RoutePaths.friendDetail,
                       extra: friendId,
                     );
                     return deleted ?? false;
@@ -331,6 +385,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                 ),
                 routes: [
                   GoRoute(
+                    parentNavigatorKey: rootNavigatorKey,
                     path: RoutePaths.friendWrite,
                     builder: (context, state) {
                       final extra = state.extra as Map<String, dynamic>?;
@@ -342,48 +397,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                         friendInfo: friendInfo,
                       );
                     },
-                  ),
-                  GoRoute(
-                    path: RoutePaths.friendDetail,
-                    builder: (context, state) {
-                      final friendId = state.extra as int;
-                      return FriendDetailScreen(
-                        friendId: friendId,
-                        onTapSummary: () {
-                          context.push(
-                            RoutePaths.friends + RoutePaths.friendDetail + RoutePaths.friendSummary,
-                          );
-                        },
-                        onTapGift: (friend) {
-                          context.push(
-                            RoutePaths.gifts,
-                            extra: friend,
-                          );
-                        },
-                        onTapEventDetail: (id) {
-                          context.push(
-                            RoutePaths.events + RoutePaths.eventDetail,
-                            extra: id,
-                          );
-                        },
-                        onTapEdit: (isEdit, friendInfo) async {
-                          final refresh = await context.push<Friend?>(
-                            RoutePaths.friends + RoutePaths.friendWrite,
-                            extra: {
-                              'isEdit': isEdit,
-                              'friendInfo': friendInfo,
-                            },
-                          );
-                          return refresh;
-                        },
-                      );
-                    },
-                    routes: [
-                      GoRoute(
-                        path: RoutePaths.friendSummary,
-                        builder: (context, state) => FriendSummary(),
-                      )
-                    ],
                   ),
                 ],
               ),

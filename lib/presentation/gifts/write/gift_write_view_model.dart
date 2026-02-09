@@ -92,7 +92,7 @@ class GiftWriteViewModel extends Notifier<GiftWriteState> {
       state = state.copyWith(description: v);
 
   Future<GiftDetail?> submit() async {
-    if (!state.canSubmit) return null;
+    if (!state.canSubmit || state.isLoading) return null;
 
     state = state.copyWith(isLoading: true, errorMessage: null);
 

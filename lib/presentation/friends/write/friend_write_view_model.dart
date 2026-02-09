@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:relog/core/exception/api_exception.dart';
+import 'package:relog/core/state/app_mutation_provider.dart';
 import 'package:relog/domain/friends/model/friend.dart';
 import 'package:relog/domain/friends/model/friend_edit_request.dart';
 import 'package:relog/domain/friends/model/friend_write_request.dart';
@@ -137,6 +138,12 @@ class FriendWriteViewModel extends Notifier<FriendWriteState> {
         );
         final result = await _friendEditUseCase.execute(req, state.friendId!);
         state = state.copyWith(isLoading: false);
+
+        if (result != null) {
+          ref.read(appMutationProvider.notifier).emit(
+            FriendUpserted(friend: result, prevBirthday: state.originalBirthday),
+          );
+        }
         return result;
       } else {
         final req = FriendWriteRequest(
@@ -146,6 +153,12 @@ class FriendWriteViewModel extends Notifier<FriendWriteState> {
         );
         final result = await _writeFriendUseCase.execute(req);
         state = state.copyWith(isLoading: false);
+
+        if (result != null) {
+          ref.read(appMutationProvider.notifier).emit(
+            FriendUpserted(friend: result, prevBirthday: null),
+          );
+        }
         return result;
       }
     } on ApiException catch (e) {

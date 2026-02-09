@@ -17,6 +17,7 @@ class SignUpViewModel extends Notifier<SignUpState> {
   }
 
   Future<bool> signUp(LoginRequest request, String nickname, String birthday) async {
+    if (state.isLoading) return false;
     state = state.copyWith(isLoading: true, errorMessage: null,);
 
     try {
@@ -36,7 +37,6 @@ class SignUpViewModel extends Notifier<SignUpState> {
       state = state.copyWith(isLoading: false, errorMessage: e.message);
       return false;
     } catch (e) {
-      print('e: $e');
       state = state.copyWith(isLoading: false, errorMessage: "회원가입 중 알 수 없는\n오류가 발생했습니다.");
       return false;
     }
