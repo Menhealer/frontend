@@ -317,7 +317,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                     builder: (context, state) => FriendshipScreen(
                       onTapFriendDetail: (friendId) {
                         context.push(
-                          RoutePaths.friends + RoutePaths.friendDetail,
+                          RoutePaths.friendDetail,
                           extra: friendId,
                         );
                       },

@@ -50,7 +50,9 @@ class EventDetailScreen extends HookConsumerWidget {
                 CustomDialogAction(
                   text: '확인',
                   style: DialogActionStyle.normal,
-                  onPressed: () {},
+                  onPressed: () {
+                    context.pop();
+                  },
                 ),
               ],
             ),

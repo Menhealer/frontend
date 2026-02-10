@@ -51,7 +51,7 @@ class FriendshipCard extends StatelessWidget {
               ),
             ),
 
-            if (item.group != null) ...[
+            if (item.group != null && item.group != '') ...[
               InfoChip(
                 label: item.group!,
                 backgroundColor: ColorStyles.purple100,
