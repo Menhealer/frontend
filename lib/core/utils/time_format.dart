@@ -27,3 +27,11 @@ String formatIntBirthday(int y, int m, int d) {
   final dd = date.day.toString().padLeft(2, '0');
   return '${date.year}-$mm-$dd';
 }
+
+String monthlyVersion(int year, int month) =>
+    '$year-${month.toString().padLeft(2, '0')}-01';
+
+int quarterStartMonth(int quarter) => (quarter - 1) * 3 + 1;
+
+String quarterlyVersion(int year, int quarter) =>
+    '$year-${quarterStartMonth(quarter).toString().padLeft(2, '0')}-01';
