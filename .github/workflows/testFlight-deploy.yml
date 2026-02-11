@@ -72,15 +72,8 @@ jobs:
           echo "${{ secrets.IOS_DISTRIBUTION_P12_B64 }}" | base64 --decode > ios_distribution.p12
           echo "${{ secrets.IOS_PROVISIONING_PROFILE_B64 }}" | base64 --decode > profile.mobileprovision
 
-      - name: Verify P12 file
-        run: |
-          ls -al ios_distribution.p12
-          file ios_distribution.p12
-          openssl pkcs12 -in ios_distribution.p12 -nodes -passin pass:"${{ secrets.IOS_DISTRIBUTION_P12_PASSWORD }}" >/dev/null
-
       - name: Import certificate to keychain
         run: |
-          run: |
           KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain-db"
           security delete-keychain "$KEYCHAIN_PATH" || true
           security create-keychain -p "${{ secrets.IOS_DISTRIBUTION_P12_PASSWORD }}" "$KEYCHAIN_PATH"
