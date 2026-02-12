@@ -39,4 +39,10 @@ class UserSessionNotifier extends AsyncNotifier<User?> {
     await _secureStorageService.delete();
     state = const AsyncValue.data(null);
   }
+
+  Future<void> delete() async {
+    await _sharedPreferencesService.clearAll();
+    await _secureStorageService.delete();
+    state = const AsyncValue.data(null);
+  }
 }
