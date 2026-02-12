@@ -75,8 +75,15 @@ class MyPageViewModel extends Notifier<MyPageState> {
         )
       );
 
-      // 유저 정보 삭제
-      if (result) await ref.read(userSessionProvider.notifier).delete();
+      if (!result) {
+        state = state.copyWith(
+          isLoading: false,
+          errorMessage: '회원 탈퇴에 실패했어요',
+        );
+        return const SocialLoginCanceled();
+      }
+
+      await ref.read(userSessionProvider.notifier).delete();
 
       state = state.copyWith(isLoading: false);
       return const SocialLoginSuccess();
@@ -86,7 +93,7 @@ class MyPageViewModel extends Notifier<MyPageState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: "로그인 중 알 수 없는\n오류가 발생했습니다.",
+        errorMessage: "회원 탈퇴 중 알 수 없는\n오류가 발생했습니다.",
       );
       return const SocialLoginCanceled();
     }
