@@ -176,6 +176,7 @@ class FriendDetailScreen extends HookConsumerWidget {
             color: ColorStyles.pointPurple,
             onRefresh: () async => vm.loadFriend(friendId, force: true),
             child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
                 children: [
                   // 친구 정보
