@@ -109,7 +109,7 @@ class FriendsScreen extends HookConsumerWidget {
           onTap: () => FocusScope.of(context).unfocus(),
           behavior: HitTestBehavior.translucent,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+            padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
             child: Column(
               children: [
                 SearchTextField(controller: searchController,),
