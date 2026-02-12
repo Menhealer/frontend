@@ -178,7 +178,6 @@ class GiftsScreen extends HookConsumerWidget {
                                           ],
                                         ),
                                       );
-                                      // 삭제 로직
                                     },
                                   ),
                                 ],

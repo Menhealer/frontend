@@ -5,6 +5,7 @@ import 'package:relog/domain/auth/use_case/logout_use_case.dart';
 import 'package:relog/domain/auth/use_case/profile_edit_use_case.dart';
 import 'package:relog/domain/auth/use_case/sign_up_use_case.dart';
 import 'package:relog/domain/auth/use_case/social_login_use_case.dart';
+import 'package:relog/domain/auth/use_case/user_delete_use_case.dart';
 
 final socialLoginUseCaseProvider = Provider<SocialLoginUseCase>((ref) {
   final repo = ref.watch(authRepositoryProvider);
@@ -24,6 +25,11 @@ final signUpUseCaseProvider = Provider<SignUpUseCase>((ref) {
 final logoutUseCaseProvider = Provider<LogoutUseCase>((ref) {
   final repo = ref.watch(authRepositoryProvider);
   return LogoutUseCase(repo);
+});
+
+final userDeleteUseCaseProvider = Provider<UserDeleteUseCase>((ref) {
+  final repo = ref.watch(authRepositoryProvider);
+  return UserDeleteUseCase(repo);
 });
 
 final profileEditUseCaseProvider = Provider<ProfileEditUseCase>((ref) {

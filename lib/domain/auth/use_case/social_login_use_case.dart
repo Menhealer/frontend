@@ -5,10 +5,10 @@ class SocialLoginUseCase {
   final AuthRepository _authRepository;
   SocialLoginUseCase(this._authRepository);
 
-  Future<String?> execute(LoginPlatform platform) async {
+  Future<String?> execute(LoginPlatform platform, bool isLogin) async {
     return switch (platform) {
       LoginPlatform.KAKAO => _authRepository.kakaoLogin(),
-      LoginPlatform.APPLE => _authRepository.appleLogin(),
+      LoginPlatform.APPLE => _authRepository.appleLogin(isLogin),
     };
   }
 }

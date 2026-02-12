@@ -50,6 +50,11 @@ class SharedPreferencesService {
     await prefs.remove(_loginPlatformKey);
   }
 
+  Future<void> clearAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+  }
+
   // Home analysis cache
   static const _homeMonthlyPrefix = 'home_monthly';
   static const _homeQuarterlyPrefix = 'home_quarterly';

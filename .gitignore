@@ -282,3 +282,7 @@ fabric.properties
 
 ### AndroidStudio Patch ###
 !/gradle/wrapper/gradle-wrapper.jar
+
+# Firebase (FlutterFire)
+firebase.json
+lib/firebase_options.dart

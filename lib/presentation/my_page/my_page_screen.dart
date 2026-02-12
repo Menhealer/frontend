@@ -152,9 +152,32 @@ class MyPageScreen extends HookConsumerWidget {
                     ),
                     SettingsItem(
                       label: '회원 탈퇴',
-                      onTap: () {
+                      onTap: () async {
                         // TODO: 회원 탈퇴 로직
                         KakaoLoginFlow.entry = LoginEntry.mypage;
+                        showCupertinoDialog(
+                          context: context,
+                          barrierDismissible: true, // 바깥 터치 시 다이얼로그 닫힘
+                          builder: (_) => CustomDialog(
+                            title: '회원 탈퇴',
+                            content: '회원 탈퇴를 진행하려면\n소셜 로그인 재인증이 필요해요.\n계속할까요?',
+                            actions: [
+                              CustomDialogAction(
+                                text: '취소',
+                                style: DialogActionStyle.destructive,
+                                onPressed: () {},
+                              ),
+                              CustomDialogAction(
+                                text: '확인',
+                                style: DialogActionStyle.normal,
+                                isDefaultAction: true,
+                                onPressed: () async {
+                                  await vm.userDelete(user.provider.toLoginPlatform());
+                                },
+                              ),
+                            ],
+                          ),
+                        );
                       },
                     ),
                   ],
