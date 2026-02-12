@@ -20,7 +20,7 @@ class SelectedDayEventList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         border: Border(top: BorderSide(color: ColorStyles.black42)),
       ),
@@ -32,26 +32,28 @@ class SelectedDayEventList extends StatelessWidget {
             ),
           )
         : ListView.separated(
-            itemCount: events.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 16),
+            itemCount: events.length + 1,
+            separatorBuilder: (_, index) => SizedBox(height: index == 0 ? 0 : 16),
             itemBuilder: (context, index) {
-              final event = events[index];
+              if (index == 0) return const SizedBox(height: 16);
+
+              final event = events[index - 1];
               return GestureDetector(
                 onTap: event.type == CalendarItemType.event
-                  ? () => onTapEventDetail(event.id)
-                  : () => onTapGift(
-                        Friend(
-                          id: event.friendId,
-                          name: event.friendName,
-                          score: event.score ?? 0,
-                          group: event.group,
-                          birthday: event.birthday,
+                    ? () => onTapEventDetail(event.id)
+                    : () => onTapGift(
+                          Friend(
+                            id: event.friendId,
+                            name: event.friendName,
+                            score: event.score ?? 0,
+                            group: event.group,
+                            birthday: event.birthday,
+                          ),
                         ),
-                      ),
                 behavior: HitTestBehavior.opaque,
                 child: EventCard(event: event),
               );
-            }
+            },
           ),
     );
   }

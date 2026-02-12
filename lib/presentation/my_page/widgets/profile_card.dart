@@ -40,7 +40,10 @@ class MyProfileCard extends StatelessWidget {
             width: _avatarSize,
             height: _avatarSize,
             child: const Center(
-              child: CircularProgressIndicator(strokeWidth: 2),
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: ColorStyles.pointPurple,
+              ),
             ),
           );
         },
