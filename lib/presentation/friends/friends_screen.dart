@@ -109,7 +109,7 @@ class FriendsScreen extends HookConsumerWidget {
           onTap: () => FocusScope.of(context).unfocus(),
           behavior: HitTestBehavior.translucent,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+            padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
             child: Column(
               children: [
                 SearchTextField(controller: searchController,),
@@ -124,7 +124,10 @@ class FriendsScreen extends HookConsumerWidget {
                         ),
                       ),
                     )
-                  : ListView.builder(
+                  : RefreshIndicator(
+                      color: ColorStyles.pointPurple,
+                      onRefresh: () async => vm.loadFriends(),
+                      child: ListView.builder(
                       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                       padding: EdgeInsets.only(top: 16),
                       itemCount: filteredFriends.length,
@@ -150,6 +153,7 @@ class FriendsScreen extends HookConsumerWidget {
                         );
                       },
                     ),
+                  ),
                 ),
               ],
             ),
