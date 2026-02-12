@@ -59,6 +59,14 @@ class EventsScreen extends HookConsumerWidget {
         isProgrammaticJump.value = false;
       }
 
+      final isCurrentMonth = (m.year == now.year && m.month == now.month);
+
+      if (isCurrentMonth) {
+        vm.setFocusedMonth(m, alsoSelectFirstDay: false);
+        vm.setSelectedDate(now);
+        return;
+      }
+
       vm.setFocusedMonth(m, alsoSelectFirstDay: !wasProgrammatic);
     }
 
@@ -105,7 +113,14 @@ class EventsScreen extends HookConsumerWidget {
         curve: Curves.easeOut,
       );
 
-      vm.setFocusedMonth(target, alsoSelectFirstDay: true);
+      final isCurrentMonth = (target.year == now.year && target.month == now.month);
+
+      if (isCurrentMonth) {
+        vm.setFocusedMonth(target, alsoSelectFirstDay: false);
+        vm.setSelectedDate(now);
+      } else {
+        vm.setFocusedMonth(target, alsoSelectFirstDay: true);
+      }
     }, [context, focusedMonth.year, focusedMonth.month]);
 
     // 선택된 날짜의 아이템
