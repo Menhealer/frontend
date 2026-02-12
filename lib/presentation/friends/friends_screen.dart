@@ -124,7 +124,10 @@ class FriendsScreen extends HookConsumerWidget {
                         ),
                       ),
                     )
-                  : ListView.builder(
+                  : RefreshIndicator(
+                      color: ColorStyles.pointPurple,
+                      onRefresh: () async => vm.loadFriends(),
+                      child: ListView.builder(
                       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                       padding: EdgeInsets.only(top: 16),
                       itemCount: filteredFriends.length,
@@ -150,6 +153,7 @@ class FriendsScreen extends HookConsumerWidget {
                         );
                       },
                     ),
+                  ),
                 ),
               ],
             ),
