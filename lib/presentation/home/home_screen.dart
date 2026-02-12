@@ -77,7 +77,7 @@ class HomeScreen extends HookConsumerWidget {
       backgroundColor: ColorStyles.black22,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 40, 16, 24),
+          padding: const EdgeInsets.fromLTRB(16, 40, 16, 0),
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,

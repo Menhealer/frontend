@@ -153,7 +153,7 @@ class EventsScreen extends HookConsumerWidget {
         child: Stack(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.only(top: 16),
               child: Column(
                 children: [
                   Padding(
@@ -175,7 +175,6 @@ class EventsScreen extends HookConsumerWidget {
                   const _WeekdayRow(),
                   const SizedBox(height: 8),
 
-                  // 달력
                   // 달력
                   SizedBox(
                     height: calendarHeight,

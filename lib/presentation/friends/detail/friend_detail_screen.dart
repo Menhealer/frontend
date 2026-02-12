@@ -171,7 +171,7 @@ class FriendDetailScreen extends HookConsumerWidget {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16,),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: RefreshIndicator(
             color: ColorStyles.pointPurple,
             onRefresh: () async => vm.loadFriend(friendId, force: true),
@@ -179,6 +179,7 @@ class FriendDetailScreen extends HookConsumerWidget {
               child: Column(
                 children: [
                   // 친구 정보
+                  SizedBox(height: 16,),
                   SizedBox(
                     width: double.infinity,
                     child: SingleChildScrollView(
