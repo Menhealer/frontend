@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:relog/core/exception/api_exception.dart';
+import 'package:relog/core/storage/providers/shared_preferences_provider.dart';
 import 'package:relog/core/storage/providers/user_session_provider.dart';
 import 'package:relog/domain/auth/model/login_request.dart';
 import 'package:relog/domain/auth/model/sign_up_request.dart';
@@ -16,7 +17,7 @@ class SignUpViewModel extends Notifier<SignUpState> {
     return SignUpState(isLoading: false);
   }
 
-  Future<bool> signUp(LoginRequest request, String nickname, String birthday) async {
+  Future<bool> signUp(LoginRequest request, String nickname, String birthday, bool agreed) async {
     if (state.isLoading) return false;
     state = state.copyWith(isLoading: true, errorMessage: null,);
 
@@ -31,6 +32,7 @@ class SignUpViewModel extends Notifier<SignUpState> {
       );
 
       await ref.read(userSessionProvider.notifier).setUser(result.member!, result.accessToken!, result.refreshToken!);
+      await ref.read(sharedPreferencesProvider).saveMarketingConsent(agreed);
       state = state.copyWith(isLoading: false,);
       return true;
     } on ApiException catch (e) {
