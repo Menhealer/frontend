@@ -67,10 +67,18 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       final location = state.matchedLocation;
 
-      final inAuthFlow = location == RoutePaths.signIn || location.startsWith(RoutePaths.signIn);
+      // Routes allowed even when signed out
+      final isPublicRoute =
+          location == RoutePaths.splash ||
+          location == RoutePaths.webView ||
+          location.startsWith(RoutePaths.webView);
+
+      // Auth flow routes (sign-in + nested routes like sign-up)
+      final inAuthFlow =
+          location == RoutePaths.signIn || location.startsWith(RoutePaths.signIn);
 
       // 미로그인 & 보호된 영역 -> 로그인
-      if (!signedIn && !inAuthFlow && location != RoutePaths.splash) {
+      if (!signedIn && !inAuthFlow && !isPublicRoute) {
         print('📍 로그인 페이지로 라우팅 됩니다.');
         return RoutePaths.signIn;
       }
@@ -123,6 +131,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                 request: request,
                 onTapSignUp: () {
                   context.go(RoutePaths.signIn);
+                },
+                onTapWebView: (url, title) {
+                  context.push(
+                    RoutePaths.webView,
+                    extra: {
+                      'url': url,
+                      'title': title,
+                    },
+                  );
                 },
               );
             },
@@ -286,6 +303,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => SelectFriendScreen(),
       ),
 
+      // 웹뷰
+      GoRoute(
+        path: RoutePaths.webView,
+        builder: (context, state) {
+          return WebViewScreen(
+            url: (state.extra as Map<String, dynamic>)['url'],
+            title: (state.extra as Map<String, dynamic>)['title'],
+          );
+        },
+      ),
+
       // 탭
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -425,7 +453,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                   },
                   onTapWebView: (url, title) {
                     context.push(
-                      RoutePaths.mypage + RoutePaths.webView,
+                      RoutePaths.webView,
                       extra: {
                         'url': url,
                         'title': title,
@@ -437,15 +465,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: RoutePaths.profileEdit,
                     builder: (context, state) => ProfileEditScreen(),
-                  ),
-                  GoRoute(
-                    path: RoutePaths.webView,
-                    builder: (context, state) {
-                      return WebViewScreen(
-                        url: (state.extra as Map<String, dynamic>)['url'],
-                        title: (state.extra as Map<String, dynamic>)['title'],
-                      );
-                    },
                   ),
                 ],
               ),
