@@ -120,8 +120,17 @@ class SignInScreen extends HookConsumerWidget {
                             _ImageButton(
                               platform: LoginPlatform.APPLE,
                               img: 'assets/images/apple_login.png',
-                              onTap: () {
+                              onTap: () async {
+                                final result = await vm.socialLogin(LoginPlatform.APPLE);
 
+                                switch (result) {
+                                  case SocialLoginSuccess():
+                                    onTapSignIn();
+                                  case SocialLoginNeedSignUp(:final platform, :final token):
+                                    onTapSignUp(LoginRequest(provider: platform, token: token));
+                                  case SocialLoginCanceled():
+                                    break;
+                                }
                               },
                             ),
                         ],

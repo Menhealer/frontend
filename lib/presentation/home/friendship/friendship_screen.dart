@@ -2,22 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/widgets/app_bar/default_app_bar.dart';
-import 'package:relog/presentation/home/home_dummy.dart';
+import 'package:relog/domain/home/model/friend_info.dart';
 import 'package:relog/presentation/home/widgets/friendship_card.dart';
 import 'package:relog/presentation/home/widgets/friendship_tab_bar.dart';
 
 class FriendshipScreen extends HookConsumerWidget {
+  final List<FriendInfo> bestFriends;
+  final List<FriendInfo> worstFriends;
   final void Function(int friendId) onTapFriendDetail;
 
   const FriendshipScreen({
     super.key,
+    required this.bestFriends,
+    required this.worstFriends,
     required this.onTapFriendDetail,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bestItems = bestDummy;
-    final worstItems = worstDummy;
 
     return DefaultTabController(
       length: 2,
@@ -41,24 +43,24 @@ class FriendshipScreen extends HookConsumerWidget {
                     physics: const BouncingScrollPhysics(),
                     children: [
                       ListView.separated(
-                        itemCount: bestItems.length,
+                        itemCount: bestFriends.length,
                         separatorBuilder: (_, __) => const SizedBox(height: 16),
                         itemBuilder: (context, index) {
-                          final item = bestItems[index];
+                          final friend = bestFriends[index];
                           return FriendshipCard(
-                            onTap: () => onTapFriendDetail(item.id),
-                            item: item,
+                            onTap: () => onTapFriendDetail(friend.friend.id),
+                            item: friend,
                           );
                         },
                       ),
                       ListView.separated(
-                        itemCount: worstItems.length,
+                        itemCount: worstFriends.length,
                         separatorBuilder: (_, __) => const SizedBox(height: 16),
                         itemBuilder: (context, index) {
-                          final item = worstItems[index];
+                          final friend = worstFriends[index];
                           return FriendshipCard(
-                            onTap: () => onTapFriendDetail(item.id),
-                            item: item,
+                            onTap: () => onTapFriendDetail(friend.friend.id),
+                            item: friend,
                           );
                         },
                       ),

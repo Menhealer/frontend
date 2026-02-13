@@ -1,19 +1,22 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/widgets/dialog/custom_dialog.dart';
 import 'package:relog/core/utils/time_format.dart';
+import 'package:relog/domain/home/model/friend_info.dart';
 import 'package:relog/presentation/home/providers/home_view_providers.dart';
 import 'package:relog/presentation/home/widgets/best_worst_panel.dart';
 import 'package:relog/presentation/home/widgets/empty_card.dart';
 import 'package:relog/presentation/home/widgets/expandable_section.dart';
 import 'package:relog/presentation/home/widgets/section_header.dart';
 import 'package:relog/presentation/home/widgets/text_card.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends HookConsumerWidget {
-  final VoidCallback onTapFriendship;
+  final void Function(List<FriendInfo> bestFriends, List<FriendInfo> worstFriends) onTapFriendship;
 
   const HomeScreen({
     super.key,
@@ -36,6 +39,29 @@ class HomeScreen extends HookConsumerWidget {
       });
       return null;
     }, []);
+
+    Future<void> clearHomeCacheForDebug() async {
+      final prefs = await SharedPreferences.getInstance();
+      final keys = prefs.getKeys();
+
+      var removed = 0;
+      for (final k in keys) {
+        if (k.startsWith('home_monthly') || k.startsWith('home_quarterly')) {
+          final ok = await prefs.remove(k);
+          if (ok) removed++;
+        }
+      }
+
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('홈 캐시 삭제 완료: $removed개'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+
 
     // 오류
     useEffect(() {
@@ -77,12 +103,52 @@ class HomeScreen extends HookConsumerWidget {
       backgroundColor: ColorStyles.black22,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 40, 16, 24),
+          padding: const EdgeInsets.fromLTRB(16, 40, 16, 0),
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if (kDebugMode) ...[
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        showCupertinoDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (_) => CustomDialog(
+                            title: '테스트',
+                            content: '홈(월별/분기별) 캐시 데이터를 삭제할까요?',
+                            actions: [
+                              CustomDialogAction(
+                                text: '취소',
+                                style: DialogActionStyle.normal,
+                                onPressed: () {},
+                              ),
+                              CustomDialogAction(
+                                text: '삭제',
+                                style: DialogActionStyle.destructive,
+                                isDefaultAction: true,
+                                onPressed: () async {
+                                  await clearHomeCacheForDebug();
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.delete_outline),
+                      label: const Text('홈 캐시 삭제(테스트용)'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: ColorStyles.grayD3,
+                        side: const BorderSide(color: ColorStyles.black42),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+
                 // 월별 정산
                 SectionHeader(title: '${DateTime.now().month}월 정산'),
                 const SizedBox(height: 24,),
@@ -113,7 +179,15 @@ class HomeScreen extends HookConsumerWidget {
                   BestWorstPanel(
                     bestName: state.bestFriendName,
                     worstName: state.worstFriendName,
-                    onTap: onTapFriendship,
+                    onTap: () {
+                      final q = state.quarterly;
+                      if (q == null) return;
+
+                      final best = q.bestFriends.whereType<FriendInfo>().toList();
+                      final worst = q.worstFriends.whereType<FriendInfo>().toList();
+
+                      onTapFriendship(best, worst);
+                    },
                   ),
                   const SizedBox(height: 16),
 

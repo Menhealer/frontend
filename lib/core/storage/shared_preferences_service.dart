@@ -8,8 +8,9 @@ class SharedPreferencesService {
   static const _idKey = 'id';
   static const _nicknameKey = 'nickname';
   static const _birthdayKey = 'birthday';
-  static const _profileImageKey = 'profileImage';
+  static const _profileImageKey = 'profile_image';
   static const _loginPlatformKey = 'provider';
+  static const _marketingConsentKey = 'marketing_consent';
 
   Future<void> saveUser(User user) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -48,6 +49,21 @@ class SharedPreferencesService {
     await prefs.remove(_birthdayKey);
     await prefs.remove(_profileImageKey);
     await prefs.remove(_loginPlatformKey);
+  }
+
+  Future<void> saveMarketingConsent(bool agreed) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_marketingConsentKey, agreed);
+  }
+
+  Future<void> clearAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+  }
+
+  Future<bool> getMarketingConsent() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_marketingConsentKey) ?? false;
   }
 
   // Home analysis cache

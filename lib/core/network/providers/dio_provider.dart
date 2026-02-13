@@ -48,11 +48,11 @@ final authDioProvider = Provider<Dio>((ref) {
   );
 
   dio.interceptors.add(ResponseInterceptor());
-  // dio.interceptors.add(LogInterceptor(
-  //   requestHeader: true,
-  //   requestBody: true,
-  //   responseBody: true,
-  //   error: true,
-  // ));
+  dio.interceptors.add(LogInterceptor(
+    requestHeader: true,
+    requestBody: true,
+    responseBody: true,
+    error: true,
+  ));
   return dio;
 });

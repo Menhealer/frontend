@@ -9,6 +9,7 @@ import 'package:relog/domain/auth/model/user.dart';
 import 'package:relog/domain/events/model/event_detail.dart';
 import 'package:relog/domain/friends/model/friend.dart';
 import 'package:relog/domain/gifts/model/gift_detail.dart';
+import 'package:relog/domain/home/model/friend_info.dart';
 import 'package:relog/presentation/events/events_screen.dart';
 import 'package:relog/presentation/events/detail/event_detail_screen.dart';
 import 'package:relog/presentation/events/write/event_write_screen.dart';
@@ -66,10 +67,18 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       final location = state.matchedLocation;
 
-      final inAuthFlow = location == RoutePaths.signIn || location.startsWith(RoutePaths.signIn);
+      // Routes allowed even when signed out
+      final isPublicRoute =
+          location == RoutePaths.splash ||
+          location == RoutePaths.webView ||
+          location.startsWith(RoutePaths.webView);
+
+      // Auth flow routes (sign-in + nested routes like sign-up)
+      final inAuthFlow =
+          location == RoutePaths.signIn || location.startsWith(RoutePaths.signIn);
 
       // 미로그인 & 보호된 영역 -> 로그인
-      if (!signedIn && !inAuthFlow && location != RoutePaths.splash) {
+      if (!signedIn && !inAuthFlow && !isPublicRoute) {
         print('📍 로그인 페이지로 라우팅 됩니다.');
         return RoutePaths.signIn;
       }
@@ -122,6 +131,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                 request: request,
                 onTapSignUp: () {
                   context.go(RoutePaths.signIn);
+                },
+                onTapWebView: (url, title) {
+                  context.push(
+                    RoutePaths.webView,
+                    extra: {
+                      'url': url,
+                      'title': title,
+                    },
+                  );
                 },
               );
             },
@@ -285,6 +303,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => SelectFriendScreen(),
       ),
 
+      // 웹뷰
+      GoRoute(
+        path: RoutePaths.webView,
+        builder: (context, state) {
+          return WebViewScreen(
+            url: (state.extra as Map<String, dynamic>)['url'],
+            title: (state.extra as Map<String, dynamic>)['title'],
+          );
+        },
+      ),
+
       // 탭
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -305,23 +334,35 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: RoutePaths.home,
                 builder: (context, state) => HomeScreen(
-                  onTapFriendship: () {
+                  onTapFriendship: (bestFriends, worstFriends) {
                     context.push(
                       RoutePaths.home + RoutePaths.friendship,
+                      extra: {
+                        'bestFriends': bestFriends,
+                        'worstFriends': worstFriends,
+                      }
                     );
                   },
                 ),
                 routes: [
                   GoRoute(
                     path: RoutePaths.friendship,
-                    builder: (context, state) => FriendshipScreen(
-                      onTapFriendDetail: (friendId) {
-                        context.push(
-                          RoutePaths.friendDetail,
-                          extra: friendId,
-                        );
-                      },
-                    ),
+                    builder: (context, state) {
+                      final extra = state.extra as Map<String, dynamic>?;
+                      final List<FriendInfo> bestFriends = extra?['bestFriends'];
+                      final List<FriendInfo> worstFriends = extra?['worstFriends'];
+
+                      return FriendshipScreen(
+                        bestFriends: bestFriends,
+                        worstFriends: worstFriends,
+                        onTapFriendDetail: (friendId) {
+                          context.push(
+                            RoutePaths.friendDetail,
+                            extra: friendId,
+                          );
+                        },
+                      );
+                    },
                   ),
                 ],
               ),
@@ -412,7 +453,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                   },
                   onTapWebView: (url, title) {
                     context.push(
-                      RoutePaths.mypage + RoutePaths.webView,
+                      RoutePaths.webView,
                       extra: {
                         'url': url,
                         'title': title,
@@ -424,15 +465,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: RoutePaths.profileEdit,
                     builder: (context, state) => ProfileEditScreen(),
-                  ),
-                  GoRoute(
-                    path: RoutePaths.webView,
-                    builder: (context, state) {
-                      return WebViewScreen(
-                        url: (state.extra as Map<String, dynamic>)['url'],
-                        title: (state.extra as Map<String, dynamic>)['title'],
-                      );
-                    },
                   ),
                 ],
               ),

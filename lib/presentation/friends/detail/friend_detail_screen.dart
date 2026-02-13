@@ -171,260 +171,266 @@ class FriendDetailScreen extends HookConsumerWidget {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16,),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                // 친구 정보
-                SizedBox(
-                  width: double.infinity,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.end,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: RefreshIndicator(
+            color: ColorStyles.pointPurple,
+            onRefresh: () async => vm.loadFriend(friendId, force: true),
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                children: [
+                  // 친구 정보
+                  SizedBox(height: 16,),
+                  SizedBox(
+                    width: double.infinity,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            friend.name,
+                            style: TextStyles.titleTextBold.copyWith(
+                              color: ColorStyles.grayD3,
+                            ),
+                          ),
+                          const SizedBox(width: 16,),
+              
+                          if (group != null) ...[
+                            InfoChip(
+                              label: group,
+                              backgroundColor: ColorStyles.purple100,
+                              textColor: ColorStyles.purple10,
+                            ),
+                            const SizedBox(width: 8,),
+                          ],
+              
+                          if (birthday != null)
+                            InfoChip(
+                              label: formatBirthday(birthday),
+                              backgroundColor: ColorStyles.pink100,
+                              textColor: ColorStyles.pink10,
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24,),
+              
+                  // 관계 상태
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: ColorStyles.black2D,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          friend.name,
-                          style: TextStyles.titleTextBold.copyWith(
+                          '${user.nickname}님의 관계 상태',
+                          style: TextStyles.largeTextBold.copyWith(
                             color: ColorStyles.grayD3,
                           ),
                         ),
-                        const SizedBox(width: 16,),
-
-                        if (group != null) ...[
-                          InfoChip(
-                            label: group,
-                            backgroundColor: ColorStyles.purple100,
-                            textColor: ColorStyles.purple10,
+                        const SizedBox(height: 16,),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ScoreBar(
+                            score: state.rawScore,
+                            height: 40,
                           ),
-                          const SizedBox(width: 8,),
-                        ],
-
-                        if (birthday != null)
-                          InfoChip(
-                            label: formatBirthday(birthday),
-                            backgroundColor: ColorStyles.pink100,
-                            textColor: ColorStyles.pink10,
+                        ),
+                        const SizedBox(height: 8,),
+              
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: friend.score == 0
+                            ? Text(
+                                '표시될 만큼 정보가 없어요',
+                                style: TextStyles.smallTextRegular.copyWith(
+                                  color: ColorStyles.grayA3,
+                                ),
+                              )
+                            : Text.rich(
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: state.scorePercentText,
+                                      style: TextStyles.smallTextRegular.copyWith(
+                                        color: scoreTextColor,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: state.sentimentText,
+                                      style: TextStyles.smallTextRegular.copyWith(
+                                        color: ColorStyles.grayA3,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8,),
+              
+                  // AI 요약
+                  SecondaryButton(
+                    label: 'AI 요약 보기',
+                    minHeight: 44,
+                    onTap: onTapSummary,
+                  ),
+                  const SizedBox(height: 40,),
+              
+                  // 일정 기록
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: ColorStyles.black2D,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 16,
+                      children: [
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            spacing: 8,
+                            children: [
+                              Text(
+                                '${friend.name}님과의 기록',
+                                style: TextStyles.largeTextBold.copyWith(
+                                  color: ColorStyles.grayD3,
+                                ),
+                              ),
+                              Text(
+                                '최근 기록 3개만 보여져요',
+                                style: TextStyles.smallTextRegular.copyWith(
+                                  color: ColorStyles.grayA3,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+              
+                        // 일정 카드
+                        if (recentEvents.isEmpty)
+                          SizedBox(
+                            height: 48,
+                            child: Center(
+                              child: Text(
+                                '아무 기록이 없어요',
+                                style: TextStyles.normalTextRegular.copyWith(
+                                  color: ColorStyles.grayA3,
+                                ),
+                              ),
+                            ),
+                          )
+                        else
+                          Column(
+                            spacing: 8,
+                            children: [
+                              for (final event in recentEvents) GestureDetector(
+                                onTap: () => onTapEventDetail(event.eventId),
+                                behavior: HitTestBehavior.opaque,
+                                child: EventCard(event: event)
+                              ),
+                            ],
                           ),
                       ],
                     ),
                   ),
-                ),
-                const SizedBox(height: 24,),
-
-                // 관계 상태
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: ColorStyles.black2D,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${user.nickname}님의 관계 상태',
-                        style: TextStyles.largeTextBold.copyWith(
-                          color: ColorStyles.grayD3,
-                        ),
-                      ),
-                      const SizedBox(height: 16,),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ScoreBar(
-                          score: state.rawScore,
-                          height: 40,
-                        ),
-                      ),
-                      const SizedBox(height: 8,),
-
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: friend.score == 0
-                          ? Text(
-                              '표시될 만큼 정보가 없어요',
-                              style: TextStyles.smallTextRegular.copyWith(
-                                color: ColorStyles.grayA3,
+                  const SizedBox(height: 40,),
+              
+                  // 선물 기록
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                    decoration: BoxDecoration(
+                      color: ColorStyles.black2D,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      spacing: 16,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '최근 선물 기록',
+                                style: TextStyles.largeTextBold.copyWith(
+                                  color: ColorStyles.grayD3,
+                                ),
                               ),
-                            )
-                          : Text.rich(
-                              TextSpan(
+                            ),
+                            GestureDetector(
+                              onTap: () => onTapGift(friend),
+                              behavior: HitTestBehavior.opaque,
+                              child: Row(
+                                spacing: 8,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  TextSpan(
-                                    text: state.scorePercentText,
+                                  Text(
+                                    '더보기',
                                     style: TextStyles.smallTextRegular.copyWith(
-                                      color: scoreTextColor,
+                                      color: ColorStyles.grayD3,
                                     ),
                                   ),
-                                  TextSpan(
-                                    text: state.sentimentText,
-                                    style: TextStyles.smallTextRegular.copyWith(
-                                      color: ColorStyles.grayA3,
-                                    ),
+                                  Icon(
+                                    Icons.navigate_next,
+                                    color: ColorStyles.grayD3,
+                                    size: 16,
                                   ),
                                 ],
                               ),
-                            ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 8,),
-
-                // AI 요약
-                SecondaryButton(
-                  label: 'AI 요약 보기',
-                  minHeight: 44,
-                  onTap: onTapSummary,
-                ),
-                const SizedBox(height: 40,),
-
-                // 일정 기록
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: ColorStyles.black2D,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: 16,
-                    children: [
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          spacing: 8,
-                          children: [
-                            Text(
-                              '${friend.name}님과의 기록',
-                              style: TextStyles.largeTextBold.copyWith(
-                                color: ColorStyles.grayD3,
-                              ),
-                            ),
-                            Text(
-                              '최근 기록 3개만 보여져요',
-                              style: TextStyles.smallTextRegular.copyWith(
-                                color: ColorStyles.grayA3,
-                              ),
-                            ),
+                            )
                           ],
                         ),
-                      ),
-
-                      // 일정 카드
-                      if (recentEvents.isEmpty)
-                        SizedBox(
-                          height: 48,
-                          child: Center(
-                            child: Text(
-                              '아무 기록이 없어요',
-                              style: TextStyles.normalTextRegular.copyWith(
-                                color: ColorStyles.grayA3,
-                              ),
-                            ),
-                          ),
-                        )
-                      else
-                        Column(
-                          spacing: 8,
-                          children: [
-                            for (final event in recentEvents) GestureDetector(
-                              onTap: () => onTapEventDetail(event.eventId),
-                              behavior: HitTestBehavior.opaque,
-                              child: EventCard(event: event)
-                            ),
-                          ],
-                        ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 40,),
-
-                // 선물 기록
-                Container(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-                  decoration: BoxDecoration(
-                    color: ColorStyles.black2D,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    spacing: 16,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              '최근 선물 기록',
-                              style: TextStyles.largeTextBold.copyWith(
-                                color: ColorStyles.grayD3,
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => onTapGift(friend),
-                            behavior: HitTestBehavior.opaque,
-                            child: Row(
-                              spacing: 8,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '더보기',
-                                  style: TextStyles.smallTextRegular.copyWith(
-                                    color: ColorStyles.grayD3,
-                                  ),
+              
+                        // 선물 카드
+                        if (recentGifts.isEmpty)
+                          SizedBox(
+                            height: 48,
+                            child: Center(
+                              child: Text(
+                                '아무 기록이 없어요',
+                                style: TextStyles.normalTextRegular.copyWith(
+                                  color: ColorStyles.grayA3,
                                 ),
-                                Icon(
-                                  Icons.navigate_next,
-                                  color: ColorStyles.grayD3,
-                                  size: 16,
-                                ),
-                              ],
+                              ),
                             ),
                           )
-                        ],
-                      ),
-
-                      // 선물 카드
-                      if (recentGifts.isEmpty)
-                        SizedBox(
-                          height: 48,
-                          child: Center(
-                            child: Text(
-                              '아무 기록이 없어요',
-                              style: TextStyles.normalTextRegular.copyWith(
-                                color: ColorStyles.grayA3,
-                              ),
-                            ),
-                          ),
-                        )
-                      else
-                        Column(
-                          spacing: 8,
-                          children: [
-                            for (final gift in recentGifts)
-                              GiftsCard(
-                                nickname: user.nickname,
-                                gift: GiftDetail(
-                                  id: gift.giftId,
-                                  price: gift.price,
-                                  giftDate: gift.giftDate,
-                                  giftType: gift.giftType,
-                                  direction: gift.direction,
-                                  description: gift.description,
-                                  friendId: friendId,
-                                  friendName: friend.name,
+                        else
+                          Column(
+                            spacing: 8,
+                            children: [
+                              for (final gift in recentGifts)
+                                GiftsCard(
+                                  nickname: user.nickname,
+                                  gift: GiftDetail(
+                                    id: gift.giftId,
+                                    price: gift.price,
+                                    giftDate: gift.giftDate,
+                                    giftType: gift.giftType,
+                                    direction: gift.direction,
+                                    description: gift.description,
+                                    friendId: friendId,
+                                    friendName: friend.name,
+                                  ),
                                 ),
-                              ),
-                          ],
-                        ),
-                    ],
+                            ],
+                          ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

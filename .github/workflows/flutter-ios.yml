@@ -39,6 +39,28 @@ jobs:
           mkdir -p ios/Flutter
           echo "${{ secrets.SECRETS_XCCONFIG_B64 }}" | base64 --decode > ios/Flutter/Secrets.xcconfig
 
+      - name: Decode firebase.json
+        run: |
+          echo "${{ secrets.FIREBASE_JSON_B64 }}" | base64 --decode > firebase.json
+
+      - name: Decode firebase_options.dart
+        run: |
+          mkdir -p lib
+          echo "${{ secrets.FIREBASE_OPTIONS_DART_B64 }}" | base64 --decode > lib/firebase_options.dart
+
+      - name: Decode GoogleService-Info.plist
+        run: |
+          mkdir -p ios/Runner
+          echo "${{ secrets.GOOGLE_SERVICE_INFO_PLIST_B64 }}" | base64 --decode > ios/Runner/GoogleService-Info.plist
+
+      - name: Verify decoded files
+        run: |
+          test -f .env || (echo "❌ Missing .env" && exit 1)
+          test -f ios/Flutter/Secrets.xcconfig || (echo "❌ Missing ios/Flutter/Secrets.xcconfig" && exit 1)
+          test -f firebase.json || (echo "❌ Missing firebase.json" && exit 1)
+          test -f lib/firebase_options.dart || (echo "❌ Missing lib/firebase_options.dart" && exit 1)
+          test -f ios/Runner/GoogleService-Info.plist || (echo "❌ Missing ios/Runner/GoogleService-Info.plist" && exit 1)
+
       # iOS Pods 캐시 복원
       - name: Cache iOS Pods
         uses: actions/cache@v3

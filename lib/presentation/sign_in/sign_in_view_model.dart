@@ -26,7 +26,7 @@ class SignInViewModel extends Notifier<SignInState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
-      final token = await _socialLoginUseCase.execute(platform);
+      final token = await _socialLoginUseCase.execute(platform, true);
 
       // 소셜 로그인 취소
       if (token == null) {
@@ -55,7 +55,6 @@ class SignInViewModel extends Notifier<SignInState> {
       state = state.copyWith(isLoading: false, errorMessage: e.message);
       return const SocialLoginCanceled();
     } catch (e) {
-      print('login :${e.toString()}');
       state = state.copyWith(
         isLoading: false,
         errorMessage: "로그인 중 알 수 없는\n오류가 발생했습니다.",
