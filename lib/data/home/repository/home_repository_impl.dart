@@ -113,7 +113,7 @@ class HomeRepositoryImpl implements HomeRepository {
     final hasBest = q.bestFriends.isNotEmpty;
     final hasWorst = q.worstFriends.isNotEmpty;
 
-    final overallTop = (q.overallAnalysis ?? '').trim();
+    final overallTop = (q.solution?.overallAnalysis ?? '').trim();
     final overallInSolution = (qs.overallAnalysis ?? '').trim();
     final hasOverall = overallTop.isNotEmpty || overallInSolution.isNotEmpty;
 

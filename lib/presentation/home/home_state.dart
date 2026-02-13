@@ -38,7 +38,7 @@ class HomeState {
       monthlyAnalysisText.isNotEmpty && monthlySuggestionsText.isNotEmpty;
 
   String get quarterlyOverallAnalysisText {
-    final top = (quarterly?.overallAnalysis ?? '').trim();
+    final top = (quarterly?.solution?.overallAnalysis ?? '').trim();
     if (top.isNotEmpty) return top;
 
     return (quarterly?.solution?.overallAnalysis ?? '').trim();
