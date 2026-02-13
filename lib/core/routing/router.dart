@@ -9,6 +9,7 @@ import 'package:relog/domain/auth/model/user.dart';
 import 'package:relog/domain/events/model/event_detail.dart';
 import 'package:relog/domain/friends/model/friend.dart';
 import 'package:relog/domain/gifts/model/gift_detail.dart';
+import 'package:relog/domain/home/model/friend_info.dart';
 import 'package:relog/presentation/events/events_screen.dart';
 import 'package:relog/presentation/events/detail/event_detail_screen.dart';
 import 'package:relog/presentation/events/write/event_write_screen.dart';
@@ -305,23 +306,35 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: RoutePaths.home,
                 builder: (context, state) => HomeScreen(
-                  onTapFriendship: () {
+                  onTapFriendship: (bestFriends, worstFriends) {
                     context.push(
                       RoutePaths.home + RoutePaths.friendship,
+                      extra: {
+                        'bestFriends': bestFriends,
+                        'worstFriends': worstFriends,
+                      }
                     );
                   },
                 ),
                 routes: [
                   GoRoute(
                     path: RoutePaths.friendship,
-                    builder: (context, state) => FriendshipScreen(
-                      onTapFriendDetail: (friendId) {
-                        context.push(
-                          RoutePaths.friendDetail,
-                          extra: friendId,
-                        );
-                      },
-                    ),
+                    builder: (context, state) {
+                      final extra = state.extra as Map<String, dynamic>?;
+                      final List<FriendInfo> bestFriends = extra?['bestFriends'];
+                      final List<FriendInfo> worstFriends = extra?['worstFriends'];
+
+                      return FriendshipScreen(
+                        bestFriends: bestFriends,
+                        worstFriends: worstFriends,
+                        onTapFriendDetail: (friendId) {
+                          context.push(
+                            RoutePaths.friendDetail,
+                            extra: friendId,
+                          );
+                        },
+                      );
+                    },
                   ),
                 ],
               ),
