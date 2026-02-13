@@ -3,11 +3,13 @@ import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:relog/core/exception/api_exception.dart';
 import 'package:relog/core/exception/social_exception.dart';
+import 'package:relog/core/network/http_status_code.dart';
 import 'package:relog/core/utils/map_without_null.dart';
 import 'package:relog/domain/auth/model/login_request.dart';
 import 'package:relog/domain/auth/model/login_response.dart';
 import 'package:relog/domain/auth/model/sign_up_request.dart';
 import 'package:relog/domain/auth/model/user.dart';
+import 'package:relog/domain/auth/model/user_delete_request.dart';
 import 'package:relog/domain/auth/model/user_edit_request.dart';
 import 'package:relog/domain/auth/repository/auth_repository.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
@@ -105,9 +107,44 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<String?> appleLogin() {
-    // TODO: implement appleLogin
-    throw UnimplementedError();
+  Future<String?> appleLogin(bool isLogin) async {
+    try {
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+      final identityToken = credential.identityToken;
+      final authorizationCode = credential.authorizationCode;
+
+      final token = isLogin ? identityToken : authorizationCode;
+
+      if (token == null || token.isEmpty) return null;
+
+      return token;
+    } on SignInWithAppleAuthorizationException catch (e) {
+      if (e.code == AuthorizationErrorCode.canceled) return null;
+      final msg = (e.message).toLowerCase();
+      final looksLikeCancel =
+          msg.contains('cancel') ||
+          msg.contains('canceled') ||
+          msg.contains('user cancelled') ||
+          msg.contains('user canceled');
+      if (looksLikeCancel) return null;
+
+      throw SocialException();
+    } catch (e) {
+      final msg = e.toString().toLowerCase();
+      final looksLikeCancel =
+          msg.contains('cancel') ||
+          msg.contains('canceled') ||
+          msg.contains('user cancelled') ||
+          msg.contains('user canceled');
+
+      if (looksLikeCancel) return null;
+
+      throw SocialException();
+    }
   }
 
   @override
@@ -122,6 +159,27 @@ class AuthRepositoryImpl implements AuthRepository {
       }
       throw ApiException(
         '로그아웃에 실패했어요',
+        statusCode: e.response?.statusCode,
+      );
+    } catch (e) {
+      throw ApiException('알 수 없는 오류가 발생했어요');
+    }
+  }
+
+  @override
+  Future<bool> userDelete(UserDeleteRequest request) async {
+    final endpoint = dotenv.get('USER_DELETE_ENDPOINT');
+
+    try {
+      final response = await _authDio.delete(endpoint, data: request.toJson().withoutNulls());
+      if (response.statusCode == HttpStatusCode.ok.code) return true;
+      return false;
+    } on DioException catch (e) {
+      if (e.error is ApiException) {
+        throw e.error!;
+      }
+      throw ApiException(
+        '회원탈퇴에 실패했어요',
         statusCode: e.response?.statusCode,
       );
     } catch (e) {
@@ -214,43 +272,4 @@ class AuthRepositoryImpl implements AuthRepository {
       throw ApiException('알 수 없는 오류가 발생했어요');
     }
   }
-
-  // @override
-  // Future<String?> appleLogin() async {
-  //   try {
-  //     final credential = await SignInWithApple.getAppleIDCredential(
-  //       scopes: [
-  //         AppleIDAuthorizationScopes.email,
-  //         AppleIDAuthorizationScopes.fullName,
-  //       ],
-  //     );
-  //
-  //     final token = credential.identityToken;
-  //     if (token == null || token.isEmpty) return null;
-  //
-  //     return token;
-  //   } on SignInWithAppleAuthorizationException catch (e) {
-  //     if (e.code == AuthorizationErrorCode.canceled) return null;
-  //     final msg = (e.message).toLowerCase();
-  //     final looksLikeCancel =
-  //       msg.contains('cancel') ||
-  //       msg.contains('canceled') ||
-  //       msg.contains('user cancelled') ||
-  //       msg.contains('user canceled');
-  //     if (looksLikeCancel) return null;
-  //
-  //     throw SocialException();
-  //   } catch (e) {
-  //     final msg = e.toString().toLowerCase();
-  //     final looksLikeCancel =
-  //       msg.contains('cancel') ||
-  //       msg.contains('canceled') ||
-  //       msg.contains('user cancelled') ||
-  //       msg.contains('user canceled');
-  //
-  //     if (looksLikeCancel) return null;
-  //
-  //     throw SocialException();
-  //   }
-  // }
 }

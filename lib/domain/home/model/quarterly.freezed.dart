@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Quarterly {
 
- List<FriendInfo?> get bestFriends; List<FriendInfo?> get worstFriends; String? get overallAnalysis; QuarterlySolution? get solution;
+ List<FriendInfo?> get bestFriends; List<FriendInfo?> get worstFriends; QuarterlySolution? get solution;
 /// Create a copy of Quarterly
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $QuarterlyCopyWith<Quarterly> get copyWith => _$QuarterlyCopyWithImpl<Quarterly>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Quarterly&&const DeepCollectionEquality().equals(other.bestFriends, bestFriends)&&const DeepCollectionEquality().equals(other.worstFriends, worstFriends)&&(identical(other.overallAnalysis, overallAnalysis) || other.overallAnalysis == overallAnalysis)&&(identical(other.solution, solution) || other.solution == solution));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Quarterly&&const DeepCollectionEquality().equals(other.bestFriends, bestFriends)&&const DeepCollectionEquality().equals(other.worstFriends, worstFriends)&&(identical(other.solution, solution) || other.solution == solution));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(bestFriends),const DeepCollectionEquality().hash(worstFriends),overallAnalysis,solution);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(bestFriends),const DeepCollectionEquality().hash(worstFriends),solution);
 
 @override
 String toString() {
-  return 'Quarterly(bestFriends: $bestFriends, worstFriends: $worstFriends, overallAnalysis: $overallAnalysis, solution: $solution)';
+  return 'Quarterly(bestFriends: $bestFriends, worstFriends: $worstFriends, solution: $solution)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $QuarterlyCopyWith<$Res>  {
   factory $QuarterlyCopyWith(Quarterly value, $Res Function(Quarterly) _then) = _$QuarterlyCopyWithImpl;
 @useResult
 $Res call({
- List<FriendInfo?> bestFriends, List<FriendInfo?> worstFriends, String? overallAnalysis, QuarterlySolution? solution
+ List<FriendInfo?> bestFriends, List<FriendInfo?> worstFriends, QuarterlySolution? solution
 });
 
 
@@ -65,12 +65,11 @@ class _$QuarterlyCopyWithImpl<$Res>
 
 /// Create a copy of Quarterly
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? bestFriends = null,Object? worstFriends = null,Object? overallAnalysis = freezed,Object? solution = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? bestFriends = null,Object? worstFriends = null,Object? solution = freezed,}) {
   return _then(_self.copyWith(
 bestFriends: null == bestFriends ? _self.bestFriends : bestFriends // ignore: cast_nullable_to_non_nullable
 as List<FriendInfo?>,worstFriends: null == worstFriends ? _self.worstFriends : worstFriends // ignore: cast_nullable_to_non_nullable
-as List<FriendInfo?>,overallAnalysis: freezed == overallAnalysis ? _self.overallAnalysis : overallAnalysis // ignore: cast_nullable_to_non_nullable
-as String?,solution: freezed == solution ? _self.solution : solution // ignore: cast_nullable_to_non_nullable
+as List<FriendInfo?>,solution: freezed == solution ? _self.solution : solution // ignore: cast_nullable_to_non_nullable
 as QuarterlySolution?,
   ));
 }
@@ -168,10 +167,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<FriendInfo?> bestFriends,  List<FriendInfo?> worstFriends,  String? overallAnalysis,  QuarterlySolution? solution)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<FriendInfo?> bestFriends,  List<FriendInfo?> worstFriends,  QuarterlySolution? solution)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Quarterly() when $default != null:
-return $default(_that.bestFriends,_that.worstFriends,_that.overallAnalysis,_that.solution);case _:
+return $default(_that.bestFriends,_that.worstFriends,_that.solution);case _:
   return orElse();
 
 }
@@ -189,10 +188,10 @@ return $default(_that.bestFriends,_that.worstFriends,_that.overallAnalysis,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<FriendInfo?> bestFriends,  List<FriendInfo?> worstFriends,  String? overallAnalysis,  QuarterlySolution? solution)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<FriendInfo?> bestFriends,  List<FriendInfo?> worstFriends,  QuarterlySolution? solution)  $default,) {final _that = this;
 switch (_that) {
 case _Quarterly():
-return $default(_that.bestFriends,_that.worstFriends,_that.overallAnalysis,_that.solution);case _:
+return $default(_that.bestFriends,_that.worstFriends,_that.solution);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -209,10 +208,10 @@ return $default(_that.bestFriends,_that.worstFriends,_that.overallAnalysis,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<FriendInfo?> bestFriends,  List<FriendInfo?> worstFriends,  String? overallAnalysis,  QuarterlySolution? solution)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<FriendInfo?> bestFriends,  List<FriendInfo?> worstFriends,  QuarterlySolution? solution)?  $default,) {final _that = this;
 switch (_that) {
 case _Quarterly() when $default != null:
-return $default(_that.bestFriends,_that.worstFriends,_that.overallAnalysis,_that.solution);case _:
+return $default(_that.bestFriends,_that.worstFriends,_that.solution);case _:
   return null;
 
 }
@@ -224,7 +223,7 @@ return $default(_that.bestFriends,_that.worstFriends,_that.overallAnalysis,_that
 @JsonSerializable()
 
 class _Quarterly implements Quarterly {
-  const _Quarterly({required final  List<FriendInfo?> bestFriends, required final  List<FriendInfo?> worstFriends, this.overallAnalysis, this.solution}): _bestFriends = bestFriends,_worstFriends = worstFriends;
+  const _Quarterly({required final  List<FriendInfo?> bestFriends, required final  List<FriendInfo?> worstFriends, this.solution}): _bestFriends = bestFriends,_worstFriends = worstFriends;
   factory _Quarterly.fromJson(Map<String, dynamic> json) => _$QuarterlyFromJson(json);
 
  final  List<FriendInfo?> _bestFriends;
@@ -241,7 +240,6 @@ class _Quarterly implements Quarterly {
   return EqualUnmodifiableListView(_worstFriends);
 }
 
-@override final  String? overallAnalysis;
 @override final  QuarterlySolution? solution;
 
 /// Create a copy of Quarterly
@@ -257,16 +255,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Quarterly&&const DeepCollectionEquality().equals(other._bestFriends, _bestFriends)&&const DeepCollectionEquality().equals(other._worstFriends, _worstFriends)&&(identical(other.overallAnalysis, overallAnalysis) || other.overallAnalysis == overallAnalysis)&&(identical(other.solution, solution) || other.solution == solution));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Quarterly&&const DeepCollectionEquality().equals(other._bestFriends, _bestFriends)&&const DeepCollectionEquality().equals(other._worstFriends, _worstFriends)&&(identical(other.solution, solution) || other.solution == solution));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_bestFriends),const DeepCollectionEquality().hash(_worstFriends),overallAnalysis,solution);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_bestFriends),const DeepCollectionEquality().hash(_worstFriends),solution);
 
 @override
 String toString() {
-  return 'Quarterly(bestFriends: $bestFriends, worstFriends: $worstFriends, overallAnalysis: $overallAnalysis, solution: $solution)';
+  return 'Quarterly(bestFriends: $bestFriends, worstFriends: $worstFriends, solution: $solution)';
 }
 
 
@@ -277,7 +275,7 @@ abstract mixin class _$QuarterlyCopyWith<$Res> implements $QuarterlyCopyWith<$Re
   factory _$QuarterlyCopyWith(_Quarterly value, $Res Function(_Quarterly) _then) = __$QuarterlyCopyWithImpl;
 @override @useResult
 $Res call({
- List<FriendInfo?> bestFriends, List<FriendInfo?> worstFriends, String? overallAnalysis, QuarterlySolution? solution
+ List<FriendInfo?> bestFriends, List<FriendInfo?> worstFriends, QuarterlySolution? solution
 });
 
 
@@ -294,12 +292,11 @@ class __$QuarterlyCopyWithImpl<$Res>
 
 /// Create a copy of Quarterly
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? bestFriends = null,Object? worstFriends = null,Object? overallAnalysis = freezed,Object? solution = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? bestFriends = null,Object? worstFriends = null,Object? solution = freezed,}) {
   return _then(_Quarterly(
 bestFriends: null == bestFriends ? _self._bestFriends : bestFriends // ignore: cast_nullable_to_non_nullable
 as List<FriendInfo?>,worstFriends: null == worstFriends ? _self._worstFriends : worstFriends // ignore: cast_nullable_to_non_nullable
-as List<FriendInfo?>,overallAnalysis: freezed == overallAnalysis ? _self.overallAnalysis : overallAnalysis // ignore: cast_nullable_to_non_nullable
-as String?,solution: freezed == solution ? _self.solution : solution // ignore: cast_nullable_to_non_nullable
+as List<FriendInfo?>,solution: freezed == solution ? _self.solution : solution // ignore: cast_nullable_to_non_nullable
 as QuarterlySolution?,
   ));
 }

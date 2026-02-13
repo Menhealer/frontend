@@ -3,10 +3,10 @@ import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'package:relog/core/presentation/styles/text_styles.dart';
 import 'package:relog/core/presentation/widgets/chip/info_chip.dart';
 import 'package:relog/core/utils/time_format.dart';
-import 'package:relog/domain/home/model/friendship.dart';
+import 'package:relog/domain/home/model/friend_info.dart';
 
 class FriendshipCard extends StatelessWidget {
-  final Friendship item;
+  final FriendInfo item;
   final VoidCallback onTap;
 
   const FriendshipCard({
@@ -36,13 +36,13 @@ class FriendshipCard extends StatelessWidget {
                 spacing: 8,
                 children: [
                   Text(
-                    item.name,
+                    item.friend.name,
                     style: TextStyles.largeTextBold.copyWith(
                       color: ColorStyles.grayD3,
                     ),
                   ),
                   Text(
-                    item.info,
+                    item.recommendation,
                     style: TextStyles.normalTextRegular.copyWith(
                       color: ColorStyles.grayD3,
                     ),
@@ -51,17 +51,17 @@ class FriendshipCard extends StatelessWidget {
               ),
             ),
 
-            if (item.group != null && item.group != '') ...[
+            if (item.friend.group != null && item.friend.group != '') ...[
               InfoChip(
-                label: item.group!,
+                label: item.friend.group!,
                 backgroundColor: ColorStyles.purple100,
                 textColor: ColorStyles.purple10,
               ),
             ],
 
-            if (item.birthday != null)
+            if (item.friend.birthday != null)
               InfoChip(
-                label: formatBirthday(item.birthday!),
+                label: formatBirthday(item.friend.birthday!),
                 backgroundColor: ColorStyles.pink100,
                 textColor: ColorStyles.pink10,
               ),

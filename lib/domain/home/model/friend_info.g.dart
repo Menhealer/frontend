@@ -7,12 +7,12 @@ part of 'friend_info.dart';
 // **************************************************************************
 
 _FriendInfo _$FriendInfoFromJson(Map<String, dynamic> json) => _FriendInfo(
-  friendId: (json['friendId'] as num).toInt(),
-  friendName: json['friendName'] as String,
+  friend: Friend.fromJson(json['friend'] as Map<String, dynamic>),
+  recommendation: json['recommendation'] as String,
 );
 
 Map<String, dynamic> _$FriendInfoToJson(_FriendInfo instance) =>
     <String, dynamic>{
-      'friendId': instance.friendId,
-      'friendName': instance.friendName,
+      'friend': instance.friend,
+      'recommendation': instance.recommendation,
     };

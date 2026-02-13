@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$FriendInfo {
 
- int get friendId; String get friendName;
+ Friend get friend; String get recommendation;
 /// Create a copy of FriendInfo
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $FriendInfoCopyWith<FriendInfo> get copyWith => _$FriendInfoCopyWithImpl<FriendI
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FriendInfo&&(identical(other.friendId, friendId) || other.friendId == friendId)&&(identical(other.friendName, friendName) || other.friendName == friendName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FriendInfo&&(identical(other.friend, friend) || other.friend == friend)&&(identical(other.recommendation, recommendation) || other.recommendation == recommendation));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,friendId,friendName);
+int get hashCode => Object.hash(runtimeType,friend,recommendation);
 
 @override
 String toString() {
-  return 'FriendInfo(friendId: $friendId, friendName: $friendName)';
+  return 'FriendInfo(friend: $friend, recommendation: $recommendation)';
 }
 
 
@@ -48,11 +48,11 @@ abstract mixin class $FriendInfoCopyWith<$Res>  {
   factory $FriendInfoCopyWith(FriendInfo value, $Res Function(FriendInfo) _then) = _$FriendInfoCopyWithImpl;
 @useResult
 $Res call({
- int friendId, String friendName
+ Friend friend, String recommendation
 });
 
 
-
+$FriendCopyWith<$Res> get friend;
 
 }
 /// @nodoc
@@ -65,14 +65,23 @@ class _$FriendInfoCopyWithImpl<$Res>
 
 /// Create a copy of FriendInfo
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? friendId = null,Object? friendName = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? friend = null,Object? recommendation = null,}) {
   return _then(_self.copyWith(
-friendId: null == friendId ? _self.friendId : friendId // ignore: cast_nullable_to_non_nullable
-as int,friendName: null == friendName ? _self.friendName : friendName // ignore: cast_nullable_to_non_nullable
+friend: null == friend ? _self.friend : friend // ignore: cast_nullable_to_non_nullable
+as Friend,recommendation: null == recommendation ? _self.recommendation : recommendation // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
-
+/// Create a copy of FriendInfo
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$FriendCopyWith<$Res> get friend {
+  
+  return $FriendCopyWith<$Res>(_self.friend, (value) {
+    return _then(_self.copyWith(friend: value));
+  });
+}
 }
 
 
@@ -154,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int friendId,  String friendName)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Friend friend,  String recommendation)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FriendInfo() when $default != null:
-return $default(_that.friendId,_that.friendName);case _:
+return $default(_that.friend,_that.recommendation);case _:
   return orElse();
 
 }
@@ -175,10 +184,10 @@ return $default(_that.friendId,_that.friendName);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int friendId,  String friendName)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Friend friend,  String recommendation)  $default,) {final _that = this;
 switch (_that) {
 case _FriendInfo():
-return $default(_that.friendId,_that.friendName);case _:
+return $default(_that.friend,_that.recommendation);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,10 +204,10 @@ return $default(_that.friendId,_that.friendName);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int friendId,  String friendName)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Friend friend,  String recommendation)?  $default,) {final _that = this;
 switch (_that) {
 case _FriendInfo() when $default != null:
-return $default(_that.friendId,_that.friendName);case _:
+return $default(_that.friend,_that.recommendation);case _:
   return null;
 
 }
@@ -210,11 +219,11 @@ return $default(_that.friendId,_that.friendName);case _:
 @JsonSerializable()
 
 class _FriendInfo implements FriendInfo {
-  const _FriendInfo({required this.friendId, required this.friendName});
+  const _FriendInfo({required this.friend, required this.recommendation});
   factory _FriendInfo.fromJson(Map<String, dynamic> json) => _$FriendInfoFromJson(json);
 
-@override final  int friendId;
-@override final  String friendName;
+@override final  Friend friend;
+@override final  String recommendation;
 
 /// Create a copy of FriendInfo
 /// with the given fields replaced by the non-null parameter values.
@@ -229,16 +238,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FriendInfo&&(identical(other.friendId, friendId) || other.friendId == friendId)&&(identical(other.friendName, friendName) || other.friendName == friendName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FriendInfo&&(identical(other.friend, friend) || other.friend == friend)&&(identical(other.recommendation, recommendation) || other.recommendation == recommendation));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,friendId,friendName);
+int get hashCode => Object.hash(runtimeType,friend,recommendation);
 
 @override
 String toString() {
-  return 'FriendInfo(friendId: $friendId, friendName: $friendName)';
+  return 'FriendInfo(friend: $friend, recommendation: $recommendation)';
 }
 
 
@@ -249,11 +258,11 @@ abstract mixin class _$FriendInfoCopyWith<$Res> implements $FriendInfoCopyWith<$
   factory _$FriendInfoCopyWith(_FriendInfo value, $Res Function(_FriendInfo) _then) = __$FriendInfoCopyWithImpl;
 @override @useResult
 $Res call({
- int friendId, String friendName
+ Friend friend, String recommendation
 });
 
 
-
+@override $FriendCopyWith<$Res> get friend;
 
 }
 /// @nodoc
@@ -266,15 +275,24 @@ class __$FriendInfoCopyWithImpl<$Res>
 
 /// Create a copy of FriendInfo
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? friendId = null,Object? friendName = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? friend = null,Object? recommendation = null,}) {
   return _then(_FriendInfo(
-friendId: null == friendId ? _self.friendId : friendId // ignore: cast_nullable_to_non_nullable
-as int,friendName: null == friendName ? _self.friendName : friendName // ignore: cast_nullable_to_non_nullable
+friend: null == friend ? _self.friend : friend // ignore: cast_nullable_to_non_nullable
+as Friend,recommendation: null == recommendation ? _self.recommendation : recommendation // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
 
-
+/// Create a copy of FriendInfo
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$FriendCopyWith<$Res> get friend {
+  
+  return $FriendCopyWith<$Res>(_self.friend, (value) {
+    return _then(_self.copyWith(friend: value));
+  });
+}
 }
 
 // dart format on
