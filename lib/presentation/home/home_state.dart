@@ -55,12 +55,12 @@ class HomeState {
 
   String get bestFriendName =>
       (quarterly?.bestFriends.isNotEmpty == true)
-          ? (quarterly!.bestFriends.first?.friendName ?? '')
+          ? (quarterly!.bestFriends.first?.friend.name ?? '')
           : '';
 
   String get worstFriendName =>
       (quarterly?.worstFriends.isNotEmpty == true)
-          ? (quarterly!.worstFriends.first?.friendName ?? '')
+          ? (quarterly!.worstFriends.first?.friend.name ?? '')
           : '';
 
   bool get hasQuarterlySection {

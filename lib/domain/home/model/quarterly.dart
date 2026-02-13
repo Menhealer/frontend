@@ -10,7 +10,6 @@ abstract class Quarterly with _$Quarterly {
   const factory Quarterly({
     required List<FriendInfo?> bestFriends,
     required List<FriendInfo?> worstFriends,
-    String? overallAnalysis,
     QuarterlySolution? solution,
   }) = _Quarterly;
 
