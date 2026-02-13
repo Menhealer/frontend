@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:relog/core/exception/api_exception.dart';
 import 'package:relog/core/state/app_mutation_provider.dart';
+import 'package:relog/core/storage/providers/user_session_provider.dart';
 import 'package:relog/core/utils/time_format.dart';
 import 'package:relog/domain/events/model/calendar.dart';
 import 'package:relog/domain/events/model/event_detail.dart';
@@ -12,12 +13,15 @@ import 'package:relog/presentation/events/model/calendar_item.dart';
 class EventsViewModel extends Notifier<EventsState> {
   late final GetCalendarUseCase _getCalendarUseCase;
 
-  // Prevent duplicate calendar loads per (year, month)
+  int? _userId;
   final Map<String, Future<void>> _inFlightLoads = {};
 
   @override
   EventsState build() {
     _getCalendarUseCase = ref.read(getCalendarUseCaseProvider);
+
+    final user = ref.read(userSessionProvider).asData?.value;
+    _userId = user?.id;
 
     ref.listen<AppMutation?>(appMutationProvider, (prev, next) async {
       if (next == null) return;
@@ -186,7 +190,9 @@ class EventsViewModel extends Notifier<EventsState> {
     for (final day in calendar.days) {
       final items = <CalendarItem>[
         for (final e in day.events) CalendarItem.fromEvent(e),
-        for (final f in day.birthdays) CalendarItem.fromBirthday(f),
+        for (final f in day.birthdays)
+          if (_userId == null || f.id != _userId)
+            CalendarItem.fromBirthday(f)
       ];
 
       items.sort((a, b) {
