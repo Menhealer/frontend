@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:relog/core/network/app_check_interceptor.dart';
 import 'package:relog/core/network/auth_interceptor.dart';
 import 'package:relog/core/network/response_interceptor.dart';
 import 'package:relog/core/storage/providers/secure_storage_provider.dart';
@@ -15,9 +17,16 @@ final baseDioOptionsProvider = Provider<BaseOptions>((ref) {
   );
 });
 
+final firebaseAppCheckProvider = Provider<FirebaseAppCheck>((ref) {
+  return FirebaseAppCheck.instance;
+});
+
 final plainDioProvider = Provider<Dio>((ref) {
   final options = ref.watch(baseDioOptionsProvider);
   final dio = Dio(options);
+
+  final appCheck = ref.watch(firebaseAppCheckProvider);
+  dio.interceptors.add(AppCheckInterceptor(appCheck));
 
   dio.interceptors.add(ResponseInterceptor());
   return dio;
@@ -27,6 +36,9 @@ final refreshDioProvider = Provider<Dio>((ref) {
   final options = ref.watch(baseDioOptionsProvider);
   final dio = Dio(options);
 
+  final appCheck = ref.watch(firebaseAppCheckProvider);
+  dio.interceptors.add(AppCheckInterceptor(appCheck));
+
   dio.interceptors.add(ResponseInterceptor());
   return dio;
 });
@@ -35,6 +47,9 @@ final refreshDioProvider = Provider<Dio>((ref) {
 final authDioProvider = Provider<Dio>((ref) {
   final options = ref.watch(baseDioOptionsProvider);
   final dio = Dio(options);
+
+  final appCheck = ref.watch(firebaseAppCheckProvider);
+  dio.interceptors.add(AppCheckInterceptor(appCheck));
 
   final secureStorage = ref.watch(secureStorageProvider);
   final refreshDio = ref.watch(refreshDioProvider);
