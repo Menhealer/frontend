@@ -28,6 +28,7 @@ Future<void> main() async {
         ? AppleDebugProvider()
         : AppleAppAttestProvider(),
   );
+  await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
 
   // 카카오 로그인
   final kakaoNativeAppKey = dotenv.get('KAKAO_NATIVE_APP_KEY');
