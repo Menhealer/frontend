@@ -3,3 +3,6 @@
 -keepattributes *Annotation*
 -keepattributes EnclosingMethod
 -keepattributes InnerClasses
+
+# kakao login
+-keep class com.kakao.sdk.**.model.* { <fields>; }

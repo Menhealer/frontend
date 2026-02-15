@@ -64,8 +64,8 @@ android {
             keyPassword = keystoreProperties["keyPassword"] as String?
             storePassword = keystoreProperties["storePassword"] as String?
 
-            val storeFilePath = keystoreProperties["storeFile"] as String?
-            storeFile = if (storeFilePath != null) file("keystore/$storeFilePath") else null
+            val storeFilePath = keystoreProperties["storeFile"]?.toString()
+            storeFile = storeFilePath?.let { file(it) }
         }
     }
 
@@ -74,11 +74,6 @@ android {
             signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
-
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
         }
 
         getByName("debug") { }
