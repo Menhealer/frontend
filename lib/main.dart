@@ -1,15 +1,34 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:relog/core/presentation/styles/color_styles.dart';
 import 'core/routing/router.dart';
+import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // env 파일 로드
   await dotenv.load();
+
+  // firebase
+  await Firebase.initializeApp(
+    name: 'Relog',
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  await FirebaseAppCheck.instance.activate(
+    providerAndroid: kDebugMode
+        ? AndroidDebugProvider()
+        : AndroidPlayIntegrityProvider(),
+    providerApple: kDebugMode
+        ? AppleDebugProvider()
+        : AppleAppAttestProvider(),
+  );
+  await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
 
   // 카카오 로그인
   final kakaoNativeAppKey = dotenv.get('KAKAO_NATIVE_APP_KEY');
