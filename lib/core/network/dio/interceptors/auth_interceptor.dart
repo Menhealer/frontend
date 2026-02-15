@@ -30,6 +30,15 @@ class AuthInterceptor extends Interceptor {
       return;
     }
 
+    // App Check 실패
+    final data = err.response?.data;
+    final msg = data is Map ? (data['message']?.toString() ?? '') : '';
+    final isAppCheck401 = msg.contains('App Check');
+    if (isAppCheck401) {
+      handler.next(err);
+      return;
+    }
+
     Future<void> forceLogout([String? message]) async {
       await onUnauthorized();
       handler.reject(

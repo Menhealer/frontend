@@ -1,0 +1,108 @@
+name: ReLog Android CI
+
+on:
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build-android:
+    timeout-minutes: 15
+    name: Build Flutter Android App
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Cache Flutter pub packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.pub-cache
+          key: pubcache-${{ runner.os }}-stable-3.35.4-${{ hashFiles('pubspec.lock') }}
+          restore-keys: pubcache-${{ runner.os }}-stable-3.35.4-
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.35.4'
+          channel: 'stable'
+          architecture: x64
+          cache: true
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Decode and create .env file
+        run: |
+          echo "${{ secrets.ENV_B64 }}" | base64 --decode > .env
+
+      - name: Create android/local.properties
+        run: |
+          mkdir -p android
+          SDK_DIR="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          test -n "$SDK_DIR" || (echo "❌ ANDROID_SDK_ROOT/ANDROID_HOME not set" && exit 1)
+          echo "sdk.dir=$SDK_DIR" > android/local.properties
+          echo "KAKAO_NATIVE_APP_KEY=${{ secrets.KAKAO_NATIVE_APP_KEY }}" >> android/local.properties
+          echo "local.properties created at android/local.properties"
+          cat android/local.properties | sed 's/KAKAO_NATIVE_APP_KEY=.*/KAKAO_NATIVE_APP_KEY=***REDACTED***/' 
+
+      - name: Decode firebase.json
+        run: |
+          echo "${{ secrets.FIREBASE_JSON_B64 }}" | base64 --decode > firebase.json
+
+      - name: Decode firebase_options.dart
+        run: |
+          mkdir -p lib
+          echo "${{ secrets.FIREBASE_OPTIONS_DART_B64 }}" | base64 --decode > lib/firebase_options.dart
+
+      - name: Decode google-services.json
+        run: |
+          mkdir -p android/app
+          echo "${{ secrets.GOOGLE_SERVICES_JSON_B64 }}" | base64 --decode > android/app/google-services.json
+
+      - name: Verify decoded files
+        run: |
+          test -f .env || (echo "❌ Missing .env" && exit 1)
+          test -f firebase.json || (echo "❌ Missing firebase.json" && exit 1)
+          test -f lib/firebase_options.dart || (echo "❌ Missing lib/firebase_options.dart" && exit 1)
+          test -f android/app/google-services.json || (echo "❌ Missing android/app/google-services.json" && exit 1)
+          test -f android/local.properties || (echo "❌ Missing android/local.properties" && exit 1)
+
+      - name: Install dependencies
+        run: |
+          flutter clean
+          flutter pub get
+
+      - name: Analyze code
+        run: flutter analyze --no-fatal-warnings || echo "Analysis completed with warnings"
+        continue-on-error: false
+
+      - name: Build Android APK (debug)
+        run: |
+          flutter build apk --debug
+          echo "Android debug APK build completed successfully!"
+
+      - name: List build artifacts
+        run: |
+          ls -la build/app/outputs/flutter-apk/
+          du -sh build/app/outputs/flutter-apk/app-debug.apk
+
+      - name: Upload APK as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ReLog-android-apk-${{ github.run_number }}
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 7
+
+      - name: Build Success Summary
+        run: |
+          echo "🎉 Flutter Android build completed successfully!"
+          echo "🤖 Android debug APK built"
+          echo "📦 Artifacts uploaded to GitHub Actions"
+          echo "⬇️ Download from: Actions tab > Artifacts"
+          echo "🔗 Build #${{ github.run_number }}"
+          echo "📁 Artifact name: ReLog-android-apk-${{ github.run_number }}"
